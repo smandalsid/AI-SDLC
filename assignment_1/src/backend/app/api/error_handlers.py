@@ -1,6 +1,7 @@
 import logging
 import traceback
 from http import HTTPStatus
+from typing import cast
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -28,24 +29,21 @@ def error_response(status: int, code: str, message: str) -> JSONResponse:
 
 
 async def handle_app_error(request: Request, exc: Exception) -> JSONResponse:
-    if not isinstance(exc, AppError):
-        return await handle_unexpected(request, exc)
-    return error_response(STATUS_BY_CODE.get(exc.code, 500), exc.code, exc.message)
+    error = cast(AppError, exc)  # registered for AppError only
+    return error_response(STATUS_BY_CODE.get(error.code, 500), error.code, error.message)
 
 
 async def handle_validation_error(request: Request, exc: Exception) -> JSONResponse:
-    if not isinstance(exc, RequestValidationError):
-        return await handle_unexpected(request, exc)
+    error = cast(RequestValidationError, exc)
     # Only the offending field locations are reported, never the submitted values.
-    where = ", ".join(".".join(str(part) for part in error["loc"]) for error in exc.errors())
+    where = ", ".join(".".join(str(part) for part in item["loc"]) for item in error.errors())
     return error_response(422, "validation_error", f"Invalid request: {where}"[:MAX_DETAIL_LENGTH])
 
 
 async def handle_http_error(request: Request, exc: Exception) -> JSONResponse:
-    if not isinstance(exc, StarletteHTTPException):
-        return await handle_unexpected(request, exc)
-    code = CODE_BY_HTTP_STATUS.get(exc.status_code, "http_error")
-    return error_response(exc.status_code, code, HTTPStatus(exc.status_code).phrase)
+    error = cast(StarletteHTTPException, exc)
+    code = CODE_BY_HTTP_STATUS.get(error.status_code, "http_error")
+    return error_response(error.status_code, code, HTTPStatus(error.status_code).phrase)
 
 
 async def handle_database_unavailable(request: Request, exc: Exception) -> JSONResponse:

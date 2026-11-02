@@ -1,7 +1,6 @@
 from collections.abc import Sequence
 
 import pytest
-
 from app.core.errors import BusNotFoundError
 from app.models.bus import Bus
 from app.services.bus_service import BusService
