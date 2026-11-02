@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getBus } from "../../src/api/buses";
 import { createBookings } from "../../src/api/bookings";
+import { ApiError } from "../../src/api/errors";
 import type { BookingResult } from "../../src/api/types";
 import { listUsers } from "../../src/api/users";
 import { BusSeatsPage } from "../../src/pages/BusSeatsPage";
@@ -118,5 +119,50 @@ describe("BusSeatsPage (booking)", () => {
     await waitFor(() => expect(confirm()).toBeDisabled());
     expect(screen.getByText("No seats selected.")).toBeInTheDocument();
     expect(createBookingsMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("BusSeatsPage (failed bookings)", () => {
+  it("on a conflict shows an alert, refreshes the seats, and drops the taken seat", async () => {
+    createBookingsMock.mockRejectedValue(
+      new ApiError("conflict", 409, "seat_unavailable", "taken"),
+    );
+    renderPage();
+    await chooseRaviAndSeats(3, 4);
+    getBusMock.mockResolvedValue(makeBusDetail([3]));
+
+    await userEvent.click(confirm());
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Seat no longer available");
+    expect(await seat(3, "booked")).toBeDisabled();
+    expect(getBusMock).toHaveBeenCalledTimes(2);
+    expect(screen.getByText("Selected seats: 4")).toBeInTheDocument();
+  });
+
+  it.each([
+    ["a 503 response", new ApiError("unavailable", 503, "service_unavailable", "down")],
+    ["a network failure", new ApiError("unavailable", 0, "network_error", "unreachable")],
+  ])("on %s shows Service unavailable and keeps the selection", async (_label, error) => {
+    createBookingsMock.mockRejectedValue(error);
+    renderPage();
+    await chooseRaviAndSeats(3, 4);
+
+    await userEvent.click(confirm());
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Service unavailable");
+    expect(screen.getByText("Selected seats: 3, 4")).toBeInTheDocument();
+    expect(screen.queryByText(/^Booked seat/)).not.toBeInTheDocument();
+    expect(getBusMock).toHaveBeenCalledTimes(1);
+    expect(confirm()).toBeEnabled();
+  });
+
+  it.each([400, 422])("on a %i response shows Invalid request", async (status) => {
+    createBookingsMock.mockRejectedValue(new ApiError("invalid", status, "validation_error", "bad"));
+    renderPage();
+    await chooseRaviAndSeats(3);
+
+    await userEvent.click(confirm());
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Invalid request");
   });
 });

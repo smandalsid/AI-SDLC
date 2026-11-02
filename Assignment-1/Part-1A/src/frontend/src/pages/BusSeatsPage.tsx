@@ -21,7 +21,7 @@ function parseBusId(raw: string | undefined): number | null {
   return value <= MAX_ID ? value : null;
 }
 
-function BusSeatsContent({ bus, onBooked }: { bus: BusDetail; onBooked: () => void }) {
+function BusSeatsContent({ bus, onRefresh }: { bus: BusDetail; onRefresh: () => void }) {
   const users = useUsers();
   const [userId, setUserId] = useState<number | null>(null);
   const selection = useSeatSelection(bus.seats);
@@ -31,10 +31,9 @@ function BusSeatsContent({ bus, onBooked }: { bus: BusDetail; onBooked: () => vo
     if (userId === null) return;
     const request = { bus_id: bus.id, user_id: userId, seat_numbers: selection.selected };
     const outcome = await booking.submit(request);
-    if (outcome.kind === "success") {
-      selection.clear();
-      onBooked();
-    }
+    if (outcome.kind === "success") selection.clear();
+    // Success and conflict both mean the stored seats changed, so re-read them.
+    if (outcome.kind === "success" || outcome.kind === "conflict") onRefresh();
   }
 
   function toggle(seatNumber: number): void {
@@ -72,7 +71,7 @@ function BusSeats({ busId }: { busId: number }) {
       <StatusMessage variant="error" message={describeApiError(bus.error)} onRetry={bus.refresh} />
     );
   }
-  return <BusSeatsContent bus={bus.data} onBooked={bus.refresh} />;
+  return <BusSeatsContent bus={bus.data} onRefresh={bus.refresh} />;
 }
 
 export function BusSeatsPage() {
