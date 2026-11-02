@@ -1,11 +1,10 @@
 from functools import partial
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.core.errors import DatabaseUnavailableError
 from app.db.session import get_session, wait_for_database
 from app.main import create_app
+from fastapi.testclient import TestClient
 
 
 class FakeClock:

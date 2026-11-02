@@ -1,10 +1,9 @@
 from typing import NoReturn
 
+from app.db.session import get_session
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy.exc import OperationalError
-
-from app.db.session import get_session
 
 
 def failing_session() -> NoReturn:

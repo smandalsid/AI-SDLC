@@ -1,12 +1,6 @@
 from collections.abc import Callable
 
 import pytest
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
-from pydantic import BaseModel, Field
-from sqlalchemy.exc import OperationalError
-from sqlalchemy.exc import TimeoutError as PoolTimeoutError
-
 from app.api.error_handlers import register_error_handlers
 from app.core.errors import (
     BusNotFoundError,
@@ -14,6 +8,11 @@ from app.core.errors import (
     SeatAlreadyBookedError,
     UserNotFoundError,
 )
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+from pydantic import BaseModel, Field
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.exc import TimeoutError as PoolTimeoutError
 
 LEAKY_MARKERS = (
     "Traceback",
