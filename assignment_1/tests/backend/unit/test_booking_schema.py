@@ -1,9 +1,8 @@
 from typing import Any
 
 import pytest
-from pydantic import ValidationError
-
 from app.api.schemas.booking import BookingCreate
+from pydantic import ValidationError
 
 
 def build(**overrides: Any) -> dict[str, Any]:

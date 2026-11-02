@@ -37,7 +37,7 @@ describe("BusSeatsPage (viewing)", () => {
     renderPage();
 
     expect(await screen.findByRole("button", { name: "Seat 5, booked" })).toBeDisabled();
-    expect(screen.getAllByRole("button")).toHaveLength(20);
+    expect(screen.getAllByRole("button", { name: /^Seat \d+,/ })).toHaveLength(20);
     expect(screen.getByRole("button", { name: "Seat 6, available" })).toBeEnabled();
     expect(getBusMock).toHaveBeenCalledWith(1);
   });

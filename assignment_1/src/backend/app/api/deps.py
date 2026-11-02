@@ -8,6 +8,7 @@ from app.db.session import get_session
 from app.repositories.booking_repository import BookingRepository
 from app.repositories.bus_repository import BusRepository
 from app.repositories.user_repository import UserRepository
+from app.services.booking_service import BookingService
 from app.services.bus_service import BusService
 from app.services.user_service import UserService
 
@@ -34,3 +35,12 @@ def get_user_service(session: SessionDep) -> UserService:
 
 
 UserServiceDep = Annotated[UserService, Depends(get_user_service)]
+
+
+def get_booking_service(session: SessionDep, clock: ClockDep) -> BookingService:
+    return BookingService(
+        BusRepository(session), UserRepository(session), BookingRepository(session), clock
+    )
+
+
+BookingServiceDep = Annotated[BookingService, Depends(get_booking_service)]

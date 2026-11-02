@@ -2,7 +2,6 @@ from collections.abc import Sequence
 from datetime import UTC, datetime
 
 import pytest
-
 from app.core.errors import BusNotFoundError, InvalidSeatError, UserNotFoundError
 from app.models.booking import Booking
 from app.models.bus import Bus

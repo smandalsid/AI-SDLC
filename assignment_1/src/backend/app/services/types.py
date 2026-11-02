@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Literal
 
 SeatStatus = Literal["available", "booked"]
@@ -29,6 +30,15 @@ class UserSummary:
 class SeatView:
     seat_number: int
     status: SeatStatus
+
+
+@dataclass(frozen=True)
+class BookingView:
+    id: int
+    bus_id: int
+    user_id: int
+    seat_number: int
+    booked_at: datetime
 
 
 @dataclass(frozen=True)
