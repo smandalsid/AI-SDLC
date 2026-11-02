@@ -37,3 +37,10 @@ _Filled by T126: every FR, NFR, SC, and acceptance scenario mapped to at least o
 ## Final decision
 
 _Recorded by a human only (T134): ACCEPT or REJECT, known limitations (T133 drafts them), and justification. The agent MUST NOT write the decision._
+
+## Harness run table
+
+Rows are appended by `.harness/run.sh`; do not edit by hand.
+
+| Timestamp | Integrity | Lint | Security | Tests | Build | E2E | Result | Evidence |
+|-----------|-----------|------|----------|-------|-------|-----|--------|----------|
