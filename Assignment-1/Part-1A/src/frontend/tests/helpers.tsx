@@ -1,7 +1,7 @@
 import { render, type RenderResult } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import type { Bus, BusDetail, Seat } from "../src/api/types";
+import type { Bus, BusDetail, Seat, User } from "../src/api/types";
 
 export function renderAt(route: string, path: string, element: ReactElement): RenderResult {
   return render(
@@ -17,6 +17,14 @@ export function makeBuses(): Bus[] {
   return [
     { id: 1, name: "Bus A", total_seats: 20 },
     { id: 2, name: "Bus B", total_seats: 30 },
+  ];
+}
+
+export function makeUsers(): User[] {
+  return [
+    { id: 1, name: "Asha" },
+    { id: 2, name: "Ravi" },
+    { id: 3, name: "Meera" },
   ];
 }
 
