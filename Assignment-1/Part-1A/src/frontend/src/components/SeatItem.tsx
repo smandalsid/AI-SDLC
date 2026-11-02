@@ -1,21 +1,33 @@
-import type { Seat, SeatStatus } from "../api/types";
+import type { Seat } from "../api/types";
 
-const LABELS: Record<SeatStatus, string> = {
+type SeatState = "available" | "booked" | "selected";
+
+const LABELS: Record<SeatState, string> = {
   available: "Available",
   booked: "Booked",
+  selected: "Selected",
 };
 
-export function SeatItem({ seat }: { seat: Seat }) {
+interface SeatItemProps {
+  seat: Seat;
+  selected?: boolean;
+  onToggle?: (seatNumber: number) => void;
+}
+
+export function SeatItem({ seat, selected = false, onToggle }: SeatItemProps) {
   const booked = seat.status === "booked";
+  const state: SeatState = booked ? "booked" : selected ? "selected" : "available";
   return (
     <button
       type="button"
-      className={`seat seat--${seat.status}`}
+      className={`seat seat--${state}`}
       disabled={booked}
-      aria-label={`Seat ${seat.seat_number}, ${seat.status}`}
+      aria-pressed={booked ? undefined : selected}
+      aria-label={`Seat ${seat.seat_number}, ${state}`}
+      onClick={() => onToggle?.(seat.seat_number)}
     >
       <span>{seat.seat_number}</span>
-      <span className="seat__state">{LABELS[seat.status]}</span>
+      <span className="seat__state">{LABELS[state]}</span>
     </button>
   );
 }

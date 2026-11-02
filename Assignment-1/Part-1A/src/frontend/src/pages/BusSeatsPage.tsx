@@ -2,10 +2,14 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ApiError, describeApiError } from "../api/errors";
 import type { BusDetail } from "../api/types";
+import { BookingBar } from "../components/BookingBar";
+import { BookingFeedback } from "../components/BookingFeedback";
 import { SeatGrid } from "../components/SeatGrid";
 import { StatusMessage } from "../components/StatusMessage";
 import { UserSelect } from "../components/UserSelect";
+import { useBookSeats } from "../hooks/useBookSeats";
 import { useBusDetail } from "../hooks/useBusDetail";
+import { useSeatSelection } from "../hooks/useSeatSelection";
 import { useUsers } from "../hooks/useUsers";
 
 const ID_PATTERN = /^[1-9]\d*$/;
@@ -17,16 +21,41 @@ function parseBusId(raw: string | undefined): number | null {
   return value <= MAX_ID ? value : null;
 }
 
-function BusSeatsContent({ bus }: { bus: BusDetail }) {
+function BusSeatsContent({ bus, onBooked }: { bus: BusDetail; onBooked: () => void }) {
   const users = useUsers();
   const [userId, setUserId] = useState<number | null>(null);
+  const selection = useSeatSelection(bus.seats);
+  const booking = useBookSeats();
+
+  async function confirm(): Promise<void> {
+    if (userId === null) return;
+    const request = { bus_id: bus.id, user_id: userId, seat_numbers: selection.selected };
+    const outcome = await booking.submit(request);
+    if (outcome.kind === "success") {
+      selection.clear();
+      onBooked();
+    }
+  }
+
+  function toggle(seatNumber: number): void {
+    booking.reset();
+    selection.toggle(seatNumber);
+  }
 
   return (
     <>
       <h1>{bus.name}</h1>
       <p>{bus.total_seats} seats</p>
       <UserSelect users={users} value={userId} onChange={setUserId} />
-      <SeatGrid seats={bus.seats} />
+      <SeatGrid seats={bus.seats} selected={selection.selected} onToggle={toggle} />
+      <BookingBar
+        selectedSeats={selection.selected}
+        hasUser={userId !== null}
+        submitting={booking.state.status === "submitting"}
+        limitReached={selection.limitReached}
+        onConfirm={() => void confirm()}
+      />
+      <BookingFeedback state={booking.state} />
     </>
   );
 }
@@ -43,7 +72,7 @@ function BusSeats({ busId }: { busId: number }) {
       <StatusMessage variant="error" message={describeApiError(bus.error)} onRetry={bus.refresh} />
     );
   }
-  return <BusSeatsContent bus={bus.data} />;
+  return <BusSeatsContent bus={bus.data} onBooked={bus.refresh} />;
 }
 
 export function BusSeatsPage() {
