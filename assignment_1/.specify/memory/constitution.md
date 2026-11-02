@@ -1,0 +1,245 @@
+<!--
+Sync Impact Report (temporary; remove before commit)
+- Version change: (unratified template) -> 1.0.0
+- Modified principles: none renamed; all five template principle slots replaced by
+  principles I-XII (template allows a different number)
+- Added sections: Core Principles I-XII, Measurable Engineering Constraints,
+  Deterministic Harness & Evidence, Development Workflow & Quality Gates, Governance
+- Removed sections: none (template placeholders only)
+- Follow-up TODOs: none. Deferred non-governance intents: none.
+-->
+
+# Bus Booking Platform Constitution
+
+## Core Principles
+
+### I. SOLID, Separation of Concerns, Modularity (NON-NEGOTIABLE)
+
+The codebase MUST follow SOLID strictly and be organised in layers with one-way dependencies:
+
+- Backend layers: `api` (FastAPI routers, request/response schemas only) -> `services`
+  (business rules) -> `repositories` (all SQL/ORM access) -> `models`. A layer MUST NOT import
+  from a layer above it.
+- Routers MUST NOT contain business logic or database queries; services MUST NOT build HTTP
+  responses; repositories MUST NOT contain business rules.
+- Services MUST depend on abstractions (`typing.Protocol` / ABC) and receive them through
+  FastAPI dependency injection (`Depends`), never by instantiating concrete classes inline.
+- Frontend MUST separate presentational components, hooks (state/data fetching), and an API
+  client module. Components MUST NOT call `fetch`/`axios` directly.
+- Each module MUST have a single reason to change (SRP); extension MUST be by adding code, not
+  editing stable modules (OCP); implementations MUST be substitutable for their abstractions (LSP);
+  interfaces MUST be small and role-specific (ISP).
+
+Rationale: strict layering keeps the codebase simple to reason about, testable in isolation, and
+cheap to change.
+
+### II. Input Validation at Every Boundary
+
+- Every API request body, query parameter, and path parameter MUST be validated by a Pydantic
+  model with explicit types, length limits, ranges, and formats. Unknown fields MUST be rejected
+  (`extra="forbid"`).
+- Frontend forms MUST validate before submit; frontend validation is a usability aid only and
+  MUST NOT replace backend validation.
+- All database access MUST use parameterised queries or the ORM; string-built SQL is forbidden.
+- Invalid input MUST return HTTP 422 (schema) or 400 (business rule) with a machine-readable
+  error body, and MUST NOT reach the service or repository layer.
+
+### III. Strict Type Hinting
+
+- All Python functions, methods, and class attributes MUST be fully annotated; `mypy --strict`
+  MUST report zero errors. `Any` and `# type: ignore` are forbidden unless accompanied by a
+  one-line justification comment.
+- Frontend MUST be TypeScript with `"strict": true`; `any` is forbidden; `tsc --noEmit` MUST report
+  zero errors.
+- API request/response types MUST be defined once in the backend schemas, and frontend types
+  MUST mirror them exactly.
+
+### IV. Explicit, Consistent Error Handling
+
+- Domain errors MUST be raised as typed exceptions (e.g. `SeatAlreadyBookedError`) from services
+  and translated to HTTP responses in a single centralised exception-handler module.
+- Bare `except:` and swallowed exceptions are forbidden. Unexpected errors MUST return a generic
+  HTTP 500 body and MUST NOT leak stack traces, SQL, or internal paths to clients.
+- All error responses MUST share one JSON shape: `{"error": {"code": str, "message": str}}`.
+- The frontend MUST render a user-visible message for every failed request and MUST provide an
+  error boundary for rendering failures.
+
+### V. Test Coverage Across the Codebase (NON-NEGOTIABLE)
+
+- Tests MUST be written from the approved acceptance criteria before or alongside implementation
+  and MUST include unit tests (services, validators, components, hooks) and contract/integration
+  tests (every API endpoint, success and failure paths, against the real SQL Server container or
+  an equivalent transactional test database).
+- Coverage minimums are defined in "Measurable Engineering Constraints" and are enforced by the
+  harness; they MUST NOT be lowered.
+- Every bug fix MUST add a regression test that fails before the fix.
+
+### VI. Secrets Never in Source (NON-NEGOTIABLE)
+
+- Secrets (DB password, JWT signing key, API keys) MUST exist only in `.env` (local) or the
+  deployment secret store. They MUST NOT appear in source code, tests, fixtures, Dockerfiles,
+  compose files, logs, evidence files, or the harness log.
+- `.env` MUST be listed in `.gitignore` and MUST NOT be committed. A committed `.env.example`
+  MUST list every variable name with placeholder values only.
+- `.env` already provides `DB_NAME`, `DB_USER`, `DB_PASSWORD`; additional variables (e.g.
+  `DB_HOST`, `DB_PORT`, `JWT_SECRET`) MUST be added there and loaded through a single typed
+  settings module (`pydantic-settings`). Application code MUST NOT read `os.environ` elsewhere.
+- The application MUST fail fast at startup if a required variable is missing.
+- Coding agents MUST NOT print, copy, or echo secret values into any artifact or conversation.
+
+### VII. Security by Default
+
+- Passwords MUST be stored only as salted hashes (bcrypt or argon2); authentication MUST use
+  short-lived signed tokens; protected endpoints MUST enforce authorisation server-side.
+- CORS MUST allow only configured origins; wildcard origins are forbidden outside local
+  development.
+- Dependencies MUST be pinned; the SAST and dependency audit gates in the harness MUST pass.
+- Booking operations MUST be safe under concurrency: a seat on a trip MUST NOT be double-booked,
+  enforced by a database constraint in addition to service-level checks.
+
+### VIII. Simple, Minimal Data Model
+
+- The schema MUST contain only entities required by approved specifications (expected core:
+  User, Route, Bus, Trip, Booking; seats are derived from the Bus capacity unless a spec proves
+  otherwise).
+- Every table MUST have a surrogate primary key, explicit foreign keys, appropriate indexes
+  for documented query paths, and NOT NULL/unique/check constraints reflecting the rules.
+- Schema changes MUST be made only through versioned migrations (Alembic); manual schema edits
+  are forbidden. Adding a table or column MUST be justified in the spec or plan.
+
+### IX. Scalable and Simple Architecture
+
+- The backend MUST be stateless (no in-process session or booking state) so it can be scaled
+  horizontally; all state lives in the database.
+- List endpoints MUST be paginated with a documented maximum page size.
+- Prefer the simplest solution that satisfies the spec (YAGNI). New dependencies, services, or
+  abstractions MUST be justified in the plan's complexity section.
+- The API MUST be versioned under a path prefix (`/api/v1`) and documented via the generated
+  OpenAPI schema.
+
+### X. Simple, Responsive, Lightweight UI
+
+- The frontend MUST be React + Vite + TypeScript and MUST work from 320 px to 1920 px viewport
+  widths without horizontal scrolling (mobile-first CSS).
+- No heavy UI frameworks or large dependencies without plan justification; routes MUST be
+  code-split. Size budgets are in "Measurable Engineering Constraints".
+- Interactive elements MUST be keyboard-accessible and labelled; loading, empty, and error
+  states MUST be implemented for every data-driven view.
+
+### XI. Reproducible Local Environment
+
+- The database MUST be SQL Server (Azure SQL-compatible engine, `mcr.microsoft.com/mssql/server`
+  image) running in Docker on Colima, defined in a `docker-compose.yml` that reads credentials
+  from `.env` and never hard-codes them.
+- The database service MUST have a healthcheck; the backend MUST NOT start serving until the
+  database is reachable.
+- On Apple Silicon, Colima MUST be started with `--vm-type=vz --vz-rosetta` so the amd64 image
+  runs. Setup steps MUST be documented in the README.
+- If the corporate TLS proxy breaks image pulls, the corporate CA MUST be installed in the Colima
+  VM rather than disabling TLS verification.
+
+### XII. Spec-Driven, Harness-Gated Development (NON-NEGOTIABLE)
+
+- Implementation MUST proceed only from approved Spec Kit artifacts (`spec.md`, `plan.md`,
+  `tasks.md`). The coding agent MUST receive the approved specification context, this
+  constitution, and the relevant tasks before generating code.
+- Acceptance criteria MUST be written so each yields a binary (pass/fail) test: stated as
+  Given/When/Then with concrete inputs, status codes, and field values. Vague criteria
+  ("fast", "user-friendly") MUST be quantified or rejected at spec review.
+- The first generated implementation MUST be preserved unmodified under
+  `evidence/initial-generation/` before any harness-driven correction.
+- The coding agent MUST NOT: weaken or delete acceptance criteria; remove, skip, or loosen failing
+  tests or assertions; disable or relax lint, type, security, or coverage checks; expose secrets;
+  bypass the harness; or hand-edit recorded harness results to obtain a PASS.
+- A legitimate specification change MUST be made through the SDD artifacts (spec -> plan ->
+  tasks) and documented in `evidence/harness-log.md`.
+
+## Measurable Engineering Constraints
+
+Each constraint is binary and is verified by the harness or a named tool.
+
+| Area | Constraint | Verified by |
+|------|-----------|-------------|
+| Backend lint | `ruff check` and `ruff format --check`: 0 violations | Lint gate |
+| Backend types | `mypy --strict`: 0 errors | Lint gate |
+| Frontend lint/types | `eslint --max-warnings 0` and `tsc --noEmit`: 0 issues | Lint gate |
+| Complexity | Cyclomatic complexity <= 10 per function (Ruff `C901`); function <= 40 lines | Lint gate |
+| Backend coverage | Line coverage >= 85% and branch coverage >= 80% (`pytest --cov`) | Test gate |
+| Frontend coverage | Line coverage >= 80% (Vitest) | Test gate |
+| Endpoint tests | 100% of endpoints have >= 1 success and >= 1 failure test | Contract tests |
+| Backend SAST | `bandit -ll`: 0 medium/high findings | Security gate |
+| Dependency audit | `pip-audit` and `npm audit --audit-level=high`: 0 findings | Security gate |
+| Secret scan | 0 secrets detected in tracked files and evidence (e.g. `gitleaks`) | Security gate |
+| API latency | p95 <= 300 ms for read endpoints with a 1,000-row dataset on local Docker | Performance test |
+| Pagination | Default page size 20; max 100; larger values return 422 | Contract tests |
+| Frontend size | Initial JS <= 200 KB gzipped per route; production build succeeds | Build gate |
+| Responsiveness | No horizontal overflow at 320, 768, 1280 px widths | UI test |
+| Data integrity | Concurrent booking of one seat: exactly 1 succeeds, others get HTTP 409 | Integration test |
+| Reproducibility | Fresh clone + `.env` + one documented command starts DB, API, and UI | Documented check |
+
+## Deterministic Harness & Evidence
+
+The harness MUST be runnable with a single command (e.g. `.harness/run_harness.sh`) that executes
+all gates in order and exits non-zero on any failure:
+
+1. **Syntax & Lint Guard**: Ruff, mypy, ESLint, tsc. Unambiguous PASS/FAIL per tool.
+2. **Security / SAST Guard**: Bandit, pip-audit, npm audit, secret scan.
+3. **Unit & Contract Tests**: pytest and Vitest, with assertions derived from the approved
+   acceptance criteria; all mandatory tests MUST pass, and coverage thresholds MUST be met.
+4. **Feedback Capture**: for each failure, record stdout/stderr, the failed test or rule,
+   the expected behaviour, and the observed behaviour (secrets redacted).
+5. **Self-Healing**: feed the captured failure evidence to the coding agent, repair the
+   implementation, and rerun the same harness gates unchanged.
+6. **Human Review**: record a final ACCEPT or REJECT decision, known limitations, and
+   justification after the automated result.
+
+Harness output MUST be generated by the runner, never typed by hand. Genuine failure-and-repair
+cycles MUST be logged; failures MUST NOT be manufactured.
+
+Required repository layout (names may vary only where tooling requires):
+
+```text
+.specify/ and specs/        Spec Kit artifacts (constitution, spec, plan, tasks)
+src/                        backend and frontend application code
+tests/                      unit, contract, and integration tests
+.harness/                   lint/security/test configuration and harness runner
+evidence/
+  initial-generation/       first generated implementation, preserved unmodified
+  final-generation/         implementation after harness-driven repair
+  harness-results/          runner-generated outputs per execution
+  harness-log.md            chronological record (see below)
+```
+
+`evidence/harness-log.md` MUST show: the initial generation and the task/spec context given;
+each harness execution and outcome; each failure-and-repair cycle with the failure evidence
+supplied to the agent, what changed, and whether the same checks passed on re-execution; and the
+final human ACCEPT/REJECT decision with known limitations and justification.
+
+## Development Workflow & Quality Gates
+
+- Workflow order: constitution -> specify -> clarify -> plan -> tasks -> analyze -> implement ->
+  harness -> human review.
+- Tests derived from acceptance criteria MUST exist and fail before the corresponding
+  implementation is considered complete (red -> green).
+- A change is accepted only when every harness gate passes on the final code and a human records
+  ACCEPT. A partial PASS is a REJECT.
+- Commits MUST NOT contain `.env`, credentials, or generated harness output edited by hand.
+- Code comments MUST explain intent that code cannot show; they MUST NOT restate the code.
+- Pull requests/reviews MUST verify compliance with every principle above.
+
+## Governance
+
+This constitution supersedes all other practices for this project. Amendments MUST be made by
+editing this file, stating the reason, the version bump, and any impact on existing artifacts;
+dependent specs, plans, and tasks MUST be re-checked after an amendment.
+
+Versioning follows semantic versioning: MAJOR for removing or redefining a principle in a
+backward-incompatible way; MINOR for adding a principle or materially expanding guidance; PATCH
+for clarifications and wording fixes.
+
+Compliance MUST be reviewed at plan time (a Constitution Check in `plan.md`), at `analyze`
+time, and at human review. Any violation MUST be fixed or explicitly justified in the plan's
+complexity-tracking table before implementation proceeds. Constraints marked NON-NEGOTIABLE
+(I, V, VI, XII) cannot be waived.
+
+**Version**: 1.0.0 | **Ratified**: 2026-11-02 | **Last Amended**: 2026-11-02
