@@ -2,9 +2,20 @@ from collections.abc import Sequence
 from datetime import datetime
 
 from sqlalchemy import select
+from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm import Session
 
+from app.core.errors import SeatAlreadyBookedError
 from app.models.booking import Booking
+
+UNIQUE_VIOLATION_CODES = {2601, 2627}
+SEAT_CONSTRAINT = "UQ_bookings_bus_seat"
+
+
+def is_seat_conflict(error: DBAPIError) -> bool:
+    # Multi-row inserts raise this error as OperationalError, so match on code and name.
+    args = error.orig.args if error.orig is not None else ()
+    return bool(args) and args[0] in UNIQUE_VIOLATION_CODES and SEAT_CONSTRAINT in str(error.orig)
 
 
 class BookingRepository:
@@ -24,5 +35,11 @@ class BookingRepository:
             for seat in seat_numbers
         ]
         self.session.add_all(bookings)
-        self.session.flush()
+        try:
+            self.session.flush()
+        except DBAPIError as error:
+            self.session.rollback()
+            if is_seat_conflict(error):
+                raise SeatAlreadyBookedError from None
+            raise
         return bookings
