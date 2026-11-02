@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ApiError, describeApiError } from "../api/errors";
+import type { BusDetail } from "../api/types";
 import { SeatGrid } from "../components/SeatGrid";
 import { StatusMessage } from "../components/StatusMessage";
+import { UserSelect } from "../components/UserSelect";
 import { useBusDetail } from "../hooks/useBusDetail";
+import { useUsers } from "../hooks/useUsers";
 
 const ID_PATTERN = /^[1-9]\d*$/;
 const MAX_ID = 2_147_483_647;
@@ -11,6 +15,20 @@ function parseBusId(raw: string | undefined): number | null {
   if (raw === undefined || !ID_PATTERN.test(raw)) return null;
   const value = Number(raw);
   return value <= MAX_ID ? value : null;
+}
+
+function BusSeatsContent({ bus }: { bus: BusDetail }) {
+  const users = useUsers();
+  const [userId, setUserId] = useState<number | null>(null);
+
+  return (
+    <>
+      <h1>{bus.name}</h1>
+      <p>{bus.total_seats} seats</p>
+      <UserSelect users={users} value={userId} onChange={setUserId} />
+      <SeatGrid seats={bus.seats} />
+    </>
+  );
 }
 
 function BusSeats({ busId }: { busId: number }) {
@@ -25,13 +43,7 @@ function BusSeats({ busId }: { busId: number }) {
       <StatusMessage variant="error" message={describeApiError(bus.error)} onRetry={bus.refresh} />
     );
   }
-  return (
-    <>
-      <h1>{bus.data.name}</h1>
-      <p>{bus.data.total_seats} seats</p>
-      <SeatGrid seats={bus.data.seats} />
-    </>
-  );
+  return <BusSeatsContent bus={bus.data} />;
 }
 
 export function BusSeatsPage() {

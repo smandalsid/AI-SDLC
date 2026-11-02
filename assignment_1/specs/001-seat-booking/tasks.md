@@ -164,19 +164,19 @@ description: "Task list for feature 001-seat-booking (Bus Seat Booking), harness
 
 ### Tests for User Story 4 (write first)
 
-- [ ] T081 [P] [US4] Write `tests/backend/contract/test_users.py`: list returns Asha, Ravi, Meera with ids 1-3; `page_size=101` and `page=0` return 422; shape matches `User`
-- [ ] T082 [P] [US4] Write `tests/backend/unit/test_user_service.py` with a fake repository: returns a page with `total`
-- [ ] T083 [P] [US4] Write `src/frontend/tests/components/UserSelect.test.tsx`: labelled select listing all users with a placeholder option; selecting calls `onChange(userId)` and the placeholder calls `onChange(null)`; error with Retry and empty states
-- [ ] T084 [US4] Confirm failing: run T081-T083 and verify each fails for the expected reason; stop if any passes
+- [X] T081 [P] [US4] Write `tests/backend/contract/test_users.py`: list returns Asha, Ravi, Meera with ids 1-3; `page_size=101` and `page=0` return 422; shape matches `User`
+- [X] T082 [P] [US4] Write `tests/backend/unit/test_user_service.py` with a fake repository: returns a page with `total`
+- [X] T083 [P] [US4] Write `src/frontend/tests/components/UserSelect.test.tsx`: labelled select listing all users with a placeholder option; selecting calls `onChange(userId)` and the placeholder calls `onChange(null)`; error with Retry and empty states
+- [X] T084 [US4] Confirm failing: run T081-T083 and verify each fails for the expected reason; stop if any passes
 
 ### Implementation for User Story 4
 
-- [ ] T085 [P] [US4] Extend `src/backend/app/repositories/protocols.py` with `UserReader` (`list_page`, `count`, `get`) and implement `src/backend/app/repositories/user_repository.py`
-- [ ] T086 [US4] Implement `src/backend/app/services/user_service.py` (`list_users`) and `src/backend/app/api/schemas/user.py` (`UserOut`, `UserPage`) (depends on T085)
-- [ ] T087 [US4] Implement `src/backend/app/api/v1/users.py` (`GET /users`), add its provider to `src/backend/app/api/deps.py`, include in `src/backend/app/api/v1/router.py` (depends on T086)
-- [ ] T088 [P] [US4] Implement `src/frontend/src/api/users.ts`, `src/frontend/src/hooks/useUsers.ts`, and `src/frontend/src/components/UserSelect.tsx`
-- [ ] T089 [US4] Render `UserSelect` in `src/frontend/src/pages/BusSeatsPage.tsx` holding the selected user id; add a page test to `src/frontend/tests/pages/BusSeatsPage.test.tsx` that choosing "Ravi" keeps Ravi selected (depends on T088)
-- [ ] T090 [US4] Checkpoint: run `.harness/integrity.sh`, `lint.sh`, `security.sh`, `test.sh`, and `build.sh`; all tests pass; commit `feat(us4): choose the booking user`; report to the user
+- [X] T085 [P] [US4] Extend `src/backend/app/repositories/protocols.py` with `UserReader` (`list_page`, `count`, `get`) and implement `src/backend/app/repositories/user_repository.py`
+- [X] T086 [US4] Implement `src/backend/app/services/user_service.py` (`list_users`) and `src/backend/app/api/schemas/user.py` (`UserOut`, `UserPage`) (depends on T085)
+- [X] T087 [US4] Implement `src/backend/app/api/v1/users.py` (`GET /users`), add its provider to `src/backend/app/api/deps.py`, include in `src/backend/app/api/v1/router.py` (depends on T086)
+- [X] T088 [P] [US4] Implement `src/frontend/src/api/users.ts`, `src/frontend/src/hooks/useUsers.ts`, and `src/frontend/src/components/UserSelect.tsx`
+- [X] T089 [US4] Render `UserSelect` in `src/frontend/src/pages/BusSeatsPage.tsx` holding the selected user id; add a page test to `src/frontend/tests/pages/BusSeatsPage.test.tsx` that choosing "Ravi" keeps Ravi selected (depends on T088)
+- [X] T090 [US4] Checkpoint: run `.harness/integrity.sh`, `lint.sh`, `security.sh`, `test.sh`, and `build.sh`; all tests pass; commit `feat(us4): choose the booking user`; report to the user
 
 **Checkpoint**: user selector works (quickstart scenario 6, first half).
 

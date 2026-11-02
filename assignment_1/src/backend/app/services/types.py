@@ -20,6 +20,12 @@ class BusSummary:
 
 
 @dataclass(frozen=True)
+class UserSummary:
+    id: int
+    name: str
+
+
+@dataclass(frozen=True)
 class SeatView:
     seat_number: int
     status: SeatStatus
