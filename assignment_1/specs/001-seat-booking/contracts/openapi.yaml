@@ -1,0 +1,285 @@
+openapi: 3.1.0
+info:
+  title: Bus Booking API
+  version: 1.0.0
+  description: Contract for feature 001-seat-booking. The running app's generated OpenAPI must match this file.
+servers:
+  - url: http://localhost:8000/api/v1
+paths:
+  /buses:
+    get:
+      summary: List buses (paginated)
+      operationId: listBuses
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Page of buses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusPage'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /buses/{bus_id}:
+    get:
+      summary: Get a bus with all seats and their status
+      operationId: getBus
+      parameters:
+        - name: bus_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 2147483647
+      responses:
+        '200':
+          description: Bus detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /users:
+    get:
+      summary: List users (paginated)
+      operationId: listUsers
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Page of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPage'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /bookings:
+    post:
+      summary: Book 1 to 6 seats on a bus for a user (all-or-nothing)
+      operationId: createBookings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCreate'
+            example:
+              bus_id: 1
+              user_id: 1
+              seat_numbers: [3, 4]
+      responses:
+        '201':
+          description: Seats booked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResult'
+        '400':
+          description: Seat number is greater than the bus's seat count (code invalid_seat)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: At least one seat is already booked (code seat_unavailable); nothing was stored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /health:
+    get:
+      summary: Liveness
+      operationId: health
+      responses:
+        '200':
+          description: Process is up
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    const: ok
+  /health/ready:
+    get:
+      summary: Readiness (database reachable)
+      operationId: ready
+      responses:
+        '200':
+          description: Database answered a query
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    const: ok
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+components:
+  parameters:
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+  responses:
+    ValidationError:
+      description: Request failed schema validation (code validation_error)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Bus or user not found (code bus_not_found or user_not_found)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ServiceUnavailable:
+      description: Database unavailable (code service_unavailable)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [error]
+      additionalProperties: false
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          additionalProperties: false
+          properties:
+            code:
+              type: string
+              enum:
+                - validation_error
+                - invalid_seat
+                - bus_not_found
+                - user_not_found
+                - seat_unavailable
+                - service_unavailable
+                - internal_error
+            message:
+              type: string
+    Bus:
+      type: object
+      required: [id, name, total_seats]
+      properties:
+        id: {type: integer}
+        name: {type: string}
+        total_seats: {type: integer, minimum: 1, maximum: 60}
+    BusPage:
+      type: object
+      required: [items, page, page_size, total]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/Bus'}
+        page: {type: integer}
+        page_size: {type: integer}
+        total: {type: integer}
+    Seat:
+      type: object
+      required: [seat_number, status]
+      properties:
+        seat_number: {type: integer, minimum: 1}
+        status:
+          type: string
+          enum: [available, booked]
+    BusDetail:
+      type: object
+      required: [id, name, total_seats, seats]
+      properties:
+        id: {type: integer}
+        name: {type: string}
+        total_seats: {type: integer}
+        seats:
+          type: array
+          description: Exactly total_seats items ordered by seat_number (at most 60)
+          items: {$ref: '#/components/schemas/Seat'}
+    User:
+      type: object
+      required: [id, name]
+      properties:
+        id: {type: integer}
+        name: {type: string}
+    UserPage:
+      type: object
+      required: [items, page, page_size, total]
+      properties:
+        items:
+          type: array
+          items: {$ref: '#/components/schemas/User'}
+        page: {type: integer}
+        page_size: {type: integer}
+        total: {type: integer}
+    BookingCreate:
+      type: object
+      required: [bus_id, user_id, seat_numbers]
+      additionalProperties: false
+      properties:
+        bus_id: {type: integer, minimum: 1, maximum: 2147483647}
+        user_id: {type: integer, minimum: 1, maximum: 2147483647}
+        seat_numbers:
+          type: array
+          minItems: 1
+          maxItems: 6
+          uniqueItems: true
+          items: {type: integer, minimum: 1, maximum: 2147483647}
+    Booking:
+      type: object
+      required: [id, bus_id, user_id, seat_number, booked_at]
+      properties:
+        id: {type: integer}
+        bus_id: {type: integer}
+        user_id: {type: integer}
+        seat_number: {type: integer}
+        booked_at:
+          type: string
+          format: date-time
+          description: UTC, server assigned, identical for all seats in one request
+    BookingResult:
+      type: object
+      required: [bookings]
+      properties:
+        bookings:
+          type: array
+          items: {$ref: '#/components/schemas/Booking'}
