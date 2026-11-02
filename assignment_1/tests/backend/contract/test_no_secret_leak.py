@@ -1,11 +1,10 @@
 import logging
 
+from app.core.config import get_settings
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from pytest import LogCaptureFixture
 from sqlalchemy.exc import OperationalError
-
-from app.core.config import get_settings
 
 MARKER_HOST = "db-secret-host.internal"
 

@@ -1,9 +1,8 @@
 import pytest
+from app.db.seed import reset_data
 from sqlalchemy import Engine, inspect, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, sessionmaker
-
-from app.db.seed import reset_data
 
 SEEDED_BUSES = [(1, "Bus A", 20), (2, "Bus B", 30), (3, "Bus C", 40)]
 SEEDED_USERS = [(1, "Asha"), (2, "Ravi"), (3, "Meera")]
@@ -15,8 +14,8 @@ INSERT_BOOKING = (
 
 
 def snapshot(session: Session) -> tuple[list[tuple[int, str, int]], list[tuple[int, str]]]:
-    bus_rows = session.execute(text("SELECT id, name, total_seats FROM buses ORDER BY id"))
-    user_rows = session.execute(text("SELECT id, name FROM users ORDER BY id"))
+    bus_rows = session.execute(text("SELECT id, name, total_seats FROM buses ORDER BY id")).all()
+    user_rows = session.execute(text("SELECT id, name FROM users ORDER BY id")).all()
     buses = [(int(row[0]), str(row[1]), int(row[2])) for row in bus_rows]
     users = [(int(row[0]), str(row[1])) for row in user_rows]
     return buses, users
