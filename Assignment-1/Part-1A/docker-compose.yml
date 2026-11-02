@@ -1,0 +1,20 @@
+services:
+  azure-sql-edge:
+    image: mcr.microsoft.com/azure-sql-edge
+    container_name: azure-sql-edge
+    environment:
+      ACCEPT_EULA: "1"
+      MSSQL_SA_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in .env}
+    ports:
+      - "${DB_PORT:-1433}:1433"
+    volumes:
+      - azure-sql-edge-data:/var/opt/mssql
+    healthcheck:
+      # The image ships no sqlcmd, so a TCP probe is used.
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/1433'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  azure-sql-edge-data:
