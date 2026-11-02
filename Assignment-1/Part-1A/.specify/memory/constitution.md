@@ -1,12 +1,25 @@
 <!--
 Sync Impact Report (temporary; remove before commit)
-- Version change: (unratified template) -> 1.0.0
-- Modified principles: none renamed; all five template principle slots replaced by
-  principles I-XII (template allows a different number)
-- Added sections: Core Principles I-XII, Measurable Engineering Constraints,
-  Deterministic Harness & Evidence, Development Workflow & Quality Gates, Governance
-- Removed sections: none (template placeholders only)
-- Follow-up TODOs: none. Deferred non-governance intents: none.
+- Version change: 1.3.0 -> 1.3.1 (PATCH). Reason: analysis found numeric thresholds and lint/type/secret-scan
+  configuration outside the protected harness configuration. Clarified Principle XII (numeric thresholds
+  are injected by the gate scripts; the integrity checksum covers the lint, type, and secret-scan config)
+  and Principle XIII (the agent may not edit those files). No principle added or removed.
+- Earlier: 1.2.0 -> 1.3.0 (MINOR). Reason: the first implementation attempt never reached the
+  harness (harness tasks were last, no approval gate, no guardrails against running ahead).
+- Modified principles: V (tests MUST be written first and observed failing); XII renamed
+  "Spec-Driven, Harness-Gated Development" -> "Deterministic Harness Built First" (harness before any
+  application code, thresholds config, integrity gate, evidence capture, bounded repair).
+- Added principles: XIII Agent Guardrails and Human Approval (approval gate, no running ahead,
+  initial-generation snapshot, milestone commits).
+- Added sections: Technology & Environment Constraints (Python 3.12 via pyenv, root .venv, uv + uv.lock).
+- Changed sections: Measurable Engineering Constraints (+4 rows), Deterministic Harness & Evidence,
+  Development Workflow & Quality Gates, Governance (NON-NEGOTIABLE list).
+- Removed sections: none.
+- Templates/artifacts to re-check: specs/001-seat-booking/plan.md and tasks.md (updated in the same change).
+- Earlier: 1.1.0 -> 1.2.0 (Principle VII: mock-user features exempt from authentication until a
+  dedicated authentication iteration); 1.0.0 -> 1.1.0 (Principle XI: azure-sql-edge image);
+  (unratified template) -> 1.0.0.
+- Follow-up TODOs: none.
 -->
 
 # Bus Booking Platform Constitution
@@ -66,8 +79,9 @@ cheap to change.
 
 ### V. Test Coverage Across the Codebase (NON-NEGOTIABLE)
 
-- Tests MUST be written from the approved acceptance criteria before or alongside implementation
-  and MUST include unit tests (services, validators, components, hooks) and contract/integration
+- Tests MUST be written first from the approved acceptance criteria and MUST be observed failing
+  before the code that satisfies them is written (red -> green -> refactor). They MUST include
+  unit tests (services, validators, components, hooks) and contract/integration
   tests (every API endpoint, success and failure paths, against the real SQL Server container or
   an equivalent transactional test database).
 - Coverage minimums are defined in "Measurable Engineering Constraints" and are enforced by the
@@ -96,6 +110,9 @@ cheap to change.
 - Dependencies MUST be pinned; the SAST and dependency audit gates in the harness MUST pass.
 - Booking operations MUST be safe under concurrency: a seat on a trip MUST NOT be double-booked,
   enforced by a database constraint in addition to service-level checks.
+- Features that use mock users and expose no protected endpoints are exempt from the
+  authentication and authorisation rules above until an authentication feature is specified;
+  that feature is scheduled as a separate iteration and MUST be delivered before any real use.
 
 ### VIII. Simple, Minimal Data Model
 
@@ -128,35 +145,89 @@ cheap to change.
 
 ### XI. Reproducible Local Environment
 
-- The database MUST be SQL Server (Azure SQL-compatible engine, `mcr.microsoft.com/mssql/server`
-  image) running in Docker on Colima, defined in a `docker-compose.yml` that reads credentials
-  from `.env` and never hard-codes them.
-- The database service MUST have a healthcheck; the backend MUST NOT start serving until the
-  database is reachable.
-- On Apple Silicon, Colima MUST be started with `--vm-type=vz --vz-rosetta` so the amd64 image
-  runs. Setup steps MUST be documented in the README.
+- The database MUST be Azure SQL Edge (`mcr.microsoft.com/azure-sql-edge` image; T-SQL compatible
+  with Azure SQL) running in Docker on Colima, defined in a `docker-compose.yml` that reads
+  credentials from `.env` and never hard-codes them. Application code MUST use only portable
+  T-SQL features so the engine can be swapped for `mcr.microsoft.com/mssql/server` if the
+  Azure SQL Edge image is withdrawn.
+- The database service MUST have a healthcheck (the image ships no `sqlcmd`, so a TCP probe is
+  acceptable); the backend MUST retry its connection at startup and MUST NOT report ready until
+  the database accepts queries.
+- Azure SQL Edge runs natively on Apple Silicon (arm64); no emulation flags are required.
+  Setup steps MUST be documented in the README.
 - If the corporate TLS proxy breaks image pulls, the corporate CA MUST be installed in the Colima
   VM rather than disabling TLS verification.
 
-### XII. Spec-Driven, Harness-Gated Development (NON-NEGOTIABLE)
+### XII. Deterministic Harness Built First (NON-NEGOTIABLE)
 
-- Implementation MUST proceed only from approved Spec Kit artifacts (`spec.md`, `plan.md`,
-  `tasks.md`). The coding agent MUST receive the approved specification context, this
-  constitution, and the relevant tasks before generating code.
+- A harness under `.harness/` MUST exist and be runnable with one command (`.harness/run.sh`)
+  before any application code is written. Harness tasks belong to the Foundational phase, never to
+  the last phase, and every phase checkpoint MUST be verified with the gate scripts.
+- Gates, in order, each with an unambiguous pass/fail result: (0) integrity, (1) syntax and lint,
+  (2) security/SAST and dependency audit, (3) unit and contract tests, plus the project-specific
+  build-size and end-to-end gates. Code is accepted only when every gate passes.
+- All numeric thresholds live in `.harness/config/thresholds.env`; the gate scripts inject them into
+  the tools (for example the complexity and function-length limits), and tool configuration files
+  carry rule selection only. The harness scripts, the thresholds, and the lint, type, and
+  secret-scan configuration (`ruff.toml`, `mypy.ini`, `eslint.config.js`, `tsconfig.json`,
+  `gitleaks.toml`) are protected by `.harness/config/checksums.sha256`, verified by the integrity
+  gate; lowering a threshold requires a constitution amendment, and any change to a protected file
+  requires a regenerated checksum file that is visible in review.
+- On every run the runner MUST record stdout, stderr, exit codes, the junit and coverage reports,
+  and a `summary.json` that names each failed rule or test with its expected and observed
+  behaviour, under `evidence/harness-results/<timestamp>/`, and MUST append one row to the run
+  table at the end of `evidence/harness-log.md`.
+- Individual gate scripts MAY be run while developing; only runs made through `.harness/run.sh`
+  count as evidence, and the first such run happens only after the initial-generation snapshot
+  (Principle XIII).
+- Self-healing: failure evidence is fed to the coding agent, the implementation is repaired, and
+  the same gates are rerun unchanged. After 5 failed attempts at the same gate the agent MUST stop
+  and escalate to a human.
+
+### XIII. Agent Guardrails and Human Approval (NON-NEGOTIABLE)
+
+- **Approval gate**: implementation MUST NOT start until a human has recorded `APPROVED`, their
+  name, and the date for `spec.md`, `plan.md`, and `tasks.md` in the Approval section of
+  `evidence/harness-log.md`. This is task T001; the agent MUST stop and wait for it.
+- The coding agent MUST receive the approved specification context, this constitution, and the
+  relevant tasks before generating code.
 - Acceptance criteria MUST be written so each yields a binary (pass/fail) test: stated as
   Given/When/Then with concrete inputs, status codes, and field values. Vague criteria
   ("fast", "user-friendly") MUST be quantified or rejected at spec review.
-- The first generated implementation MUST be preserved unmodified under
-  `evidence/initial-generation/` before any harness-driven correction.
 - The coding agent MUST NOT: weaken or delete acceptance criteria; remove, skip, or loosen failing
-  tests or assertions; disable or relax lint, type, security, or coverage checks; expose secrets;
-  bypass the harness; or hand-edit recorded harness results to obtain a PASS.
+  tests or assertions; disable or relax lint, type, security, or coverage checks; edit
+  `.harness/config/` or the protected lint, type, and secret-scan configuration files; expose
+  secrets; bypass the harness; or hand-edit recorded harness results to obtain a PASS.
+- **No running ahead**: the agent MUST implement one phase at a time, stop at each phase
+  checkpoint to report completed tasks and gate results, and halt on the first failing
+  non-parallel task. Completed tasks are marked `[X]` only after their tests pass.
+- **First generation preserved**: after the last implementation task and before the first
+  `.harness/run.sh`, the code MUST be committed and tagged `initial-generation` and copied to
+  `evidence/initial-generation/`; the repaired version goes to `evidence/final-generation/`.
 - A legitimate specification change MUST be made through the SDD artifacts (spec -> plan ->
-  tasks) and documented in `evidence/harness-log.md`.
+  tasks), committed, and documented in `evidence/harness-log.md`.
+- The final ACCEPT or REJECT decision, with known limitations and justification, is recorded by a
+  human; the agent MUST NOT write it.
+
+## Technology & Environment Constraints
+
+- **Python**: 3.12 selected with `pyenv` (pinned in `.python-version` containing `3.12`).
+- **Virtual environment**: `python3.12 -m venv .venv` at the repository root; every Python
+  dependency install MUST target this `.venv` and MUST NOT be installed globally.
+- **Dependency management**: `uv` is the only Python dependency tool. Dependencies are declared in
+  `src/backend/pyproject.toml`, locked in `src/backend/uv.lock` (committed), and installed with
+  `uv sync --active` (or `uv pip install` with `VIRTUAL_ENV=.venv`). `requirements.txt` is not a
+  source of truth.
+- **Frontend**: Vite + React + TypeScript (strict); `npm` with a committed lockfile.
+- **Repository layout**: `src/backend`, `src/frontend`, `tests/backend`, `src/frontend/tests`,
+  `.harness/`, `evidence/`, `specs/`; `.venv/`, `node_modules/`, build outputs and caches are
+  excluded through `.gitignore`.
 
 ## Measurable Engineering Constraints
 
-Each constraint is binary and is verified by the harness or a named tool.
+Each constraint is binary and is verified by the harness or a named tool. Numeric thresholds are
+stored in `.harness/config/thresholds.env`, injected into the tools by the gate scripts, and MUST
+NOT be lowered without a constitution amendment.
 
 | Area | Constraint | Verified by |
 |------|-----------|-------------|
@@ -176,18 +247,24 @@ Each constraint is binary and is verified by the harness or a named tool.
 | Responsiveness | No horizontal overflow at 320, 768, 1280 px widths | UI test |
 | Data integrity | Concurrent booking of one seat: exactly 1 succeeds, others get HTTP 409 | Integration test |
 | Reproducibility | Fresh clone + `.env` + one documented command starts DB, API, and UI | Documented check |
+| Skipped tests | 0 skipped or xfail tests without a documented reason | Test gate |
+| Harness integrity | `.harness/` scripts and thresholds match `.harness/config/checksums.sha256` | Integrity gate |
+| Traceability | Every FR, NFR, and acceptance scenario maps to >= 1 automated test (table in `harness-log.md`) | Review |
+| Repair bound | <= 5 repair attempts per gate before human escalation | Process |
 
 ## Deterministic Harness & Evidence
 
-The harness MUST be runnable with a single command (e.g. `.harness/run_harness.sh`) that executes
-all gates in order and exits non-zero on any failure:
+The harness is the single entry point `.harness/run.sh` (see Principle XII). It executes all gates
+in order, continues after a failure to collect all evidence, and exits non-zero if any gate failed:
 
+0. **Integrity Guard**: checksums of `.harness/` scripts and thresholds.
 1. **Syntax & Lint Guard**: Ruff, mypy, ESLint, tsc. Unambiguous PASS/FAIL per tool.
 2. **Security / SAST Guard**: Bandit, pip-audit, npm audit, secret scan.
 3. **Unit & Contract Tests**: pytest and Vitest, with assertions derived from the approved
    acceptance criteria; all mandatory tests MUST pass, and coverage thresholds MUST be met.
+   Build-size and end-to-end checks run as further gates of the same runner.
 4. **Feedback Capture**: for each failure, record stdout/stderr, the failed test or rule,
-   the expected behaviour, and the observed behaviour (secrets redacted).
+   the expected behaviour, and the observed behaviour (secrets redacted) in `summary.json`.
 5. **Self-Healing**: feed the captured failure evidence to the coding agent, repair the
    implementation, and rerun the same harness gates unchanged.
 6. **Human Review**: record a final ACCEPT or REJECT decision, known limitations, and
@@ -202,7 +279,9 @@ Required repository layout (names may vary only where tooling requires):
 .specify/ and specs/        Spec Kit artifacts (constitution, spec, plan, tasks)
 src/                        backend and frontend application code
 tests/                      unit, contract, and integration tests
-.harness/                   lint/security/test configuration and harness runner
+.harness/                   gate scripts, runner, summariser
+  config/thresholds.env     all numeric thresholds
+  config/checksums.sha256   integrity checksums of the harness
 evidence/
   initial-generation/       first generated implementation, preserved unmodified
   final-generation/         implementation after harness-driven repair
@@ -210,21 +289,32 @@ evidence/
   harness-log.md            chronological record (see below)
 ```
 
-`evidence/harness-log.md` MUST show: the initial generation and the task/spec context given;
-each harness execution and outcome; each failure-and-repair cycle with the failure evidence
-supplied to the agent, what changed, and whether the same checks passed on re-execution; and the
-final human ACCEPT/REJECT decision with known limitations and justification.
+`evidence/harness-log.md` MUST contain, in this order: the human Approval section; the initial
+generation and the task/spec context given; the failure-and-repair log (failure evidence supplied
+to the agent, what changed, and whether the same checks passed on re-execution); quickstart
+validation; convergence results; the acceptance traceability table; the final human ACCEPT/REJECT
+decision with known limitations and justification; and, last, the run table that the runner
+appends to.
 
 ## Development Workflow & Quality Gates
 
-- Workflow order: constitution -> specify -> clarify -> plan -> tasks -> analyze -> implement ->
-  harness -> human review.
+- Workflow order: constitution -> specify -> clarify -> plan -> tasks -> analyze -> **human approval**
+  -> implement (phase by phase) -> snapshot of the first generation -> harness -> repair ->
+  converge -> human decision.
+- A human MUST approve the spec, plan, and tasks before `/speckit-implement` (Principle XIII).
 - Tests derived from acceptance criteria MUST exist and fail before the corresponding
-  implementation is considered complete (red -> green).
+  implementation is written (red -> green).
 - A change is accepted only when every harness gate passes on the final code and a human records
   ACCEPT. A partial PASS is a REJECT.
+- Run `/speckit-analyze` before implementation and `/speckit-converge` after it; gaps MUST become
+  new tasks or spec changes, not silent code changes.
+- Commits MUST be small and use conventional messages (`feat:`, `fix:`, `test:`, `docs:`,
+  `chore:`). Milestones MUST be committed: approved artifacts, foundation with harness, each user
+  story, the `initial-generation` tag, each repair, and the final generation.
 - Commits MUST NOT contain `.env`, credentials, or generated harness output edited by hand.
 - Code comments MUST explain intent that code cannot show; they MUST NOT restate the code.
+- A `README.md` MUST document setup (pyenv, venv, uv, npm), how to start everything, and how to run
+  the harness, with copy-pasteable commands.
 - Pull requests/reviews MUST verify compliance with every principle above.
 
 ## Governance
@@ -240,6 +330,6 @@ for clarifications and wording fixes.
 Compliance MUST be reviewed at plan time (a Constitution Check in `plan.md`), at `analyze`
 time, and at human review. Any violation MUST be fixed or explicitly justified in the plan's
 complexity-tracking table before implementation proceeds. Constraints marked NON-NEGOTIABLE
-(I, V, VI, XII) cannot be waived.
+(I, V, VI, XII, XIII) cannot be waived.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-02 | **Last Amended**: 2026-11-02
+**Version**: 1.3.1 | **Ratified**: 2026-11-02 | **Last Amended**: 2026-11-02
