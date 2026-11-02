@@ -1,0 +1,11 @@
+[extend]
+useDefault = true
+
+# Only the git-ignored .env (it legitimately holds the DB password) and vendored directories.
+[allowlist]
+description = "git-ignored or vendored paths"
+paths = [
+  '''(^|/)\.env$''',
+  '''(^|/)\.venv/''',
+  '''(^|/)node_modules/''',
+]
