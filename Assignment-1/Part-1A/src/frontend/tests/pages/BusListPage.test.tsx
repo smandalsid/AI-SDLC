@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "../../src/api/errors";
@@ -41,7 +41,7 @@ describe("BusListPage", () => {
 
     renderPage();
 
-    expect(await screen.findByRole("status")).toHaveTextContent("No buses");
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("No buses"));
   });
 
   it("shows an error with Retry, and Retry loads the buses", async () => {

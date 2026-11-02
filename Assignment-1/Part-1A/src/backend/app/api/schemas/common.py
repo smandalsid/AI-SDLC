@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import Depends, Query
 from pydantic import BaseModel
@@ -37,3 +37,8 @@ def page_params(
 
 
 PageParamsDep = Annotated[PageParams, Depends(page_params)]
+
+
+def error_responses(*statuses: int) -> dict[int | str, dict[str, Any]]:
+    """OpenAPI documentation of the shared error body for the given status codes."""
+    return {status: {"model": ErrorResponse} for status in statuses}
