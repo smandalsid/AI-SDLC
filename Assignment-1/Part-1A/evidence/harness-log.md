@@ -16,7 +16,45 @@ date. The coding agent MUST NOT write this decision.
 
 ## Initial generation and context
 
-_Filled by T128: commit hash of the `initial-generation` tag and the spec/task context given to the agent._
+**Snapshot**: git tag `initial-generation` on commit `0f02bdff5c2e5a3daa4ae2d164192f16c108a8a5` (`0f02bdf`, "feat: polish, performance and documentation"), created on 2026-11-03 before any recorded harness run. The tag contains tasks T001-T127 as implemented by the coding agent (Spec Kit `/speckit-implement`), phase by phase with a stop and report at every checkpoint. A copy of `src/`, `tests/`, `.harness/`, and the approved `spec.md`, `plan.md`, `tasks.md` (without `node_modules`, `dist`, and caches) is in `evidence/initial-generation/`.
+
+**Context given to the agent**:
+
+- `.specify/memory/constitution.md` v1.3.1, `specs/001-seat-booking/spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/openapi.yaml`, `quickstart.md`, and `tasks.md`, all approved by a human in the Approval table above (dated 2026-11-02).
+- The guardrails in `tasks.md`: tests first and seen failing, harness built before application code, no weakening of tests or thresholds, protected files (`.harness/`, `ruff.toml`, `mypy.ini`, `eslint.config.js`, `tsconfig.json`), no changes to `.env` or to other databases on the container.
+- Changes after the approval date: Chrome Canary replaced Edge for Playwright (Edge remote debugging is blocked by managed policy), and task T135 (DB-tooling tests) plus a "DB tooling" row in `plan.md` were added on 2026-11-03 after backend branch coverage measured 61.1% against the 80% minimum. The Approval table dates predate these two changes.
+- Phase 7 added two files not listed in `tasks.md` to close traceability gaps: `tests/backend/contract/test_input_safety.py` and `tests/backend/unit/test_bundle_size_check.py`.
+
+**Development gate results at the snapshot** (not evidence; run by hand at the T127 checkpoint): integrity, lint, security, test, build, and e2e all passed; backend 270 tests with line 98.3% and branch 88.9% coverage, frontend 74 tests with line 91.5%, initial JS 80.3 KB gzipped, 14 end-to-end specs.
+
+**Commits in the tag**:
+
+```text
+0f02bdf feat: polish, performance and documentation
+b63c71d test: acceptance traceability and two gap-closing test files (T126)
+143b8ec docs: README, quickstart uv flow, keep existing container (T123-T125)
+03fa813 feat: scripts/dev.sh single start command (T122)
+4f4f4c9 test: scripts/dev.sh branch tests written first (T122)
+c9d24fa test: responsive, usability, keyboard and architecture tests (T119-T121)
+16d21b8 test: performance and OpenAPI contract tests (T117, T118)
+65132e3 test: DB tooling tests lift backend branch coverage to 88.9% (T135)
+7819d28 docs: add T135 DB-tooling tests task
+81b2199 feat(us3): conflict protection and persistence
+2936bff feat(us3): conflict protection (browser checks blocked; T110, T115, T116 open)
+c03aca7 feat(us2): book seats
+5f757a4 test(us2): booking tests written first (T091-T096)
+90df6d2 feat(us4): choose the booking user
+ce6a55d test(us4): user list and selector tests written first (T081-T083)
+753ebdf feat(us1): view buses and seats
+feff7b0 test(us1): bus and seat view tests written first (T064-T068)
+8e12219 feat: application foundation
+e234e99 test: foundation tests written first (T031-T038)
+0e876d2 chore: deterministic harness (gates, thresholds, integrity checksums)
+73ff5d1 chore: project skeleton and tool configuration
+dd29c26 chore: added basic setup after first approval, and first phase of env and skeleton setup
+0f7696f docs: approved constitution v1.3.1, spec, plan, tasks
+9daeb6e chore(docs): ratify constitution v1.0.0 (bus booking platform, SDD harness gates)
+```
 
 ## Failure and repair log
 
