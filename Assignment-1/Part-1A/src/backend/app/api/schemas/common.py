@@ -1,10 +1,14 @@
 from dataclasses import dataclass
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from fastapi import Depends, Query
 from pydantic import BaseModel
 
 MAX_ID = 2_147_483_647
+
+
+class HealthOut(BaseModel):
+    status: Literal["ok"]
 
 
 class ErrorBody(BaseModel):
