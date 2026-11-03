@@ -269,7 +269,7 @@ description: "Task list for feature 001-seat-booking (Bus Seat Booking), harness
 - [X] T131 Run every scenario in `specs/001-seat-booking/quickstart.md` against the running stack and record the observed results in the "Quickstart validation" section of `evidence/harness-log.md`
 - [X] T132 Run `/speckit-converge`; record the result in the "Convergence results" section of `evidence/harness-log.md` tasks test-first, then re-run `.harness/run.sh`
 - [X] T133 Copy the final `src/` and `tests/` to `evidence/final-generation/`; confirm `gitleaks dir` and `gitleaks git` (with `.harness/config/gitleaks.toml`) report nothing for the project and `evidence/`; commit `chore: final generation and evidence`; draft the known limitations (for example `sa` account use, retired Azure SQL Edge image, no authentication) and a note on every unplanned helper file under the "Final decision" heading of `evidence/harness-log.md` (the human confirms or edits them in T134)
-- [ ] T134 Human review: the user records the final ACCEPT or REJECT decision with justification in the "Final decision" section of `evidence/harness-log.md` (the agent MUST NOT write this decision)
+- [X] T134 Human review: the user records the final ACCEPT or REJECT decision with justification in the "Final decision" section of `evidence/harness-log.md` (the agent MUST NOT write this decision)
 
 ---
 

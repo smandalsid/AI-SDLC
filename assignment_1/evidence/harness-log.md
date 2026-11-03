@@ -198,6 +198,16 @@ Gaps found while tracing and closed with new tests: NFR-004 (injection text) by 
 
 _Recorded by a human only (T134): ACCEPT or REJECT, known limitations (T133 drafts them), and justification. The agent MUST NOT write the decision._
 
+**Decision**: ACCEPT
+
+**Decided by**: Siddharth
+
+**Date**: 2026-11-03
+
+**Justification**: "All six gates pass on two recorded runs; every requirement has a named test; limitations 1–13 are acceptable for a mock-user first feature. Authentication and authorisation will be tackled in a separate feature. Application runs with expected features."
+
+**Limitations confirmed**: The draft below is acceptable and has solid coverage.
+
 ### Draft by the agent (T133, 2026-11-03): known limitations and unplanned files
 
 This draft is for the human to confirm or edit in T134. It records no decision.
