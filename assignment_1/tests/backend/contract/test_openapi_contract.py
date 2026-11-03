@@ -15,12 +15,14 @@ CONTRACT_PATH = (
 SERVER_PREFIX = "/api/v1"
 METHODS = {"get", "post", "put", "patch", "delete"}
 
+# Parsed JSON and YAML documents have no fixed shape.
 Document = dict[str, Any]
 Operation = tuple[str, str]
 
 
+# Returns whatever node the reference points at.
 def follow(document: Document, ref: str) -> Any:
-    node: Any = document
+    node: Any = document  # walks the same untyped document
     for part in ref.removeprefix("#/").split("/"):
         node = node[part]
     return node

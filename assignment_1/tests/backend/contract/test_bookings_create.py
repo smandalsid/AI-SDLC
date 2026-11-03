@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
@@ -18,7 +17,7 @@ def stored_bookings(factory: sessionmaker[Session]) -> list[tuple[int, int, int,
     return [(int(r[0]), int(r[1]), int(r[2]), r[3]) for r in rows]
 
 
-def assert_error(response_json: dict[str, Any], code: str) -> None:
+def assert_error(response_json: dict[str, dict[str, str]], code: str) -> None:
     assert set(response_json) == {"error"}
     assert response_json["error"]["code"] == code
 
@@ -63,7 +62,7 @@ def test_six_seats_are_accepted(client: TestClient) -> None:
     [[], [3, 3], [1, 2, 3, 4, 5, 6, 7], [0], [-1], [99999999999999999999], ["3"], [3.5], [True]],
 )
 def test_invalid_seat_lists_are_rejected_with_422_and_store_nothing(
-    client: TestClient, session_factory: sessionmaker[Session], seats: list[Any]
+    client: TestClient, session_factory: sessionmaker[Session], seats: list[object]
 ) -> None:
     response = client.post(BOOKINGS, json={**VALID, "seat_numbers": seats})
 
@@ -89,7 +88,7 @@ def test_invalid_seat_lists_are_rejected_with_422_and_store_nothing(
     ],
 )
 def test_invalid_bodies_are_rejected_with_422_and_store_nothing(
-    client: TestClient, session_factory: sessionmaker[Session], payload: dict[str, Any]
+    client: TestClient, session_factory: sessionmaker[Session], payload: dict[str, object]
 ) -> None:
     response = client.post(BOOKINGS, json=payload)
 

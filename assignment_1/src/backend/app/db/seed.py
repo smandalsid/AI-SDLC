@@ -1,18 +1,17 @@
 import argparse
 from collections.abc import Sequence
-from typing import Any
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import get_settings
 
-BUSES: list[dict[str, Any]] = [
+BUSES: list[dict[str, int | str]] = [
     {"id": 1, "name": "Bus A", "total_seats": 20},
     {"id": 2, "name": "Bus B", "total_seats": 30},
     {"id": 3, "name": "Bus C", "total_seats": 40},
 ]
-USERS: list[dict[str, Any]] = [
+USERS: list[dict[str, int | str]] = [
     {"id": 1, "name": "Asha"},
     {"id": 2, "name": "Ravi"},
     {"id": 3, "name": "Meera"},

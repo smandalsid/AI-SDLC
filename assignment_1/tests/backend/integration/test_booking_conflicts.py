@@ -1,10 +1,10 @@
 import threading
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from httpx2 import Response
 from sqlalchemy import text
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -12,7 +12,7 @@ BOOKINGS = "/api/v1/bookings"
 SIMULTANEOUS_REQUESTS = 20
 
 
-def book(client: TestClient, seats: list[int], bus_id: int = 1, user_id: int = 1) -> Any:
+def book(client: TestClient, seats: list[int], bus_id: int = 1, user_id: int = 1) -> Response:
     return client.post(BOOKINGS, json={"bus_id": bus_id, "user_id": user_id, "seat_numbers": seats})
 
 
@@ -79,7 +79,7 @@ def test_the_same_seat_number_on_another_bus_is_still_bookable(
 def test_every_kind_of_rejected_request_leaves_the_table_identical(
     client: TestClient,
     session_factory: sessionmaker[Session],
-    payload: dict[str, Any],
+    payload: dict[str, object],
     status: int,
 ) -> None:
     book(client, [3])
