@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="74" failures="0" errors="0" time="2.452783833">
+    <testsuite name="tests/api/client.test.ts" timestamp="2026-11-03T09:12:56.897Z" hostname="HWHX52N0QG" tests="14" failures="0" errors="0" skipped="0" time="0.009127584">
+        <testcase classname="tests/api/client.test.ts" name="request &gt; returns parsed JSON for a 2xx response from the /api/v1 base" time="0.004741">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; sends a JSON body with the content type for POST requests" time="0.000755375">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 409 seat_unavailable to a conflict error" time="0.0006385">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 400 to an invalid error" time="0.0002395">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 404 to an invalid error" time="0.000159041">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 422 to an invalid error" time="0.000119667">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 500 to an unavailable error" time="0.000151417">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 503 to an unavailable error" time="0.0001085">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps a network failure to an unavailable error" time="0.000178125">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps a non-JSON error body to an unavailable error" time="0.000171708">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="describeApiError &gt; describes a conflict error" time="0.000277542">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="describeApiError &gt; describes a invalid error" time="0.000070167">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="describeApiError &gt; describes a unavailable error" time="0.000089">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="describeApiError &gt; describes an unknown error as service unavailable" time="0.000177375">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/architecture.test.ts" timestamp="2026-11-03T09:12:56.898Z" hostname="HWHX52N0QG" tests="2" failures="0" errors="0" skipped="0" time="0.003348958">
+        <testcase classname="tests/architecture.test.ts" name="architecture: components and pages never call the network directly &gt; scans the component and page sources" time="0.00147825">
+        </testcase>
+        <testcase classname="tests/architecture.test.ts" name="architecture: components and pages never call the network directly &gt; contains no fetch call in src/components or src/pages" time="0.000565125">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/components/BookingBar.test.tsx" timestamp="2026-11-03T09:12:56.898Z" hostname="HWHX52N0QG" tests="7" failures="0" errors="0" skipped="0" time="0.1103195">
+        <testcase classname="tests/components/BookingBar.test.tsx" name="BookingBar &gt; shows the selected seat numbers" time="0.018522792">
+        </testcase>
+        <testcase classname="tests/components/BookingBar.test.tsx" name="BookingBar &gt; is enabled when a user and at least one seat are chosen" time="0.056025667">
+        </testcase>
+        <testcase classname="tests/components/BookingBar.test.tsx" name="BookingBar &gt; is disabled without a user and hints to choose one" time="0.004603">
+        </testcase>
+        <testcase classname="tests/components/BookingBar.test.tsx" name="BookingBar &gt; is disabled with no seats selected" time="0.003467333">
+        </testcase>
+        <testcase classname="tests/components/BookingBar.test.tsx" name="BookingBar &gt; is disabled while a request is in flight" time="0.003140042">
+        </testcase>
+        <testcase classname="tests/components/BookingBar.test.tsx" name="BookingBar &gt; explains the six-seat limit when it is reached" time="0.00114325">
+        </testcase>
+        <testcase classname="tests/components/BookingBar.test.tsx" name="BookingBar &gt; calls the handler when confirmed" time="0.022429333">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/components/BusList.test.tsx" timestamp="2026-11-03T09:12:56.899Z" hostname="HWHX52N0QG" tests="1" failures="0" errors="0" skipped="0" time="0.092105334">
+        <testcase classname="tests/components/BusList.test.tsx" name="BusList &gt; renders each bus name and seat count as a link to its seat page" time="0.091140667">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/components/ErrorBoundary.test.tsx" timestamp="2026-11-03T09:12:56.899Z" hostname="HWHX52N0QG" tests="2" failures="0" errors="0" skipped="0" time="0.083872833">
+        <testcase classname="tests/components/ErrorBoundary.test.tsx" name="ErrorBoundary &gt; renders its children when nothing fails" time="0.019874">
+        </testcase>
+        <testcase classname="tests/components/ErrorBoundary.test.tsx" name="ErrorBoundary &gt; shows a readable fallback instead of crashing when a child throws" time="0.062932542">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/components/SeatGrid.test.tsx" timestamp="2026-11-03T09:12:56.899Z" hostname="HWHX52N0QG" tests="3" failures="0" errors="0" skipped="0" time="0.129410792">
+        <testcase classname="tests/components/SeatGrid.test.tsx" name="SeatGrid &gt; renders one control per seat with an accessible name stating number and status" time="0.087672209">
+        </testcase>
+        <testcase classname="tests/components/SeatGrid.test.tsx" name="SeatGrid &gt; disables booked seats and labels them with text, not colour alone" time="0.007316042">
+        </testcase>
+        <testcase classname="tests/components/SeatGrid.test.tsx" name="SeatGrid &gt; is reachable by keyboard: Tab visits available seats and skips booked ones" time="0.033187041">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/components/StatusMessage.test.tsx" timestamp="2026-11-03T09:12:56.899Z" hostname="HWHX52N0QG" tests="7" failures="0" errors="0" skipped="0" time="0.12939775">
+        <testcase classname="tests/components/StatusMessage.test.tsx" name="StatusMessage &gt; announces loading politely" time="0.072534459">
+        </testcase>
+        <testcase classname="tests/components/StatusMessage.test.tsx" name="StatusMessage &gt; announces empty politely" time="0.011393208">
+        </testcase>
+        <testcase classname="tests/components/StatusMessage.test.tsx" name="StatusMessage &gt; announces success politely" time="0.002732584">
+        </testcase>
+        <testcase classname="tests/components/StatusMessage.test.tsx" name="StatusMessage &gt; announces error as an alert" time="0.002430208">
+        </testcase>
+        <testcase classname="tests/components/StatusMessage.test.tsx" name="StatusMessage &gt; announces conflict as an alert" time="0.002247125">
+        </testcase>
+        <testcase classname="tests/components/StatusMessage.test.tsx" name="StatusMessage &gt; offers Retry on an error and calls the handler" time="0.035335541">
+        </testcase>
+        <testcase classname="tests/components/StatusMessage.test.tsx" name="StatusMessage &gt; shows no Retry button without a handler" time="0.001589917">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/components/UserSelect.test.tsx" timestamp="2026-11-03T09:12:56.899Z" hostname="HWHX52N0QG" tests="5" failures="0" errors="0" skipped="0" time="0.12908675">
+        <testcase classname="tests/components/UserSelect.test.tsx" name="UserSelect &gt; is a labelled select with a placeholder and every user" time="0.077688167">
+        </testcase>
+        <testcase classname="tests/components/UserSelect.test.tsx" name="UserSelect &gt; reports the chosen user id, and null for the placeholder" time="0.031170792">
+        </testcase>
+        <testcase classname="tests/components/UserSelect.test.tsx" name="UserSelect &gt; shows the selected user" time="0.001623125">
+        </testcase>
+        <testcase classname="tests/components/UserSelect.test.tsx" name="UserSelect &gt; shows loading and empty states" time="0.005906041">
+        </testcase>
+        <testcase classname="tests/components/UserSelect.test.tsx" name="UserSelect &gt; shows an error with a working Retry" time="0.011624292">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/hooks/useSeatSelection.test.ts" timestamp="2026-11-03T09:12:56.900Z" hostname="HWHX52N0QG" tests="7" failures="0" errors="0" skipped="0" time="0.020040333">
+        <testcase classname="tests/hooks/useSeatSelection.test.ts" name="useSeatSelection &gt; toggles a seat on and off" time="0.011780625">
+        </testcase>
+        <testcase classname="tests/hooks/useSeatSelection.test.ts" name="useSeatSelection &gt; keeps the selection ordered by seat number" time="0.001105959">
+        </testcase>
+        <testcase classname="tests/hooks/useSeatSelection.test.ts" name="useSeatSelection &gt; cannot select a booked seat" time="0.001211667">
+        </testcase>
+        <testcase classname="tests/hooks/useSeatSelection.test.ts" name="useSeatSelection &gt; ignores a seventh seat and reports the limit" time="0.001675334">
+        </testcase>
+        <testcase classname="tests/hooks/useSeatSelection.test.ts" name="useSeatSelection &gt; allows deselecting at the limit to free a slot" time="0.001381084">
+        </testcase>
+        <testcase classname="tests/hooks/useSeatSelection.test.ts" name="useSeatSelection &gt; clears the selection" time="0.000752042">
+        </testcase>
+        <testcase classname="tests/hooks/useSeatSelection.test.ts" name="useSeatSelection &gt; drops seats that become booked" time="0.001013916">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/pages/BusListPage.test.tsx" timestamp="2026-11-03T09:12:56.900Z" hostname="HWHX52N0QG" tests="4" failures="0" errors="0" skipped="0" time="0.138648291">
+        <testcase classname="tests/pages/BusListPage.test.tsx" name="BusListPage &gt; shows a loading state while the buses load" time="0.067925375">
+        </testcase>
+        <testcase classname="tests/pages/BusListPage.test.tsx" name="BusListPage &gt; lists every bus with its seat count" time="0.024713625">
+        </testcase>
+        <testcase classname="tests/pages/BusListPage.test.tsx" name="BusListPage &gt; shows an empty state when there are no buses" time="0.0134925">
+        </testcase>
+        <testcase classname="tests/pages/BusListPage.test.tsx" name="BusListPage &gt; shows an error with Retry, and Retry loads the buses" time="0.031310166">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/pages/BusSeatsPage.booking.test.tsx" timestamp="2026-11-03T09:12:56.900Z" hostname="HWHX52N0QG" tests="10" failures="0" errors="0" skipped="0" time="0.801009833">
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (booking) &gt; sends the booking, shows progress, then success, and re-reads the seats" time="0.230941709">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (booking) &gt; sends only one request when Confirm is clicked twice" time="0.059337625">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (booking) &gt; cannot select a seventh seat" time="0.125804417">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (booking) &gt; disables Confirm without a user or without seats" time="0.053221916">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (booking) &gt; discards an unconfirmed selection when the page is reloaded" time="0.062611958">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (failed bookings) &gt; on a conflict shows an alert, refreshes the seats, and drops the taken seat" time="0.062441959">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (failed bookings) &gt; on a 503 response shows Service unavailable and keeps the selection" time="0.060824334">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (failed bookings) &gt; on a network failure shows Service unavailable and keeps the selection" time="0.061050292">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (failed bookings) &gt; on a 400 response shows Invalid request" time="0.041900709">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (failed bookings) &gt; on a 422 response shows Invalid request" time="0.041683041">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/pages/BusSeatsPage.keyboard.test.tsx" timestamp="2026-11-03T09:12:56.901Z" hostname="HWHX52N0QG" tests="3" failures="0" errors="0" skipped="0" time="0.600334542">
+        <testcase classname="tests/pages/BusSeatsPage.keyboard.test.tsx" name="BusSeatsPage (keyboard only) &gt; books seats with Tab, Space, Enter and Tab to Confirm" time="0.410539375">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.keyboard.test.tsx" name="BusSeatsPage (keyboard only) &gt; deselects a seat when Space is pressed on it again" time="0.069039167">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.keyboard.test.tsx" name="BusSeatsPage (keyboard only) &gt; shows the 6-seat limit message when a seventh seat is chosen by keyboard" time="0.119758083">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/pages/BusSeatsPage.test.tsx" timestamp="2026-11-03T09:12:56.901Z" hostname="HWHX52N0QG" tests="9" failures="0" errors="0" skipped="0" time="0.206081333">
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (viewing) &gt; shows a loading state while the bus loads" time="0.067746333">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (viewing) &gt; lists every seat with booked seats marked" time="0.05409825">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (viewing) &gt; shows an error with Retry and no partial seat list" time="0.036193333">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (viewing) &gt; shows a readable message when the bus does not exist" time="0.004444917">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (viewing) &gt; shows bus not found for the malformed id abc without calling the API" time="0.001919917">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (viewing) &gt; shows bus not found for the malformed id 0 without calling the API" time="0.002173459">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (viewing) &gt; shows bus not found for the malformed id 99999999999999999999 without calling the API" time="0.00175125">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (choosing the user) &gt; lists the users in a selector once the seats are shown" time="0.017028375">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (choosing the user) &gt; keeps the chosen user selected" time="0.019646208">
+        </testcase>
+    </testsuite>
+</testsuites>

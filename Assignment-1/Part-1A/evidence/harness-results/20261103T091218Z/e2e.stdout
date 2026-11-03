@@ -1,0 +1,19 @@
+
+Running 14 tests using 1 worker
+
+  ✓   1 [canary] › e2e/booking-persistence.spec.ts:8:1 › seats booked through the UI are still booked after a reload (3.0s)
+  ✓   2 [canary] › e2e/booking-persistence.spec.ts:24:1 › an unconfirmed selection is discarded on reload and nothing is stored (2.5s)
+  ✓   3 [canary] › e2e/responsive.spec.ts:20:3 › the bus list does not scroll horizontally at 320px (1.6s)
+  ✓   4 [canary] › e2e/responsive.spec.ts:29:3 › the seat page does not scroll horizontally at 320px (1.6s)
+  ✓   5 [canary] › e2e/responsive.spec.ts:39:3 › a booking can be made and confirmed at 320px (1.7s)
+  ✓   6 [canary] › e2e/responsive.spec.ts:20:3 › the bus list does not scroll horizontally at 768px (1.6s)
+  ✓   7 [canary] › e2e/responsive.spec.ts:29:3 › the seat page does not scroll horizontally at 768px (1.6s)
+  ✓   8 [canary] › e2e/responsive.spec.ts:39:3 › a booking can be made and confirmed at 768px (1.7s)
+  ✓   9 [canary] › e2e/responsive.spec.ts:20:3 › the bus list does not scroll horizontally at 1280px (1.6s)
+  ✓  10 [canary] › e2e/responsive.spec.ts:29:3 › the seat page does not scroll horizontally at 1280px (1.6s)
+  ✓  11 [canary] › e2e/responsive.spec.ts:39:3 › a booking can be made and confirmed at 1280px (1.7s)
+  ✓  12 [canary] › e2e/usability.spec.ts:35:1 › the bus list is visible within 2 seconds of opening the application (1.2s)
+  ✓  13 [canary] › e2e/usability.spec.ts:44:1 › the seat list is visible within 2 seconds of choosing a bus (1.7s)
+  ✓  14 [canary] › e2e/usability.spec.ts:57:1 › one seat is booked in at most 5 interactions and under 30 seconds (1.7s)
+
+  14 passed (32.8s)

@@ -1,0 +1,103 @@
+results folder: /Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_1/evidence/harness-results/20261103T091218Z
+== pytest
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0
+rootdir: /Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_1/src/backend
+configfile: pyproject.toml
+testpaths: ../../tests/backend
+plugins: platformdirs-4.14.3, cov-7.1.0, anyio-4.16.0
+collected 270 items
+
+contract/test_bookings_create.py ...........................             [ 10%]
+contract/test_buses.py .................                                 [ 16%]
+contract/test_conflict_response.py .                                     [ 16%]
+contract/test_health.py ...                                              [ 17%]
+contract/test_input_safety.py .................                          [ 24%]
+contract/test_no_secret_leak.py .                                        [ 24%]
+contract/test_openapi_contract.py .........................              [ 33%]
+contract/test_users.py ........                                          [ 36%]
+integration/test_booking_conflicts.py .........                          [ 40%]
+integration/test_db_tooling.py ............                              [ 44%]
+integration/test_performance.py ..                                       [ 45%]
+integration/test_schema_and_seed.py ............                         [ 49%]
+unit/test_architecture.py ........                                       [ 52%]
+unit/test_booking_schema.py ..........................                   [ 62%]
+unit/test_booking_service.py ......                                      [ 64%]
+unit/test_bundle_size_check.py .........                                 [ 67%]
+unit/test_bus_service.py ....                                            [ 69%]
+unit/test_check_function_length.py ....                                  [ 70%]
+unit/test_db_tooling.py ...........................                      [ 80%]
+unit/test_dev_script.py .................                                [ 87%]
+unit/test_error_handlers.py ............                                 [ 91%]
+unit/test_harness_summarize.py .....                                     [ 93%]
+unit/test_settings.py ............                                       [ 97%]
+unit/test_startup.py ....                                                [ 99%]
+unit/test_user_service.py ..                                             [100%]
+
+- generated xml file: /Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_1/evidence/harness-results/20261103T091218Z/junit-backend.xml -
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.12.14-final-0 _______________
+
+Coverage JSON written to file /Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_1/evidence/harness-results/20261103T091218Z/coverage-backend.json
+============================= 270 passed in 21.23s =============================
+== vitest
+
+ RUN  v5.1.0 /Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_1/src/frontend
+      Coverage enabled with v8
+
+ ✓ tests/api/client.test.ts (14 tests) 9ms
+ ✓ tests/hooks/useSeatSelection.test.ts (7 tests) 20ms
+ ✓ tests/architecture.test.ts (2 tests) 3ms
+ ✓ tests/components/ErrorBoundary.test.tsx (2 tests) 84ms
+ ✓ tests/components/BusList.test.tsx (1 test) 92ms
+ ✓ tests/components/BookingBar.test.tsx (7 tests) 110ms
+ ✓ tests/components/StatusMessage.test.tsx (7 tests) 129ms
+ ✓ tests/components/SeatGrid.test.tsx (3 tests) 129ms
+ ✓ tests/components/UserSelect.test.tsx (5 tests) 129ms
+ ✓ tests/pages/BusListPage.test.tsx (4 tests) 139ms
+ ✓ tests/pages/BusSeatsPage.test.tsx (9 tests) 206ms
+ ✓ tests/pages/BusSeatsPage.keyboard.test.tsx (3 tests) 600ms
+   ✓ BusSeatsPage (keyboard only) (3)
+     ✓ books seats with Tab, Space, Enter and Tab to Confirm 411ms
+ ✓ tests/pages/BusSeatsPage.booking.test.tsx (10 tests) 801ms
+
+ Test Files  13 passed (13)
+      Tests  74 passed (74)
+   Start at  14:42:54
+   Duration  2.54s (environment 64%, setup 16%, tests 11%, import 4%, worker 3%, transform 2%)
+
+JUNIT report written to /Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_1/evidence/harness-results/20261103T091218Z/junit-frontend.xml
+[34m % [39m[2mCoverage report from [22m[33mv8[39m
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   90.32 |     93.7 |   84.37 |    91.5 |                   
+ src               |       0 |        0 |       0 |       0 |                   
+  App.tsx          |       0 |      100 |       0 |       0 | 6-23              
+  main.tsx         |       0 |        0 |     100 |       0 | 7-10              
+ src/api           |   89.74 |    93.93 |      60 |   88.57 |                   
+  bookings.ts      |       0 |      100 |       0 |       0 | 5                 
+  buses.ts         |       0 |      100 |       0 |       0 | 5-9               
+  client.ts        |     100 |    91.66 |     100 |     100 | 5                 
+  users.ts         |       0 |      100 |       0 |       0 | 5                 
+ src/components    |     100 |    97.95 |     100 |     100 |                   
+  ...gFeedback.tsx |     100 |    91.66 |     100 |     100 | 11                
+ src/hooks         |   98.43 |    88.88 |     100 |     100 |                   
+  ...ncResource.ts |     100 |    85.71 |     100 |     100 | 24-27             
+  useBookSeats.ts  |   94.44 |    83.33 |     100 |     100 | 25                
+ src/pages         |   97.05 |    96.87 |     100 |     100 |                   
+  BusSeatsPage.tsx |   96.87 |    95.83 |     100 |     100 | 31                
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 90.32% ( 168/186 )
+Branches     : 93.7% ( 134/143 )
+Functions    : 84.37% ( 54/64 )
+Lines        : 91.5% ( 140/153 )
+================================================================================
+== coverage thresholds and skipped tests
+backend line coverage: 98.3% (minimum 85%) PASS
+backend branch coverage: 88.9% (minimum 80%) PASS
+frontend line coverage: 91.5% (minimum 80%) PASS
+junit-backend.xml: 0 skipped or xfail tests PASS
+junit-frontend.xml: 0 skipped or xfail tests PASS
