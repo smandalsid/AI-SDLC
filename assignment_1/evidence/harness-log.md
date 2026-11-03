@@ -198,6 +198,39 @@ Gaps found while tracing and closed with new tests: NFR-004 (injection text) by 
 
 _Recorded by a human only (T134): ACCEPT or REJECT, known limitations (T133 drafts them), and justification. The agent MUST NOT write the decision._
 
+### Draft by the agent (T133, 2026-11-03): known limitations and unplanned files
+
+This draft is for the human to confirm or edit in T134. It records no decision.
+
+**State at drafting**: tag `initial-generation` is commit `756677e`. Two recorded harness runs exist, both all-PASS: `evidence/harness-results/20261103T091218Z` (first run) and `evidence/harness-results/20261103T092135Z` (after the convergence fixes T136-T138 and T140). `evidence/final-generation/` holds `src/` and `tests/` as of commit `1f05c49`. `gitleaks dir` (project and `evidence/`) and `gitleaks git` (32 commits) with `.harness/config/gitleaks.toml` report no leaks.
+
+**Known limitations**
+
+1. The application connects as the SQL Server `sa` account and has no authentication or authorisation; the spec scopes both out (mock users chosen from a list).
+2. The database image, Azure SQL Edge, is retired but still pullable. The compose file was only validated as YAML because the `docker compose` plugin is not installed; `scripts/dev.sh` falls back to `docker run`, and its database branches are tested only with stub `docker` and `colima` commands plus a real run against the existing container.
+3. The existing hand-started `azure-sql-edge` container is used as is (decision T125); the compose-managed container was never created.
+4. Playwright runs on the manually installed Google Chrome Canary (`channel: "chrome-canary"`) because the Chromium download is blocked by the corporate proxy and Edge forbids remote debugging by managed policy. The e2e gate needs that browser and free ports 8000 and 5173.
+5. The latency checks (NFR-001, NFR-002) call the application in process through the test client against the real database; they exclude the HTTP server and network. The usability timings (NFR-007, NFR-008) run against the Vite dev server after a warm-up request.
+6. The 20-simultaneous-request test uses threads inside one test process, not separate server processes; the guarantee itself comes from the database unique index.
+7. uvicorn itself logs the traceback of an unhandled exception; the application's own logging never writes the exception message.
+8. `src/backend/ruff.toml` also ignores S105 and S106 (hard-coded password strings) under `tests/`, and the tests contain fake password literals (`tests/backend/unit/conftest.py`, `tests/backend/unit/test_dev_script.py`) that `gitleaks` accepts. Two test subprocess calls carry an inline `# noqa: S603` with a comment (`unit/test_dev_script.py`, `unit/test_bundle_size_check.py`).
+9. `.specify/memory/constitution.md` still contains a "remove before commit" Sync Impact comment.
+10. The Approval table dates (2026-11-02) predate four later changes: Chrome Canary replacing Edge, task T135 and a "DB tooling" row in `plan.md` (2026-11-03), the convergence tasks T136-T141, and the contract enum amendment with two matching rows in the `plan.md` error table (T140, approved by the user on 2026-11-03).
+11. Tests written after the code they cover (Constitution V, converge finding F3, T139): T117 (performance), T119 (responsive e2e), T120 (keyboard, limit message, no-`fetch` architecture check), T121 (usability e2e), and T135 (DB tooling) were written after the code existed, which was built in earlier phases. Each was shown able to fail by mutating the code or an input; the commit messages `test: DB tooling tests lift backend branch coverage to 88.9% (T135)`, `test: performance and OpenAPI contract tests (T117, T118)`, and `test: responsive, usability, keyboard and architecture tests (T119-T121)` record the mutations. T118, T122, T136, and T140 were committed red first.
+12. Running a backend unit test file before an integration test file in one pytest invocation leaves fake `DB_*` values in the environment for the later tests. The default directory order (contract, integration, unit) is unaffected, and the new integration tests patch `get_settings` explicitly.
+13. Vite serves the frontend on `localhost` only (not `127.0.0.1`), matching the default `CORS_ORIGINS`.
+
+**Unplanned helper files and options (not named in `plan.md` or `tasks.md`)**
+
+- `tests/backend/unit/harness_loader.py` and `tests/backend/unit/layer_scan.py`: helpers for the harness and architecture tests.
+- `.harness/check_coverage.py`: computes the coverage figures for `test.sh`.
+- `scripts/e2e-reset.sh` and `scripts/e2e-backend.sh`: reset the test database and start the backend on it for Playwright.
+- `src/frontend/e2e/support.ts` and `src/frontend/e2e/global-setup.ts`: reset the test database for the e2e specs.
+- `@types/node` dev dependency in `src/frontend` for those e2e helpers.
+- `scripts/dev.sh --check` and `--db-only` options (the task text names only `--check`); `--db-only` makes the database branches testable.
+- `tests/backend/unit/test_dev_script.py`, `tests/backend/unit/test_bundle_size_check.py`, `tests/backend/contract/test_input_safety.py`, and `tests/backend/unit/test_type_hygiene.py`: tests added to close traceability and convergence gaps.
+- `HealthOut` schema in `src/backend/app/api/schemas/common.py`: documents the health responses so the generated OpenAPI matches the contract (T118).
+
 ## Harness run table
 
 Rows are appended by `.harness/run.sh`; do not edit by hand.
