@@ -1,6 +1,13 @@
 <!--
 Sync Impact Report (temporary; remove before commit)
-- Version change: 1.3.1 -> 1.4.0 (MINOR). Reason: genuine failures seen while developing (task test runs, phase
+- Version change: 1.4.0 -> 1.4.1 (PATCH). Reason: analysis of feature 002 found that Principle XIII names the tag
+  `initial-generation`, which feature 001 already owns, so a later feature could not comply literally.
+  Clarified Principle XIII: for a later feature whose tag name is taken, the tag is
+  `<NNN>-initial-generation` and the earlier feature's evidence is archived under `evidence/<NNN>-<name>/`
+  first. Wording only; no principle added, removed, or redefined; feature 001 evidence is not re-written.
+  Impact: specs/002-user-authentication/{plan,tasks}.md cite v1.4.1. The mock-user exemption sentence of
+  Principle VII is unchanged and is to be retired by a separate amendment after feature 002 is accepted.
+- Earlier: 1.3.1 -> 1.4.0 (MINOR). Reason: genuine failures seen while developing (task test runs, phase
   checkpoints, gate script runs) were not captured in the failure-and-repair log, which only covered recorded
   runs. Principle XII gains a failure-logging rule, the Deterministic Harness & Evidence section and the
   Development Workflow gain matching text, and the Measurable Engineering Constraints table gains a row.
@@ -219,7 +226,10 @@ cheap to change.
   non-parallel task. Completed tasks are marked `[X]` only after their tests pass.
 - **First generation preserved**: after the last implementation task and before the first
   `.harness/run.sh`, the code MUST be committed and tagged `initial-generation` and copied to
-  `evidence/initial-generation/`; the repaired version goes to `evidence/final-generation/`.
+  `evidence/initial-generation/`; the repaired version goes to `evidence/final-generation/`. For a
+  later feature whose tag name is already taken, the tag is `<NNN>-initial-generation` (for example
+  `002-initial-generation`) and the earlier feature's evidence is first archived, unedited, under
+  `evidence/<NNN>-<name>/`.
 - A legitimate specification change MUST be made through the SDD artifacts (spec -> plan ->
   tasks), committed, and documented in `evidence/harness-log.md`.
 - The final ACCEPT or REJECT decision, with known limitations and justification, is recorded by a
@@ -353,4 +363,4 @@ time, and at human review. Any violation MUST be fixed or explicitly justified i
 complexity-tracking table before implementation proceeds. Constraints marked NON-NEGOTIABLE
 (I, V, VI, XII, XIII) cannot be waived.
 
-**Version**: 1.4.0 | **Ratified**: 2026-11-02 | **Last Amended**: 2026-11-03
+**Version**: 1.4.1 | **Ratified**: 2026-11-02 | **Last Amended**: 2026-11-03
