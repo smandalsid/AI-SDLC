@@ -10,15 +10,18 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.exc import TimeoutError as PoolTimeoutError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.core.errors import AppError
+from app.core.errors import AppError, TooManyAttemptsError, UnauthenticatedError
 
 logger = logging.getLogger(__name__)
 
 STATUS_BY_CODE = {
     "invalid_seat": 400,
+    "unauthenticated": 401,
+    "invalid_credentials": 401,
     "bus_not_found": 404,
     "user_not_found": 404,
     "seat_unavailable": 409,
+    "too_many_attempts": 429,
 }
 CODE_BY_HTTP_STATUS = {404: "not_found", 405: "method_not_allowed"}
 MAX_DETAIL_LENGTH = 200
@@ -28,9 +31,18 @@ def error_response(status: int, code: str, message: str) -> JSONResponse:
     return JSONResponse(status_code=status, content={"error": {"code": code, "message": message}})
 
 
+def response_for(error: AppError) -> JSONResponse:
+    """The only place a domain error becomes a response; also used where nothing may be raised."""
+    response = error_response(STATUS_BY_CODE.get(error.code, 500), error.code, error.message)
+    if isinstance(error, UnauthenticatedError):
+        response.headers["WWW-Authenticate"] = "Bearer"
+    if isinstance(error, TooManyAttemptsError):
+        response.headers["Retry-After"] = str(error.retry_after_seconds)
+    return response
+
+
 async def handle_app_error(request: Request, exc: Exception) -> JSONResponse:
-    error = cast(AppError, exc)  # registered for AppError only
-    return error_response(STATUS_BY_CODE.get(error.code, 500), error.code, error.message)
+    return response_for(cast(AppError, exc))  # registered for AppError only
 
 
 async def handle_validation_error(request: Request, exc: Exception) -> JSONResponse:

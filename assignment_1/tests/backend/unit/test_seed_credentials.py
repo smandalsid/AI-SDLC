@@ -1,10 +1,9 @@
 import pytest
+from app.core.config import Settings
 from app.core.passwords import Argon2Hasher
 from app.db import seed
 from app.db.seed import MissingMockPasswordError, password_hashes_from_settings
 from pydantic import SecretStr
-
-from .conftest import clear_settings_cache
 
 USERNAMES = ["asha", "ravi", "meera"]
 PASSWORDS = {
@@ -56,7 +55,8 @@ def test_seed_cli_exits_non_zero_and_prints_no_password_when_an_entry_is_missing
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setenv("MOCK_USER_PASSWORDS", '{"asha": "pw-for-asha-unit-1"}')
-    clear_settings_cache()
+    # The real .env must not leak in: dict settings are merged across sources.
+    monkeypatch.setattr(seed, "get_settings", lambda: Settings(_env_file=None))
 
     exit_code = seed.main(["--database", "unused_test"])
 

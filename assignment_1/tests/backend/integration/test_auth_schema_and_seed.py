@@ -4,6 +4,7 @@ import pytest
 from app.core.passwords import Argon2Hasher
 from app.db.seed import reset_data
 from sqlalchemy import Engine, inspect, text
+from sqlalchemy.engine.interfaces import ReflectedColumn
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -37,7 +38,7 @@ def seeded_users(session: Session) -> list[tuple[int, str, str]]:
     return [(int(row[0]), str(row[1]), str(row[2])) for row in rows]
 
 
-def column_info(engine: Engine, table: str, column: str) -> dict[str, object]:
+def column_info(engine: Engine, table: str, column: str) -> ReflectedColumn:
     return next(item for item in inspect(engine).get_columns(table) if item["name"] == column)
 
 

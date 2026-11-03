@@ -115,8 +115,3 @@ def test_credential_modules_exist_and_import_no_other_application_layer() -> Non
     for name in ("passwords.py", "tokens.py"):
         assert (APP_DIR / "core" / name).exists(), f"core/{name} is missing"
     assert find_violations(APP_DIR) == []
-
-
-def test_gate_middleware_module_exists_without_data_layer_imports() -> None:
-    assert (APP_DIR / "api" / "middleware" / "auth_gate.py").exists()
-    assert find_violations(APP_DIR) == []

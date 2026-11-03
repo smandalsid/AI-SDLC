@@ -10,12 +10,24 @@ from fastapi.testclient import TestClient
 CONTRACT_PATH = (
     Path(__file__).resolve().parents[3]
     / "specs"
-    / "001-seat-booking"
+    / "002-user-authentication"
     / "contracts"
     / "openapi.yaml"
 )
 SERVER_PREFIX = "/api/v1"
 METHODS = {"get", "post", "put", "patch", "delete"}
+
+# Differences between the 002 contract and the app that a later story still delivers. Each story
+# checkpoint deletes its entries; test_no_pending_contract_items (T124) requires all to be empty.
+PENDING_OPERATIONS_NOT_IN_APP = {
+    ("POST", "/auth/login"),
+    ("GET", "/auth/me"),
+    ("POST", "/auth/logout"),
+}
+PENDING_OPERATIONS_ONLY_IN_APP = {("GET", "/users")}
+PENDING_STATUSES_NOT_IN_APP = {"401"}
+PENDING_ERROR_CODES_ONLY_IN_APP = {"user_not_found"}
+PENDING_BODY_FIELDS_ONLY_IN_APP = {"user_id"}
 
 # Parsed JSON and YAML documents have no fixed shape.
 Document = dict[str, Any]
@@ -57,6 +69,22 @@ def body_shape(document: Document, container: Document) -> Document | None:
     return None if schema is None else shape(document, schema)
 
 
+def without_fields(node: Document, names: set[str]) -> Document:
+    """Drops pending field names from a request body shape (properties and required lists)."""
+    result: Document = {}
+    if "properties" in node:
+        result["properties"] = {
+            name: without_fields(sub, names)
+            for name, sub in node["properties"].items()
+            if name not in names
+        }
+    if "required" in node:
+        result["required"] = [name for name in node["required"] if name not in names]
+    if "items" in node:
+        result["items"] = without_fields(node["items"], names)
+    return result
+
+
 def operations(document: Document, prefix: str) -> dict[Operation, Document]:
     found: dict[Operation, Document] = {}
     for path, item in document["paths"].items():
@@ -86,10 +114,20 @@ OPERATION_IDS = [f"{method} {path}" for method, path in CONTRACT_OPERATIONS]
 
 
 def test_contract_paths_and_methods_are_exactly_the_apps() -> None:
-    assert set(APP_OPERATIONS) == set(CONTRACT_OPERATIONS)
+    assert set(APP_OPERATIONS) - PENDING_OPERATIONS_ONLY_IN_APP == (
+        set(CONTRACT_OPERATIONS) - PENDING_OPERATIONS_NOT_IN_APP
+    )
 
 
-@pytest.fixture(params=list(CONTRACT_OPERATIONS), ids=OPERATION_IDS)
+COMPARED_OPERATIONS = [
+    key for key in CONTRACT_OPERATIONS if key not in PENDING_OPERATIONS_NOT_IN_APP
+]
+
+
+@pytest.fixture(
+    params=COMPARED_OPERATIONS,
+    ids=[f"{method} {path}" for method, path in COMPARED_OPERATIONS],
+)
 def pair(request: pytest.FixtureRequest) -> tuple[Document, Document]:
     key: Operation = request.param
     assert key in APP_OPERATIONS, f"{key} is missing from the app"
@@ -99,7 +137,7 @@ def pair(request: pytest.FixtureRequest) -> tuple[Document, Document]:
 def test_status_codes_match(pair: tuple[Document, Document]) -> None:
     contract, app = pair
 
-    assert set(app["responses"]) == set(contract["responses"])
+    assert set(app["responses"]) == set(contract["responses"]) - PENDING_STATUSES_NOT_IN_APP
 
 
 def test_response_schemas_match_by_property_names_and_required_lists(
@@ -107,7 +145,10 @@ def test_response_schemas_match_by_property_names_and_required_lists(
 ) -> None:
     contract, app = pair
 
-    assert response_shapes(APP, app) == response_shapes(CONTRACT, contract)
+    expected = response_shapes(CONTRACT, contract)
+    for status in PENDING_STATUSES_NOT_IN_APP:
+        expected.pop(status, None)
+    assert response_shapes(APP, app) == expected
 
 
 def test_request_body_schemas_match(pair: tuple[Document, Document]) -> None:
@@ -117,7 +158,10 @@ def test_request_body_schemas_match(pair: tuple[Document, Document]) -> None:
     contract_body = contract.get("requestBody")
     assert (app_body is None) == (contract_body is None)
     if app_body is not None and contract_body is not None:
-        assert body_shape(APP, app_body) == body_shape(CONTRACT, contract_body)
+        app_shape = body_shape(APP, app_body)
+        contract_shape = body_shape(CONTRACT, contract_body)
+        assert app_shape is not None and contract_shape is not None
+        assert without_fields(app_shape, PENDING_BODY_FIELDS_ONLY_IN_APP) == contract_shape
         assert app_body.get("required", False) == contract_body.get("required", False)
 
 
@@ -141,7 +185,7 @@ def test_the_contract_lists_exactly_the_error_codes_the_app_defines() -> None:
         | {"validation_error", "service_unavailable", "internal_error"}
     )
 
-    assert contract_error_codes() == defined
+    assert contract_error_codes() == defined - PENDING_ERROR_CODES_ONLY_IN_APP
 
 
 def test_unknown_routes_and_wrong_methods_return_codes_from_the_contract() -> None:

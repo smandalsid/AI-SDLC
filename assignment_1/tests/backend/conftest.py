@@ -1,6 +1,7 @@
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from datetime import UTC, datetime
 from pathlib import Path
+from secrets import token_urlsafe
 
 import pytest
 from alembic import command
@@ -8,8 +9,9 @@ from alembic.config import Config
 from app.api.deps import get_clock
 from app.core.clock import Clock
 from app.core.config import Settings, get_settings
+from app.core.passwords import Argon2Hasher
 from app.db.admin import drop_and_create_database
-from app.db.seed import reset_data
+from app.db.seed import USERS, reset_data
 from app.db.session import get_session, unit_of_work
 from app.main import create_app
 from fastapi import FastAPI
@@ -57,14 +59,33 @@ def session_factory(engine: Engine) -> sessionmaker[Session]:
     return sessionmaker(engine, expire_on_commit=False)
 
 
+@pytest.fixture(scope="session")
+def credentials() -> Mapping[str, str]:
+    """A random password per seeded username, kept in memory only and never printed."""
+    return {str(user["username"]): token_urlsafe(16) for user in USERS}
+
+
+@pytest.fixture(scope="session")
+def password_hasher() -> Argon2Hasher:
+    return Argon2Hasher(time_cost=1, memory_cost=8, parallelism=1)
+
+
+@pytest.fixture(scope="session")
+def password_hashes(
+    credentials: Mapping[str, str], password_hasher: Argon2Hasher
+) -> Mapping[str, str]:
+    return {username: password_hasher.hash(password) for username, password in credentials.items()}
+
+
 @pytest.fixture(autouse=True)
 def reset_database(request: pytest.FixtureRequest) -> None:
     """Every test outside unit/ starts from the seeded state (real commits are needed)."""
     if "unit" in request.node.path.parts:
         return
     factory: sessionmaker[Session] = request.getfixturevalue("session_factory")
+    hashes: Mapping[str, str] = request.getfixturevalue("password_hashes")
     with factory() as session:
-        reset_data(session)
+        reset_data(session, hashes)
         session.commit()
 
 
