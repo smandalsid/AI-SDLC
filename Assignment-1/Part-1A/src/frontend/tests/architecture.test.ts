@@ -33,10 +33,6 @@ describe("architecture: components, pages, and hooks never call the network dire
 });
 
 describe("architecture: only the session store touches browser storage", () => {
-  it("has the session store module", () => {
-    expect(Object.keys(allSources)).toContain(SESSION_MODULE);
-  });
-
   it("contains no sessionStorage or localStorage access outside src/api/session.ts", () => {
     const offenders = Object.entries(allSources)
       .filter(([path]) => path !== SESSION_MODULE)

@@ -29,5 +29,27 @@ class SeatAlreadyBookedError(AppError):
     default_message = "One or more requested seats are no longer available."
 
 
+class UnauthenticatedError(AppError):
+    """One message for every cause, so a caller cannot tell why a credential was refused."""
+
+    code = "unauthenticated"
+    default_message = "Authentication required."
+
+
+class InvalidCredentialsError(AppError):
+    code = "invalid_credentials"
+    default_message = "Invalid username or password."
+
+
+class TooManyAttemptsError(AppError):
+    code = "too_many_attempts"
+
+    def __init__(self, retry_after_seconds: int) -> None:
+        self.retry_after_seconds = retry_after_seconds
+        super().__init__(
+            f"Too many failed sign-in attempts. Try again in {retry_after_seconds} seconds."
+        )
+
+
 class DatabaseUnavailableError(Exception):
     """The database did not accept queries within the startup timeout."""

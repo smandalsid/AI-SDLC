@@ -317,7 +317,7 @@ components:
       properties:
         access_token:
           type: string
-          description: Signed session credential; send as "Authorization: Bearer <access_token>"
+          description: 'Signed session credential; send as "Authorization: Bearer <access_token>"'
         token_type:
           type: string
           const: bearer
