@@ -251,17 +251,21 @@ With multiple developers:
 - Stop at any checkpoint to validate story independently
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
 
-### Failure and repair log (constitution XII)
+### Failure and repair log (constitution XII, v1.4.0)
 
-Every genuine gate failure is logged in `evidence/harness-log.md`, in the "Failure and repair log"
-section, when it happens: at a phase checkpoint, in a recorded `.harness/run.sh` run, or in a
-convergence re-run. Failures are never created to fill the log, and a clean run is logged as
-"no repair needed". Each entry states:
+Every genuine, unexpected failure is logged in `evidence/harness-log.md`, in the "Failure and repair
+log" section, when it happens: in a task's test run, at a phase checkpoint, in a gate script run, in a
+recorded `.harness/run.sh` run, or in a convergence re-run. Tests written first that fail as intended
+are not repair events; their failure summary goes in the commit message. Failures are never created to
+fill the log, and a phase without an unexpected failure is logged as "no repair needed". Each entry
+states:
 
 - the gate or test that failed, with the results folder or the command and its output summary;
 - the expected and the observed behaviour;
 - the change made (commit hash and files) without touching the spec, tests, thresholds, or harness scripts;
 - the outcome of re-running the same checks unchanged (attempt number, at most 5 per gate).
 
-Add a checkpoint step to every phase: "log any failure seen in this phase's gate runs before the
-phase commit". Recorded runs appear only in the run table written by `.harness/run.sh`.
+Add a step to every task that changes code: "run its tests; log any unexpected failure before marking
+the task `[X]`". Add a checkpoint step to every phase: "confirm the log covers every failure seen in
+this phase before the phase commit". Recorded runs appear only in the run table written by
+`.harness/run.sh`.
