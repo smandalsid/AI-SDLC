@@ -62,7 +62,20 @@ No repair was needed. The first recorded run (`evidence/harness-results/20261103
 
 ## Quickstart validation
 
-_Filled by T131: observed result of each quickstart scenario._
+Run on 2026-11-03 against the stack started by `scripts/dev.sh` (existing `azure-sql-edge` container reused, `bus_db` freshly seeded: "seeded 3 buses, 3 users, 0 bookings"). Scenarios 1-5 used `curl` against http://localhost:8000; scenarios 6-7 drove http://localhost:5173 in Chrome Canary with a throwaway Playwright script (not part of the suite). Afterwards `scripts/dev.sh` was stopped with SIGINT; both processes ended and the database container kept running.
+
+| # | Scenario | Expected | Observed | Result |
+|---|----------|----------|----------|--------|
+| 1 | List buses | 3 buses, Bus A with 20 seats | 3 buses: Bus A 20, Bus B 30, Bus C 40 | PASS |
+| 2 | View seats of bus 1 | 20 seats, all available | 20 seats, statuses `{available}` | PASS |
+| 3 | Book seats 3 and 4 | 201, two bookings with one `booked_at` | 201; ids 1 and 2, both `booked_at` 2026-11-03T09:14:22.931500Z | PASS |
+| 4 | Reflected, then repeat | seats 3, 4 booked; repeat gives 409 `seat_unavailable` | booked seats `[3, 4]`; repeat gave 409 `seat_unavailable` | PASS |
+| 5 | Validation | empty, duplicate, 7 seats, seat 0: 422; seat 21: 400; bus 99, user 99: 404; body `{"error": {"code", "message"}}` | empty 422, duplicate 422, 7 seats 422, seat 0 422 (all `validation_error`); seat 21 400 `invalid_seat`; bus 99 404 `bus_not_found`; user 99 404 `user_not_found`; bookings unchanged (`[3, 4]`) | PASS |
+| 6 | UI booking of seats 5, 6 as Asha, then reload | success message listing 5 and 6; seats booked; still booked after reload | message "Booked seats 5, 6."; both seats booked and disabled; after reload still booked and disabled | PASS |
+| 7 | Conflict in UI (stale tab) | UI says seat no longer available and refreshes | seat 7 booked through the API (201) while a stale tab had it selected as Ravi; Confirm showed the alert "Seat no longer available. The seat list has been refreshed."; seat 7 then shown booked and disabled; API log shows 201 then 409 | PASS |
+| 8 | Reset with `scripts/db-init.sh` | seeded state | "seeded 3 buses, 3 users, 0 bookings"; no booked seats on bus 1; 3 buses | PASS |
+
+Scenario 7 booked seat 7 through a `fetch` call to the same endpoint instead of the `curl` command; the request is identical.
 
 ## Convergence results
 
