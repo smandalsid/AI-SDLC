@@ -1,0 +1,168 @@
+:root {
+  --color-bg: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-text: #1b1f27;
+  --color-muted: #5a6372;
+  --color-border: #c9ced8;
+  --color-primary: #1c5fd4;
+  --color-primary-text: #ffffff;
+  --color-available: #e8f4ea;
+  --color-booked: #e6e7ea;
+  --color-selected: #fff1c2;
+  --color-error: #a61b1b;
+  --space: 0.75rem;
+  --radius: 0.5rem;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.4;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.page {
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: var(--space);
+}
+
+.page h1 {
+  margin: 0 0 var(--space);
+  font-size: 1.5rem;
+}
+
+.button {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.button:disabled {
+  border-color: var(--color-border);
+  background: var(--color-booked);
+  color: var(--color-muted);
+  cursor: not-allowed;
+}
+
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space);
+  padding: var(--space);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.status__text {
+  flex: 1 1 12rem;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.status--error,
+.status--conflict {
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.bus-list {
+  display: grid;
+  gap: var(--space);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bus-list a {
+  display: block;
+  padding: var(--space);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: inherit;
+  text-decoration: none;
+}
+
+.seat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+  gap: 0.5rem;
+  margin: var(--space) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.seat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.25rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-available);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.seat--booked {
+  border-style: dashed;
+  background: var(--color-booked);
+  color: var(--color-muted);
+  cursor: not-allowed;
+}
+
+.seat--selected {
+  border-color: var(--color-primary);
+  background: var(--color-selected);
+  font-weight: 700;
+}
+
+.seat__state {
+  font-size: 0.75rem;
+}
+
+.booking-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space);
+  margin: var(--space) 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: var(--space) 0;
+}
+
+.field select {
+  min-height: 2.75rem;
+  max-width: 100%;
+  font: inherit;
+}
