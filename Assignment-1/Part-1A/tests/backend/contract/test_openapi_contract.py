@@ -3,7 +3,9 @@ from typing import Any
 
 import pytest
 import yaml
+from app.api.error_handlers import CODE_BY_HTTP_STATUS, STATUS_BY_CODE
 from app.main import create_app
+from fastapi.testclient import TestClient
 
 CONTRACT_PATH = (
     Path(__file__).resolve().parents[3]
@@ -123,3 +125,31 @@ def test_parameters_match_by_name_location_and_required(pair: tuple[Document, Do
     contract, app = pair
 
     assert parameter_set(APP, app) == parameter_set(CONTRACT, contract)
+
+
+def contract_error_codes() -> set[str]:
+    code = CONTRACT["components"]["schemas"]["ErrorResponse"]["properties"]["error"]["properties"][
+        "code"
+    ]
+    return set(code["enum"])
+
+
+def test_the_contract_lists_exactly_the_error_codes_the_app_defines() -> None:
+    defined = (
+        set(STATUS_BY_CODE)
+        | set(CODE_BY_HTTP_STATUS.values())
+        | {"validation_error", "service_unavailable", "internal_error"}
+    )
+
+    assert contract_error_codes() == defined
+
+
+def test_unknown_routes_and_wrong_methods_return_codes_from_the_contract() -> None:
+    client = TestClient(create_app(wait_for_db=lambda: None))
+
+    returned = {
+        client.get("/nowhere").json()["error"]["code"],
+        client.delete("/api/v1/buses").json()["error"]["code"],
+    }
+
+    assert returned <= contract_error_codes()
