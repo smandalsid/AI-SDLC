@@ -307,6 +307,7 @@ Test matrix (each requirement has at least one automated test; IDs are test-name
 | Edge case: refresh before confirm | RTL + e2e | unconfirmed selection is empty after reload; nothing stored |
 | NFR-009 | RTL | seats reachable by keyboard; each has an accessible name with number and status |
 | Architecture (I) | unit | AST scan: no upward imports; no `fetch` in components |
+| DB tooling (XI, V coverage) | unit + integration | name validation, test-database drop guard, `UtcDateTime` conversions, `unit_of_work` commit/rollback, seed CLI, admin create/recreate on a scratch `*_test` database |
 
 Harness (`.harness/run.sh`, built in the Foundational phase, constitution XII) runs these gates in order and
 continues after a failure so all evidence is collected. Each run writes `evidence/harness-results/<timestamp>/`
