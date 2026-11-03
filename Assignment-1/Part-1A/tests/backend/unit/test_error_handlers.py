@@ -1,11 +1,16 @@
+import json
 from collections.abc import Callable
 
 import pytest
-from app.api.error_handlers import register_error_handlers
+from app.api.error_handlers import register_error_handlers, response_for
 from app.core.errors import (
+    AppError,
     BusNotFoundError,
+    InvalidCredentialsError,
     InvalidSeatError,
     SeatAlreadyBookedError,
+    TooManyAttemptsError,
+    UnauthenticatedError,
     UserNotFoundError,
 )
 from fastapi import FastAPI
@@ -34,6 +39,9 @@ FACTORIES: dict[str, Callable[[], Exception]] = {
     "bus_not_found": BusNotFoundError,
     "user_not_found": UserNotFoundError,
     "seat_unavailable": SeatAlreadyBookedError,
+    "unauthenticated": UnauthenticatedError,
+    "invalid_credentials": InvalidCredentialsError,
+    "too_many_attempts": lambda: TooManyAttemptsError(retry_after_seconds=7),
     "db_down": lambda: OperationalError(
         "SELECT secret_column FROM hidden_table", {}, Exception("login failed on db-host.internal")
     ),
@@ -75,6 +83,9 @@ def assert_error_shape(body: object, code: str) -> None:
         ("bus_not_found", 404, "bus_not_found"),
         ("user_not_found", 404, "user_not_found"),
         ("seat_unavailable", 409, "seat_unavailable"),
+        ("unauthenticated", 401, "unauthenticated"),
+        ("invalid_credentials", 401, "invalid_credentials"),
+        ("too_many_attempts", 429, "too_many_attempts"),
         ("db_down", 503, "service_unavailable"),
         ("pool_timeout", 503, "service_unavailable"),
         ("unexpected", 500, "internal_error"),
@@ -117,3 +128,50 @@ def test_unknown_route_and_wrong_method_use_the_shared_shape() -> None:
     assert_error_shape(not_found.json(), "not_found")
     assert wrong_method.status_code == 405
     assert_error_shape(wrong_method.json(), "method_not_allowed")
+
+
+def test_unauthenticated_response_carries_the_bearer_challenge() -> None:
+    response = build_client().get("/raise/unauthenticated")
+
+    assert response.headers["www-authenticate"] == "Bearer"
+    assert response.json() == {
+        "error": {"code": "unauthenticated", "message": "Authentication required."}
+    }
+
+
+def test_invalid_credentials_body_is_the_generic_message() -> None:
+    response = build_client().get("/raise/invalid_credentials")
+
+    assert response.json() == {
+        "error": {"code": "invalid_credentials", "message": "Invalid username or password."}
+    }
+    assert "www-authenticate" not in response.headers
+
+
+def test_too_many_attempts_names_the_wait_in_the_message_and_the_retry_after_header() -> None:
+    response = build_client().get("/raise/too_many_attempts")
+
+    assert response.headers["retry-after"] == "7"
+    assert "7 seconds" in response.json()["error"]["message"]
+
+
+@pytest.mark.parametrize(
+    "kind", ["unauthenticated", "invalid_credentials", "too_many_attempts", "bus_not_found"]
+)
+def test_response_for_matches_the_registered_handler(kind: str) -> None:
+    via_handler = build_client().get(f"/raise/{kind}")
+    error = FACTORIES[kind]()
+    assert isinstance(error, AppError)
+    direct = response_for(error)
+
+    assert direct.status_code == via_handler.status_code
+    assert json.loads(bytes(direct.body)) == via_handler.json()
+    for header in ("www-authenticate", "retry-after"):
+        assert direct.headers.get(header) == via_handler.headers.get(header)
+
+
+def test_every_unauthenticated_cause_produces_the_identical_response() -> None:
+    first = response_for(UnauthenticatedError())
+    second = response_for(UnauthenticatedError())
+
+    assert (first.status_code, bytes(first.body)) == (second.status_code, bytes(second.body))
