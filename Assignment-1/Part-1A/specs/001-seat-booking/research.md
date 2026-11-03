@@ -80,8 +80,9 @@ All technical unknowns are resolved. Format: Decision, Rationale, Alternatives c
 - **Decision**: Vitest + React Testing Library with `vi.mock` on the API client modules (no extra mocking
   library). Playwright for reload persistence and responsive overflow only.
 - **Rationale**: jsdom has no layout engine, so overflow at 320/768/1280 px and real reload behaviour need a
-  browser. Verified: the Playwright Chromium download is blocked by the corporate proxy, so the installed
-  Microsoft Edge is used (`channel: "msedge"`); `gitleaks` installs through Homebrew.
+  browser. Verified: the Playwright Chromium download is blocked by the corporate proxy and Edge forbids remote
+  debugging by managed policy, so the manually installed Chrome Canary is used (`channel: "chrome-canary"`);
+  `gitleaks` installs through Homebrew.
 
 ## 11. Secret scan and function-length gates
 

@@ -19,8 +19,9 @@ pyenv local 3.12 && python3.12 -m venv .venv && source .venv/bin/activate
 npm --prefix src/frontend ci
 ```
 
-Playwright uses the installed Microsoft Edge (`channel: "msedge"`); the Chromium download is blocked by the
-corporate proxy. `gitleaks` is needed for the security gate (`brew install gitleaks`).
+Playwright uses the manually installed Google Chrome Canary (`channel: "chrome-canary"`): the Chromium download is
+blocked by the corporate proxy and Edge forbids remote debugging by managed policy. `gitleaks` is needed for the
+security gate (`brew install gitleaks`).
 
 ## Create the development database and mock data
 

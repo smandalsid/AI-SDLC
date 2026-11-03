@@ -324,8 +324,8 @@ end of `evidence/harness-log.md`:
    `thresholds.env`; any skipped or xfail test fails the gate.
 4. Build: `vite build` then `check_bundle_size.mjs`.
 5. E2E: the three Playwright specs against the test database, with Playwright `webServer` starting the backend
-   through `scripts/e2e-backend.sh` (Chromium download is blocked by the corporate proxy, so the
-   installed Microsoft Edge is used via `channel: "msedge"`).
+   through `scripts/e2e-backend.sh` (Chromium download is blocked by the corporate proxy and Edge forbids remote
+   debugging by managed policy, so the manually installed Chrome Canary is used via `channel: "chrome-canary"`).
 
 `summarize.py` extracts each failed test's expected-versus-observed message from the junit report so failure
 evidence can be fed to the coding agent. A unit test exercises `summarize.py` with fixture data.
@@ -385,7 +385,7 @@ Test database (`tests/backend/conftest.py`, session scope):
 | 8 | Reproducible test DB and deterministic ids | Seed truncates bookings and inserts buses/users with explicit ids 1-3 |
 | 9 | Naive datetimes in SQL Server | `DATETIME2` stored as UTC; API serialises ISO-8601 with `Z` |
 | 10 | Function length gate not available in Ruff | Small AST script `check_function_length.py` |
-| 11 | Responsive and reload checks cannot run in jsdom | Three Playwright specs (reload persistence, responsive overflow, usability timing); Chromium download is blocked by the corporate proxy (verified), so use the installed Microsoft Edge via `channel: "msedge"` |
+| 11 | Responsive and reload checks cannot run in jsdom | Three Playwright specs (reload persistence, responsive overflow, usability timing); Chromium download is blocked by the corporate proxy (verified) and Edge forbids remote debugging by managed policy `RemoteDebuggingAllowed=0` (verified), so use the manually installed Chrome Canary via `channel: "chrome-canary"` |
 | 12 | Layering rule needs enforcement | Architecture unit test (AST import scan) |
 | 13 | Frontend/back-end type drift | Frontend types hand-written to mirror `openapi.yaml`; a contract test compares the app's generated OpenAPI against the committed file |
 | 14 | CORS and dev proxy | Vite proxy for `/api`; backend CORS allow-list from `CORS_ORIGINS` (default `http://localhost:5173`) |
