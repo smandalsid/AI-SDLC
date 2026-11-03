@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// The corporate proxy blocks the Chromium download, so the installed Microsoft Edge is used.
+// Chromium download is blocked by the corporate proxy and Edge forbids remote debugging by policy,
+// so the manually installed Chrome Canary is used.
 export default defineConfig({
   testDir: "e2e",
   workers: 1,
@@ -8,7 +9,7 @@ export default defineConfig({
   reporter: [["list"]],
   globalSetup: "./e2e/global-setup.ts",
   use: { baseURL: "http://127.0.0.1:5173" },
-  projects: [{ name: "edge", use: { ...devices["Desktop Edge"], channel: "msedge" } }],
+  projects: [{ name: "canary", use: { ...devices["Desktop Chrome"], channel: "chrome-canary" } }],
   webServer: [
     {
       command: "../../scripts/e2e-backend.sh",
