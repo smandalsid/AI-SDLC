@@ -58,7 +58,7 @@ a884595 chore: deterministic harness (gates, thresholds, integrity checksums)
 
 ## Failure and repair log
 
-_Filled by T130: per attempt, the failure evidence supplied, what changed, and whether the same checks passed on re-execution._
+No repair was needed. The first recorded run (`evidence/harness-results/20261103T091218Z`, row dated 2026-11-03T09:13:31Z in the run table) passed every gate on the first attempt: integrity, lint, security, test, build, and e2e all PASS with 0 failed tests. No application code, test, threshold, or harness script was changed in response to the run, and no failure was created artificially.
 
 ## Quickstart validation
 
@@ -175,3 +175,4 @@ Rows are appended by `.harness/run.sh`; do not edit by hand.
 
 | Timestamp | Integrity | Lint | Security | Tests | Build | E2E | Result | Evidence |
 |-----------|-----------|------|----------|-------|-------|-----|--------|----------|
+| 2026-11-03T09:13:31Z | PASS | PASS | PASS | PASS | PASS | PASS | PASS | evidence/harness-results/20261103T091218Z |
