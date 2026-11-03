@@ -79,7 +79,19 @@ Scenario 7 booked seat 7 through a `fetch` call to the same endpoint instead of 
 
 ## Convergence results
 
-_Filled by T132: result of `/speckit-converge` and any tasks it appended._
+`/speckit-converge` was run on 2026-11-03 after the first recorded harness run (`evidence/harness-results/20261103T091218Z`, all gates PASS). No extension hooks are registered (`.specify/extensions.yml` does not exist). The command only appended `## Phase 9: Convergence` (T136-T141) to `tasks.md`; no spec, plan, or application file was changed by it.
+
+**Checked**: 24 functional requirements, 11 non-functional requirements, 7 success criteria, 17 acceptance scenarios and 7 edge cases (traced to named tests in the Acceptance traceability section below); the plan's key decisions and every planned file; all 13 constitution principles.
+
+| ID | Gap type | Severity | Source | Evidence | Remaining work (task) |
+|----|----------|----------|--------|----------|-----------------------|
+| F1 | contradicts | CRITICAL | Constitution III | `Any` without a justification comment in `src/backend/app/db/seed.py` (lines 3, 10, 15) and `src/backend/app/api/schemas/common.py` (lines 2, 46); no gate checks this (ruff rules exclude `ANN401`, `mypy --strict` allows explicit `Any`) | T136 (test), T137 (fix) |
+| F2 | contradicts | CRITICAL | Constitution III | `Any` without justification in six backend test files, and `# type: ignore[no-untyped-call]` without justification in `tests/backend/unit/test_db_tooling.py` (line 53) | T138 |
+| F3 | partial | MEDIUM | Constitution V | T117, T119, T120, T121, and T135 were written after the code they cover (the code was built in earlier phases); each test was shown able to fail by mutation, as recorded in the commit messages, but was not observed failing before the code existed | T139 |
+| F4 | partial | LOW | FR-017, `contracts/openapi.yaml` | Unknown routes and wrong methods return the shared error shape with codes `not_found` and `method_not_allowed`, which are not in the contract's code enum; the contract test compares property names, not enum values | T140 (needs user approval) |
+| F5 | unrequested | LOW | plan.md, tasks.md | Files and options not named in the plan: `tests/backend/unit/{harness_loader,layer_scan}.py`, `.harness/check_coverage.py`, `scripts/e2e-reset.sh`, `scripts/e2e-backend.sh`, `src/frontend/e2e/{support,global-setup}.ts`, `@types/node`, `scripts/dev.sh --db-only`, `contract/test_input_safety.py`, `unit/test_bundle_size_check.py`, `unit/test_dev_script.py`, the `HealthOut` schema | no new task: T133 already requires a note on every unplanned helper file |
+
+**Findings by gap type**: contradicts 2, partial 2, unrequested 1, missing 0. **By severity**: CRITICAL 2, MEDIUM 1, LOW 2. Tasks appended: 6 (T136-T141; T141 re-runs the harness unchanged after the fixes). Next: complete T136-T141, then T133.
 
 ## Acceptance traceability
 
