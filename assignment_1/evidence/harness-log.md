@@ -93,6 +93,8 @@ Scenario 7 booked seat 7 through a `fetch` call to the same endpoint instead of 
 
 **Findings by gap type**: contradicts 2, partial 2, unrequested 1, missing 0. **By severity**: CRITICAL 2, MEDIUM 1, LOW 2. Tasks appended: 6 (T136-T141; T141 re-runs the harness unchanged after the fixes). Next: complete T136-T141, then T133.
 
+**Decision on F4 (T140), 2026-11-03**: the user chose to amend the contract. `contracts/openapi.yaml` now lists `not_found` and `method_not_allowed` in the `ErrorResponse` code enum, and the error table in `plan.md` has two matching rows. The contract test was extended first (two new tests, both failed before the amendment: the enum lacked the two codes) and now compares the enum with the codes the app defines. This changes two approved artifacts after the approval date in the Approval table.
+
 ## Acceptance traceability
 
 Filled by T126 against `specs/001-seat-booking/spec.md`. Backend tests are `tests/backend/<folder>/<file>::<test>`; frontend unit tests are `src/frontend/tests/<file>`; end-to-end specs are `src/frontend/e2e/<file>`. "BE" means `tests/backend`.

@@ -197,6 +197,8 @@ components:
                 - seat_unavailable
                 - service_unavailable
                 - internal_error
+                - not_found
+                - method_not_allowed
             message:
               type: string
     Bus:

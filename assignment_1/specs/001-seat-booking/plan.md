@@ -274,6 +274,8 @@ request" (400/422/404), "service unavailable" (503/network).
 | Unknown user | `UserNotFoundError` | 404 | `user_not_found` |
 | Unique-index violation on insert | `SeatAlreadyBookedError` | 409 | `seat_unavailable` |
 | DB unreachable / timeout | SQLAlchemy `OperationalError` | 503 | `service_unavailable` |
+| Unknown route | Starlette `HTTPException` | 404 | `not_found` |
+| Known route, wrong method | Starlette `HTTPException` | 405 | `method_not_allowed` |
 | Anything else | unhandled | 500 | `internal_error` (generic text; traceback logged server-side only) |
 
 All responses use `{"error": {"code": "...", "message": "..."}}`. Logging uses the stdlib `logging` module
