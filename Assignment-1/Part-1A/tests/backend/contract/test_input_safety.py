@@ -1,5 +1,4 @@
 import json
-from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
@@ -31,7 +30,7 @@ def test_injection_text_in_an_identifier_is_rejected_and_changes_nothing(
     client: TestClient, engine: Engine, field: str, payload: str
 ) -> None:
     before = table_state(engine)
-    body: dict[str, Any] = {"bus_id": 1, "user_id": 1, "seat_numbers": [3]}
+    body: dict[str, object] = {"bus_id": 1, "user_id": 1, "seat_numbers": [3]}
     body[field] = payload
 
     response = client.post("/api/v1/bookings", json=body)

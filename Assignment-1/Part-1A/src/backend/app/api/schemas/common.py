@@ -43,6 +43,7 @@ def page_params(
 PageParamsDep = Annotated[PageParams, Depends(page_params)]
 
 
+# FastAPI types the entries of its `responses` argument as dict[str, Any].
 def error_responses(*statuses: int) -> dict[int | str, dict[str, Any]]:
     """OpenAPI documentation of the shared error body for the given status codes."""
     return {status: {"model": ErrorResponse} for status in statuses}
