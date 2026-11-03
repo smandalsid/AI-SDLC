@@ -40,7 +40,10 @@ Single command (starts or reuses the DB container, initialises `bus_db`, starts 
 scripts/dev.sh
 ```
 
-Or manually:
+`scripts/dev.sh --check` prints the database branch it would take without acting; `scripts/dev.sh --db-only`
+makes the database available and exits.
+
+Or manually (with the virtual environment active):
 
 ```bash
 # terminal 1 (backend, port 8000)
@@ -68,8 +71,9 @@ npm --prefix src/frontend run dev
 ## Test database and automated checks
 
 ```bash
+source .venv/bin/activate          # the uv environment from the one-time setup
 scripts/db-test-init.sh            # optional; pytest also does this automatically
-(cd src/backend && pytest)         # unit, contract, integration (creates bus_db_test)
+(cd src/backend && pytest)         # uses src/backend/pyproject.toml: unit, contract, integration (creates bus_db_test)
 (cd src/backend && pytest -m perf) # latency checks with 1,000 bookings
 npm --prefix src/frontend test     # Vitest + RTL
 npm --prefix src/frontend run e2e  # Playwright (starts backend on bus_db_test via scripts/e2e-backend.sh)
