@@ -60,6 +60,8 @@ a884595 chore: deterministic harness (gates, thresholds, integrity checksums)
 
 No repair was needed. The first recorded run (`evidence/harness-results/20261103T091218Z`, row dated 2026-11-03T09:13:31Z in the run table) passed every gate on the first attempt: integrity, lint, security, test, build, and e2e all PASS with 0 failed tests. No application code, test, threshold, or harness script was changed in response to the run, and no failure was created artificially.
 
+**Re-run after the convergence fixes (T141)**: `/speckit-converge` (T132) found gaps that no gate detects, so the first run was not repaired. After tasks T136-T138 (justify or remove `Any` and `# type: ignore`, with a new codebase scan) and T140 (contract enum amended with user approval) were committed, `.harness/run.sh` was run again with unchanged gate scripts, thresholds, and checksums. Result: `evidence/harness-results/20261103T092135Z`, row dated 2026-11-03T09:22:42Z, all six gates PASS, 0 failed tests; backend 281 tests (line 98.3%, branch 88.9%), frontend 74 tests (line 91.5%), 14 e2e specs. Evidence supplied to the agent for these changes was the converge findings table in the Convergence results section, not a failed gate.
+
 ## Quickstart validation
 
 Run on 2026-11-03 against the stack started by `scripts/dev.sh` (existing `azure-sql-edge` container reused, `bus_db` freshly seeded: "seeded 3 buses, 3 users, 0 bookings"). Scenarios 1-5 used `curl` against http://localhost:8000; scenarios 6-7 drove http://localhost:5173 in Chrome Canary with a throwaway Playwright script (not part of the suite). Afterwards `scripts/dev.sh` was stopped with SIGINT; both processes ended and the database container kept running.
@@ -203,3 +205,4 @@ Rows are appended by `.harness/run.sh`; do not edit by hand.
 | Timestamp | Integrity | Lint | Security | Tests | Build | E2E | Result | Evidence |
 |-----------|-----------|------|----------|-------|-------|-----|--------|----------|
 | 2026-11-03T09:13:31Z | PASS | PASS | PASS | PASS | PASS | PASS | PASS | evidence/harness-results/20261103T091218Z |
+| 2026-11-03T09:22:42Z | PASS | PASS | PASS | PASS | PASS | PASS | PASS | evidence/harness-results/20261103T092135Z |

@@ -1,0 +1,17 @@
+== vite build
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 45 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                             0.40 kB │ gzip:  0.26 kB
+dist/assets/index-BJtFk-0m.css              2.46 kB │ gzip:  0.85 kB
+dist/assets/BusListPage-HWYKt8bi.js         0.83 kB │ gzip:  0.45 kB
+dist/assets/useAsyncResource-B51a-VrR.js    2.00 kB │ gzip:  1.01 kB
+dist/assets/BusSeatsPage-CTITuO4k.js        4.93 kB │ gzip:  1.88 kB
+dist/assets/index-By1HS18K.js             260.84 kB │ gzip: 83.12 kB
+
+✓ built in 87ms
+== bundle size
+/assets/index-By1HS18K.js: 80.3 KB gzipped
+initial JS total: 80.3 KB gzipped (limit 200 KB)
