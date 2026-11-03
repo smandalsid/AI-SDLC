@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from .layer_scan import find_violations
+from .layer_scan import find_mutable_state, find_violations
 
 APP_DIR = Path(__file__).resolve().parents[3] / "src" / "backend" / "app"
 
@@ -68,3 +68,55 @@ def test_foundation_layers_are_populated() -> None:
         modules = [path for path in (APP_DIR / layer).rglob("*.py") if path.name != "__init__.py"]
         assert modules, f"layer {layer} has no modules"
     assert (APP_DIR / "main.py").exists()
+
+
+def test_scanner_flags_middleware_importing_the_data_layers(tmp_path: Path) -> None:
+    write(tmp_path, "api/middleware/a.py", "from app.repositories.user_repository import X\n")
+    write(tmp_path, "api/middleware/b.py", "from app.services.auth_service import X\n")
+    write(tmp_path, "api/middleware/c.py", "from app.db.session import X\n")
+
+    assert len(find_violations(tmp_path)) == 3
+
+
+def test_scanner_allows_middleware_to_use_core_and_the_error_handlers(tmp_path: Path) -> None:
+    write(tmp_path, "api/middleware/a.py", "from app.core.errors import UnauthenticatedError\n")
+    write(tmp_path, "api/middleware/b.py", "from app.api.error_handlers import response_for\n")
+
+    assert find_violations(tmp_path) == []
+
+
+def test_scanner_flags_module_level_mutable_state(tmp_path: Path) -> None:
+    write(tmp_path, "services/a.py", "sessions = {}\n")
+    write(tmp_path, "services/b.py", "counters: list[int] = []\n")
+    write(
+        tmp_path, "services/c.py", "from collections import defaultdict\nseen = defaultdict(list)\n"
+    )
+    write(tmp_path, "services/d.py", "cache = set()\n")
+
+    assert len(find_mutable_state(tmp_path)) == 4
+
+
+def test_scanner_allows_constants_and_non_container_values(tmp_path: Path) -> None:
+    write(
+        tmp_path,
+        "core/a.py",
+        'STATUS_BY_CODE = {"a": 1}\nBUSES: list[int] = [1]\n__all__ = ["x"]\n'
+        "import logging\nlogger = logging.getLogger(__name__)\nlimit = 5\n",
+    )
+
+    assert find_mutable_state(tmp_path) == []
+
+
+def test_application_holds_no_module_level_session_or_counter_state() -> None:
+    assert find_mutable_state(APP_DIR) == []
+
+
+def test_credential_modules_exist_and_import_no_other_application_layer() -> None:
+    for name in ("passwords.py", "tokens.py"):
+        assert (APP_DIR / "core" / name).exists(), f"core/{name} is missing"
+    assert find_violations(APP_DIR) == []
+
+
+def test_gate_middleware_module_exists_without_data_layer_imports() -> None:
+    assert (APP_DIR / "api" / "middleware" / "auth_gate.py").exists()
+    assert find_violations(APP_DIR) == []

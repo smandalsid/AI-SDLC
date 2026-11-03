@@ -1,3 +1,5 @@
+from collections.abc import Mapping
+
 import pytest
 from app.db.seed import reset_data
 from sqlalchemy import Engine, inspect, text
@@ -35,7 +37,14 @@ def booking_count(session: Session) -> int:
 def test_schema_has_exactly_the_application_tables(engine: Engine) -> None:
     tables = set(inspect(engine).get_table_names())
 
-    assert tables == {"buses", "users", "bookings", "alembic_version"}
+    assert tables == {
+        "buses",
+        "users",
+        "bookings",
+        "sessions",
+        "sign_in_attempts",
+        "alembic_version",
+    }
 
 
 def test_seed_yields_the_documented_mock_data(session_factory: sessionmaker[Session]) -> None:
@@ -80,9 +89,9 @@ def test_seat_number_below_1_is_rejected(session_factory: sessionmaker[Session])
     "statement",
     [
         "INSERT INTO buses (name, total_seats) VALUES ('Bus A', 10)",
-        "INSERT INTO users (name) VALUES ('Asha')",
+        "INSERT INTO users (name, username, password_hash) VALUES ('Asha', 'dup-user', 'x')",
         "INSERT INTO buses (name, total_seats) VALUES ('   ', 10)",
-        "INSERT INTO users (name) VALUES ('   ')",
+        "INSERT INTO users (name, username, password_hash) VALUES ('   ', 'blank-user', 'x')",
     ],
 )
 def test_duplicate_and_blank_names_are_rejected(
@@ -92,15 +101,17 @@ def test_duplicate_and_blank_names_are_rejected(
         session.execute(text(statement))
 
 
-def test_seed_is_idempotent_and_resets_bookings(session_factory: sessionmaker[Session]) -> None:
+def test_seed_is_idempotent_and_resets_bookings(
+    session_factory: sessionmaker[Session], password_hashes: Mapping[str, str]
+) -> None:
     with session_factory() as session:
         insert_booking(session, bus_id=1, user_id=1, seat=3)
         insert_booking(session, bus_id=1, user_id=2, seat=4)
         session.commit()
 
-        reset_data(session)
+        reset_data(session, password_hashes)
         session.commit()
-        reset_data(session)
+        reset_data(session, password_hashes)
         session.commit()
 
         assert snapshot(session) == (SEEDED_BUSES, SEEDED_USERS)

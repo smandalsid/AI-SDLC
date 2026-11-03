@@ -11,6 +11,11 @@ FORBIDDEN_IMPORTS: dict[str, set[str]] = {
     "core": {"models", "repositories", "services", "api", "db"},
 }
 SETTINGS_MODULE = "core/config.py"
+# The gate middleware only checks a signature; it must never reach the data layers.
+FORBIDDEN_BY_SUBPACKAGE: dict[tuple[str, str], set[str]] = {
+    ("api", "middleware"): {"repositories", "services", "db"},
+}
+MUTABLE_CONSTRUCTORS = {"dict", "list", "set", "defaultdict", "deque", "OrderedDict"}
 
 
 def imported_modules(tree: ast.AST, package: str, location: list[str]) -> Iterator[list[str]]:
@@ -48,10 +53,13 @@ def find_violations(root: Path, package: str = "app") -> list[str]:
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
         layer = relative.parts[0] if len(relative.parts) > 1 else ""
         location = [package, *relative.parts[:-1]]
+        forbidden = FORBIDDEN_IMPORTS.get(layer, set()) | FORBIDDEN_BY_SUBPACKAGE.get(
+            (relative.parts[0], relative.parts[1]) if len(relative.parts) > 2 else ("", ""), set()
+        )
 
         for module in imported_modules(tree, package, location):
             target = module[1] if len(module) > 1 and module[0] == package else ""
-            if target in FORBIDDEN_IMPORTS.get(layer, set()):
+            if target in forbidden:
                 violations.append(
                     f"{relative.as_posix()}: layer '{layer}' must not import '{target}' "
                     f"({'.'.join(module)})"
@@ -60,4 +68,39 @@ def find_violations(root: Path, package: str = "app") -> list[str]:
             violations.append(
                 f"{relative.as_posix()}: environment variables are read outside {SETTINGS_MODULE}"
             )
+    return violations
+
+
+def _is_mutable_value(value: ast.expr | None) -> bool:
+    if isinstance(value, ast.Dict | ast.List | ast.Set | ast.DictComp | ast.ListComp | ast.SetComp):
+        return True
+    if isinstance(value, ast.Call):
+        func = value.func
+        name = func.id if isinstance(func, ast.Name) else getattr(func, "attr", "")
+        return name in MUTABLE_CONSTRUCTORS
+    return False
+
+
+def _assigned_names(node: ast.stmt) -> list[str]:
+    if isinstance(node, ast.Assign):
+        return [target.id for target in node.targets if isinstance(target, ast.Name)]
+    if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+        return [node.target.id]
+    return []
+
+
+def find_mutable_state(root: Path) -> list[str]:
+    """Module-level mutable containers with a non-constant name hold hidden state (NFR-009)."""
+    violations: list[str] = []
+    for path in sorted(root.rglob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in tree.body:
+            value = node.value if isinstance(node, ast.Assign | ast.AnnAssign) else None
+            if not _is_mutable_value(value):
+                continue
+            for name in _assigned_names(node):
+                if not name.isupper() and not (name.startswith("__") and name.endswith("__")):
+                    violations.append(
+                        f"{path.relative_to(root).as_posix()}: module-level mutable state '{name}'"
+                    )
     return violations
