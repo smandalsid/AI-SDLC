@@ -1,4 +1,4 @@
-// Mirrors specs/001-seat-booking/contracts/openapi.yaml.
+// Mirrors specs/002-user-authentication/contracts/openapi.yaml.
 
 export type SeatStatus = "available" | "booked";
 
@@ -20,6 +20,23 @@ export interface BusDetail extends Bus {
 export interface User {
   id: number;
   name: string;
+}
+
+export interface AuthUser {
+  id: number;
+  name: string;
+}
+
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  access_token: string;
+  token_type: "bearer";
+  expires_at: string;
+  user: AuthUser;
 }
 
 export interface Page<T> {

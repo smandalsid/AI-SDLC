@@ -1,5 +1,3 @@
-from typing import Any
-
 import pytest
 from app.api.schemas.auth import LoginRequest
 from pydantic import ValidationError
@@ -49,7 +47,7 @@ def test_the_password_is_kept_exactly_as_typed(password: str) -> None:
     ],
 )
 def test_invalid_payloads_are_rejected_naming_the_field(
-    payload: dict[str, Any], field: str
+    payload: dict[str, object], field: str
 ) -> None:
     with pytest.raises(ValidationError) as caught:
         LoginRequest.model_validate(payload)

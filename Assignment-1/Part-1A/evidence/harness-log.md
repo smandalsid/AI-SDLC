@@ -41,6 +41,17 @@ Red-first failures (the foundation tests before T018-T029) are not repair events
 
 Phase checkpoint T030: integrity, lint, security, test (376 backend, 76 frontend, coverage 98.3% line and 90.4% branch backend, 99.3% frontend), and build pass.
 
+### Phase 3 US1 sign in (T031-T052)
+
+Red-first failures (the sign-in tests before T040-T051) are not repair events; their summary is in the commit message `test(us1): sign-in tests (red)`. The entries below are unexpected failures seen while making them pass. Fix commit for all of them: `feat(us1): sign in with username and password`.
+
+| # | Failing check and evidence | Expected vs observed | Change made | Re-run (unchanged checks) |
+|---|----------------------------|----------------------|-------------|---------------------------|
+| 1 | `tests/backend/unit/test_type_hygiene.py::test_every_any_and_type_ignore_in_the_codebase_is_justified` (seen in the red run and again after T044) | Expected pass; observed `tests/backend/unit/test_login_schema.py:52` (and, before the red commit, `test_auth_login.py`) used an unjustified `Any` in a parametrised payload type. | Payload types changed to `dict[str, object]`; no `Any` and no rule change. Files: `tests/backend/unit/test_login_schema.py`, `tests/backend/contract/test_auth_login.py`. | 432 backend tests passed |
+| 2 | Lint gate (`.harness/lint.sh`): ruff `S106` (`token_type="bearer"` passed as a keyword literal in `api/v1/auth.py`) and eslint `max-lines-per-function` (`LoginForm`, 72 lines, limit 40) | Expected 0 violations; observed 1 ruff and 1 eslint finding. | The literal moved to a typed constant `BEARER` in `api/schemas/auth.py`; the form split into `components/TextField.tsx`, `hooks/useLoginForm.ts`, and a short `LoginForm`. No configuration changed. | lint exit 0 |
+
+Phase checkpoint T052: integrity, lint, security, test (432 backend, 113 frontend, coverage 98.5% line and 91.4% branch backend, 97.8% frontend), and build pass.
+
 ## Quickstart validation
 
 Filled by T131.

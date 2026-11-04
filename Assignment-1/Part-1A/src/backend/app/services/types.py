@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal
 
+from app.core.errors import AppError
+
 SeatStatus = Literal["available", "booked"]
 
 
@@ -47,3 +49,18 @@ class BusDetailView:
     name: str
     total_seats: int
     seats: list[SeatView]
+
+
+@dataclass(frozen=True)
+class LoginSuccess:
+    access_token: str
+    expires_at: datetime
+    user_id: int
+    name: str
+
+
+@dataclass(frozen=True)
+class LoginRejected:
+    """A refused sign-in is a value, not an exception, so the attempt row still commits."""
+
+    error: AppError
