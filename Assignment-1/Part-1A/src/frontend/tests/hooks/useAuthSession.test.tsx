@@ -30,7 +30,7 @@ describe("useAuthSession", () => {
   it("starts signed out", () => {
     const { result } = renderHook(() => useAuthSession());
 
-    expect(result.current.state).toEqual({ status: "signedOut" });
+    expect(result.current.state).toEqual({ status: "signedOut", reason: "none" });
   });
 
   it("stores the token and takes the user from the server after a successful sign-in", async () => {
@@ -54,7 +54,7 @@ describe("useAuthSession", () => {
       await expect(result.current.signIn("asha", "wrong")).rejects.toBeInstanceOf(ApiError);
     });
 
-    expect(result.current.state).toEqual({ status: "signedOut" });
+    expect(result.current.state).toEqual({ status: "signedOut", reason: "none" });
     expect(getToken()).toBeNull();
   });
 
@@ -70,7 +70,7 @@ describe("useAuthSession", () => {
       await result.current.signOut();
     });
 
-    expect(result.current.state).toEqual({ status: "signedOut" });
+    expect(result.current.state).toEqual({ status: "signedOut", reason: "signedOut" });
     expect(getToken()).toBeNull();
   });
 });
@@ -100,7 +100,7 @@ describe("useAuthSession sign-out", () => {
     expect(logoutMock).toHaveBeenCalledTimes(1);
     expect(tokenDuringCall).toBe("token-value");
     expect(getToken()).toBeNull();
-    expect(result.current.state).toEqual({ status: "signedOut" });
+    expect(result.current.state).toEqual({ status: "signedOut", reason: "signedOut" });
   });
 
   it.each([
@@ -116,7 +116,58 @@ describe("useAuthSession sign-out", () => {
     });
 
     expect(getToken()).toBeNull();
-    expect(result.current.state).toEqual({ status: "signedOut" });
+    expect(result.current.state).toEqual({ status: "signedOut", reason: "signedOut" });
+  });
+});
+
+describe("useAuthSession expiry", () => {
+  const EXPIRED = { status: "signedOut", reason: "expired" };
+
+  async function signedIn() {
+    loginMock.mockResolvedValue(SUCCESS);
+    const hook = renderHook(() => useAuthSession());
+    await act(async () => {
+      await hook.result.current.signIn("asha", "secret");
+    });
+    return hook;
+  }
+
+  it("becomes signed out with the reason expired when a protected call ends the session", async () => {
+    const { result } = await signedIn();
+
+    act(() => expire());
+
+    expect(result.current.state).toEqual(EXPIRED);
+    expect(getToken()).toBeNull();
+  });
+
+  it("is not reported as expired after a deliberate sign-out, even if a late 401 arrives", async () => {
+    logoutMock.mockResolvedValue(undefined);
+    const { result } = await signedIn();
+    await act(async () => {
+      await result.current.signOut();
+    });
+
+    act(() => expire());
+
+    expect(result.current.state).toEqual({ status: "signedOut", reason: "signedOut" });
+  });
+
+  it("clears the reason when a sign-in is attempted, whether it succeeds or not", async () => {
+    const { result } = await signedIn();
+    act(() => expire());
+    loginMock.mockRejectedValue(new ApiError("credentials", 401, "invalid_credentials", "x"));
+
+    await act(async () => {
+      await expect(result.current.signIn("asha", "wrong")).rejects.toBeInstanceOf(ApiError);
+    });
+    expect(result.current.state).toEqual({ status: "signedOut", reason: "none" });
+
+    loginMock.mockResolvedValue(SUCCESS);
+    await act(async () => {
+      await result.current.signIn("asha", "secret");
+    });
+    expect(result.current.state).toEqual({ status: "signedIn", user: { id: 1, name: "Asha" } });
   });
 });
 
@@ -139,7 +190,7 @@ describe("useAuthSession with a stored token", () => {
 
     const { result } = renderHook(() => useAuthSession());
 
-    await vi.waitFor(() => expect(result.current.state).toEqual({ status: "signedOut" }));
+    await vi.waitFor(() => expect(result.current.state).toEqual({ status: "signedOut", reason: "expired" }));
     expect(getToken()).toBeNull();
   });
 
@@ -162,7 +213,7 @@ describe("useAuthSession with a stored token", () => {
 
     act(() => expire());
 
-    expect(result.current.state).toEqual({ status: "signedOut" });
+    expect(result.current.state).toEqual({ status: "signedOut", reason: "expired" });
     expect(getToken()).toBeNull();
   });
 });

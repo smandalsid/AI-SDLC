@@ -11,8 +11,13 @@ function Where() {
   return <p data-testid="where">{`${location.pathname}${location.search}`}</p>;
 }
 
-function renderPage(signIn: (username: string, password: string) => Promise<void>) {
-  const value = { state: { status: "signedOut" as const }, signIn, signOut: vi.fn() };
+const EXPIRY_MESSAGE = "Your session has expired. Please sign in again.";
+
+function renderPage(
+  signIn: (username: string, password: string) => Promise<void>,
+  reason: "none" | "signedOut" | "expired" = "none",
+) {
+  const value = { state: { status: "signedOut" as const, reason }, signIn, signOut: vi.fn() };
   render(
     <AuthContext.Provider value={value}>
       <MemoryRouter initialEntries={["/login"]}>
@@ -75,5 +80,20 @@ describe("LoginPage", () => {
 
     expect(signIn).toHaveBeenCalledTimes(1);
     expect(screen.getByTestId("where")).toHaveTextContent(/^\/login$/);
+  });
+});
+
+describe("LoginPage expiry message", () => {
+  it("shows the expiry message as an alert after a session expired", () => {
+    renderPage(vi.fn(), "expired");
+
+    expect(screen.getByRole("alert")).toHaveTextContent(EXPIRY_MESSAGE);
+  });
+
+  it.each(["none", "signedOut"] as const)("shows no message for the reason %s", (reason) => {
+    renderPage(vi.fn(), reason);
+
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.queryByText(EXPIRY_MESSAGE)).not.toBeInTheDocument();
   });
 });

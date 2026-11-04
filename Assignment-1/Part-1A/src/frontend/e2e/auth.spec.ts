@@ -122,3 +122,34 @@ test("a sign-out in one tab leaves the session of a second tab alone", async ({ 
   await second.reload();
   await expect(second.getByRole("heading", { name: "Buses" })).toBeVisible();
 });
+
+test("an expired session returns to the sign-in screen with the expiry message and no bus data", async ({
+  page,
+}) => {
+  await signIn(page, "asha");
+  // A 30-minute wait is not practical, so the server's answer for an expired session is simulated.
+  await page.route("**/api/v1/buses**", (route) =>
+    route.fulfill({
+      status: 401,
+      contentType: "application/json",
+      body: JSON.stringify({
+        error: { code: "unauthenticated", message: "Authentication required." },
+      }),
+    }),
+  );
+
+  await page.reload();
+
+  await expectOnlySignIn(page);
+  await expect(page.getByRole("alert")).toHaveText(
+    "Your session has expired. Please sign in again.",
+  );
+  expect(await page.evaluate((key) => sessionStorage.getItem(key), TOKEN_KEY)).toBeNull();
+});
+
+test("a plain first visit to the sign-in screen shows no expiry message", async ({ page }) => {
+  await page.goto("/login");
+
+  await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
+  await expect(page.getByRole("alert")).toHaveCount(0);
+});
