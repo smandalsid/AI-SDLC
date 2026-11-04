@@ -1,0 +1,152 @@
+results folder: /Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_1/evidence/harness-results/20261104T160010Z
+== pytest
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0
+rootdir: /Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_1/src/backend
+configfile: pyproject.toml
+testpaths: ../../tests/backend
+plugins: platformdirs-4.14.3, cov-7.1.0, anyio-4.16.0
+collected 702 items
+
+contract/test_auth_bypass.py ........................................... [  6%]
+..............................................................           [ 14%]
+contract/test_auth_login.py ..............                               [ 16%]
+contract/test_auth_login_throttle.py .......                             [ 17%]
+contract/test_auth_logout.py ...........                                 [ 19%]
+contract/test_auth_me.py ....                                            [ 20%]
+contract/test_bookings_create.py .................................       [ 24%]
+contract/test_buses.py .................                                 [ 27%]
+contract/test_conflict_response.py .                                     [ 27%]
+contract/test_health.py ...                                              [ 27%]
+contract/test_input_safety.py .............                              [ 29%]
+contract/test_no_auth_switch.py ............................             [ 33%]
+contract/test_no_secret_leak.py ...                                      [ 34%]
+contract/test_no_store.py ...........                                    [ 35%]
+contract/test_openapi_contract.py ....................................   [ 40%]
+contract/test_route_protection.py ...........                            [ 42%]
+contract/test_session_expiry.py .........                                [ 43%]
+contract/test_users_removed.py .......                                   [ 44%]
+integration/test_auth_performance.py ...                                 [ 45%]
+integration/test_auth_schema_and_seed.py ......................          [ 48%]
+integration/test_booking_conflicts.py ...........                        [ 49%]
+integration/test_db_tooling.py ............                              [ 51%]
+integration/test_login_timing.py .                                       [ 51%]
+integration/test_migration_0002.py ..                                    [ 51%]
+integration/test_performance.py ..                                       [ 52%]
+integration/test_schema_and_seed.py ............                         [ 53%]
+integration/test_sign_in_audit.py ....                                   [ 54%]
+integration/test_sign_in_throttle.py ..........                          [ 55%]
+integration/test_sign_out_immediacy.py ....                              [ 56%]
+integration/test_stateless_instances.py ...                              [ 56%]
+unit/test_architecture.py ....................                           [ 59%]
+unit/test_auth_gate.py ...............                                   [ 61%]
+unit/test_auth_service_authenticate.py ..........                        [ 63%]
+unit/test_auth_service_login.py .................                        [ 65%]
+unit/test_auth_service_throttle.py ................                      [ 67%]
+unit/test_booking_schema.py ...........................                  [ 71%]
+unit/test_booking_service.py ......                                      [ 72%]
+unit/test_bundle_size_check.py .........                                 [ 73%]
+unit/test_bus_service.py ....                                            [ 74%]
+unit/test_check_function_length.py ....                                  [ 75%]
+unit/test_db_tooling.py ...........................                      [ 78%]
+unit/test_dev_script.py .................                                [ 81%]
+unit/test_documentation.py ...                                           [ 81%]
+unit/test_error_handlers.py ......................                       [ 84%]
+unit/test_harness_redact.py ........                                     [ 86%]
+unit/test_harness_summarize.py .....                                     [ 86%]
+unit/test_login_schema.py ..................                             [ 89%]
+unit/test_passwords.py ...............                                   [ 91%]
+unit/test_seed_credentials.py .....                                      [ 92%]
+unit/test_settings.py ........................                           [ 95%]
+unit/test_startup.py ....                                                [ 96%]
+unit/test_tokens.py ..................                                   [ 98%]
+unit/test_type_hygiene.py .........                                      [100%]
+
+=============================== warnings summary ===============================
+unit/test_tokens.py::test_a_token_with_another_algorithm_is_rejected
+  /Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_1/.venv/lib/python3.12/site-packages/jwt/api_jwt.py:149: InsecureKeyLengthWarning: The HMAC key is 40 bytes long, which is below the minimum recommended length of 64 bytes for SHA512. See RFC 7518 Section 3.2.
+    return self._jws.encode(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_1/evidence/harness-results/20261104T160010Z/junit-backend.xml -
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.12.14-final-0 _______________
+
+Coverage JSON written to file /Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_1/evidence/harness-results/20261104T160010Z/coverage-backend.json
+================== 702 passed, 1 warning in 126.14s (0:02:06) ==================
+== vitest
+
+ RUN  v5.1.0 /Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_1/src/frontend
+      Coverage enabled with v8
+
+ ✓ tests/api/client.test.ts (28 tests) 18ms
+ ✓ tests/hooks/useSeatSelection.test.ts (7 tests) 31ms
+ ✓ tests/components/ErrorBoundary.test.tsx (2 tests) 134ms
+ ✓ tests/hooks/useAuthSession.test.tsx (15 tests) 223ms
+ ✓ tests/components/BusList.test.tsx (1 test) 157ms
+ ✓ tests/components/StatusMessage.test.tsx (7 tests) 222ms
+ ✓ tests/components/SeatGrid.test.tsx (3 tests) 233ms
+ ✓ tests/components/BookingBar.test.tsx (6 tests) 187ms
+ ✓ tests/components/AppHeader.test.tsx (6 tests) 252ms
+ ✓ tests/components/RequireAuth.test.tsx (9 tests) 331ms
+ ✓ tests/pages/BusListPage.test.tsx (4 tests) 291ms
+ ✓ tests/pages/LoginPage.test.tsx (7 tests) 502ms
+ ✓ tests/pages/BusSeatsPage.test.tsx (8 tests) 369ms
+ ✓ tests/App.test.tsx (17 tests) 1042ms
+   ✓ App routes for sign-in (2)
+     ✓ renders the sign-in page at /login 426ms
+   ✓ App header for a signed-in user (3)
+     ✓ shows the name and Sign out at /buses/1 314ms
+ ✓ tests/pages/BusSeatsPage.keyboard.test.tsx (3 tests) 974ms
+   ✓ BusSeatsPage (keyboard only) (3)
+     ✓ books seats with Tab, Space, Enter and Tab to Confirm 713ms
+ ✓ tests/components/LoginForm.test.tsx (14 tests) 1378ms
+   ✓ LoginForm (14)
+     ✓ blocks values longer than the server accepts 509ms
+ ✓ tests/pages/BusSeatsPage.booking.test.tsx (11 tests) 1187ms
+   ✓ BusSeatsPage (booking) (6)
+     ✓ sends the booking, shows progress, then success, and re-reads the seats 359ms
+ ✓ tests/api/session.test.ts (7 tests) 7ms
+ ✓ tests/api/auth.test.ts (5 tests) 10ms
+ ✓ tests/architecture.test.ts (4 tests) 3ms
+
+ Test Files  20 passed (20)
+      Tests  164 passed (164)
+   Start at  21:32:31
+   Duration  5.23s (environment 64%, setup 13%, tests 11%, import 7%, transform 3%, worker 2%)
+
+Environment  jsdom was created 20 times · 43.04s total, 64% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+
+JUNIT report written to /Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_1/evidence/harness-results/20261104T160010Z/junit-frontend.xml
+[34m % [39m[2mCoverage report from [22m[33mv8[39m
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |    98.4 |    94.81 |      99 |   99.61 |                   
+ src/api           |   98.59 |    95.91 |   93.75 |   98.33 |                   
+  bookings.ts      |       0 |      100 |       0 |       0 | 5                 
+  client.ts        |     100 |    93.33 |     100 |     100 | 6                 
+ src/components    |   98.27 |    96.15 |     100 |     100 |                   
+  AuthProvider.tsx |   85.71 |       50 |     100 |     100 | 13                
+  ...gFeedback.tsx |     100 |    91.66 |     100 |     100 | 11                
+ src/hooks         |   97.77 |    89.47 |     100 |     100 |                   
+  ...ncResource.ts |     100 |    85.71 |     100 |     100 | 24-27             
+  ...uthSession.ts |   97.14 |    83.33 |     100 |     100 | 36-39             
+  useBookSeats.ts  |   94.44 |    83.33 |     100 |     100 | 25                
+  useLoginForm.ts  |   97.29 |    94.44 |     100 |     100 | 40                
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 98.4% ( 308/313 )
+Branches     : 94.81% ( 183/193 )
+Functions    : 99% ( 99/100 )
+Lines        : 99.61% ( 261/262 )
+================================================================================
+== coverage thresholds and skipped tests
+backend line coverage: 98.5% (minimum 85%) PASS
+backend branch coverage: 93.0% (minimum 80%) PASS
+frontend line coverage: 99.6% (minimum 80%) PASS
+junit-backend.xml: 0 skipped or xfail tests PASS
+junit-frontend.xml: 0 skipped or xfail tests PASS

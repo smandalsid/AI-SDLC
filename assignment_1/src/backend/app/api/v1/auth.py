@@ -3,12 +3,13 @@ from fastapi.responses import JSONResponse
 
 from app.api.deps import AuthServiceDep, CurrentUserDep
 from app.api.error_handlers import response_for
+from app.api.routing import SessionFirstRoute
 from app.api.schemas.auth import BEARER, AuthUser, LoginRequest, LoginResponse
 from app.api.schemas.common import error_responses
 from app.services.types import LoginRejected
 
-public_router = APIRouter(prefix="/auth", tags=["auth"])
-router = APIRouter(prefix="/auth", tags=["auth"])
+public_router = APIRouter(prefix="/auth", tags=["auth"], route_class=SessionFirstRoute)
+router = APIRouter(prefix="/auth", tags=["auth"], route_class=SessionFirstRoute)
 
 
 @public_router.post(

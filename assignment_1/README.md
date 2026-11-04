@@ -102,4 +102,4 @@ The deterministic harness runs six gates in order: integrity, lint, security, te
 .harness/run.sh --dry-run  # same gates, nothing recorded
 ```
 
-Thresholds are in `.harness/config/thresholds.env`; the scripts, thresholds, and lint/type configuration are checksummed (`.harness/integrity.sh`) and must not be loosened to obtain a pass. Only recorded runs after the `initial-generation` snapshot count as evidence.
+Thresholds are in `.harness/config/thresholds.env`; the scripts, thresholds, and lint/type configuration are checksummed (`.harness/integrity.sh`) and must not be loosened to obtain a pass. Only recorded runs after the first-generation snapshot (tag `<NNN>-initial-generation`, for feature 002 `002-initial-generation`) count as evidence.

@@ -1,10 +1,11 @@
 from fastapi import APIRouter
 
 from app.api.deps import BookingServiceDep, CurrentUserDep
+from app.api.routing import SessionFirstRoute
 from app.api.schemas.booking import BookingCreate, BookingOut, BookingResult
 from app.api.schemas.common import error_responses
 
-router = APIRouter(prefix="/bookings", tags=["bookings"])
+router = APIRouter(prefix="/bookings", tags=["bookings"], route_class=SessionFirstRoute)
 
 
 @router.post(

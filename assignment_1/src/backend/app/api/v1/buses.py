@@ -3,10 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Path
 
 from app.api.deps import BusServiceDep
+from app.api.routing import SessionFirstRoute
 from app.api.schemas.bus import BusDetailOut, BusOut, BusPage
 from app.api.schemas.common import MAX_ID, PageParamsDep, error_responses
 
-router = APIRouter(prefix="/buses", tags=["buses"])
+router = APIRouter(prefix="/buses", tags=["buses"], route_class=SessionFirstRoute)
 
 
 @router.get("", response_model=BusPage, responses=error_responses(422, 503))
