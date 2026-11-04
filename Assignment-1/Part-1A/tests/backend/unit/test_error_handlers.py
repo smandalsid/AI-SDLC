@@ -11,7 +11,6 @@ from app.core.errors import (
     SeatAlreadyBookedError,
     TooManyAttemptsError,
     UnauthenticatedError,
-    UserNotFoundError,
 )
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -37,7 +36,6 @@ class Payload(BaseModel):
 FACTORIES: dict[str, Callable[[], Exception]] = {
     "invalid_seat": InvalidSeatError,
     "bus_not_found": BusNotFoundError,
-    "user_not_found": UserNotFoundError,
     "seat_unavailable": SeatAlreadyBookedError,
     "unauthenticated": UnauthenticatedError,
     "invalid_credentials": InvalidCredentialsError,
@@ -81,7 +79,6 @@ def assert_error_shape(body: object, code: str) -> None:
     [
         ("invalid_seat", 400, "invalid_seat"),
         ("bus_not_found", 404, "bus_not_found"),
-        ("user_not_found", 404, "user_not_found"),
         ("seat_unavailable", 409, "seat_unavailable"),
         ("unauthenticated", 401, "unauthenticated"),
         ("invalid_credentials", 401, "invalid_credentials"),

@@ -43,7 +43,6 @@ for (const width of WIDTHS) {
     await signIn(page, "meera");
     await page.goto("/buses/3");
 
-    await page.getByLabel("Booking as").selectOption({ label: "Meera" });
     await page.getByRole("button", { name: "Seat 40, available" }).click();
     await page.getByRole("button", { name: "Confirm booking" }).click();
 

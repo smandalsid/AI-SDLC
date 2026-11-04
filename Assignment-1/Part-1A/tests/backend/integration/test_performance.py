@@ -117,7 +117,7 @@ def test_six_seat_booking_p95_is_under_the_write_limit(
 
     def write(index: int) -> float:
         bus_id, seats = plan[index]
-        payload = {"bus_id": bus_id, "user_id": index % 3 + 1, "seat_numbers": seats}
+        payload = {"bus_id": bus_id, "seat_numbers": seats}
         return timed_ms(lambda: client.post("/api/v1/bookings", json=payload).status_code, 201)
 
     def measure() -> list[float]:

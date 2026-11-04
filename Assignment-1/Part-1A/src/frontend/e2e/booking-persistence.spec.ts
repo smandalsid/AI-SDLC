@@ -8,7 +8,6 @@ test.beforeEach(() => {
 test("seats booked through the UI are still booked after a reload", async ({ page }) => {
   await signIn(page, "asha");
   await page.getByRole("link", { name: /Bus A/ }).click();
-  await page.getByLabel("Booking as").selectOption({ label: "Asha" });
   await page.getByRole("button", { name: "Seat 5, available" }).click();
   await page.getByRole("button", { name: "Seat 6, available" }).click();
   await page.getByRole("button", { name: "Confirm booking" }).click();
