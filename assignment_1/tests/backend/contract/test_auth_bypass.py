@@ -19,6 +19,7 @@ PROTECTED = [
     pytest.param("GET", "/buses/1", id="bus-detail"),
     pytest.param("POST", "/bookings", id="create-booking"),
     pytest.param("GET", "/auth/me", id="me"),
+    pytest.param("POST", "/auth/logout", id="logout"),
 ]
 UNAUTHENTICATED = {"error": {"code": "unauthenticated", "message": "Authentication required."}}
 COUNTS = text(
@@ -83,12 +84,19 @@ def session_row_deleted(ctx: Context) -> Attempt:
     return Attempt(headers=bearer(ctx.token))
 
 
+def signed_out(ctx: Context) -> Attempt:
+    with ctx.factory() as session:
+        session.execute(text("UPDATE sessions SET ended_at = SYSUTCDATETIME()"))
+        session.commit()
+    return Attempt(headers=bearer(ctx.token))
+
+
 def another_users_subject(ctx: Context) -> Attempt:
     forged = TokenClaims(ctx.session_id, 2, datetime.now(UTC) + timedelta(minutes=30))
     return Attempt(headers=bearer(get_token_codec().encode(forged, datetime.now(UTC))))
 
 
-# Each technique with the status it must produce; later stories append `signed-out` and `expired`.
+# Each technique with the status it must produce; a later story appends `expired`.
 TECHNIQUES = [
     pytest.param(lambda ctx: Attempt(), 401, id="no-header"),
     pytest.param(lambda ctx: Attempt(headers={"Authorization": ""}), 401, id="empty-header"),
@@ -102,6 +110,7 @@ TECHNIQUES = [
     pytest.param(alg_none, 401, id="alg-none"),
     pytest.param(session_row_deleted, 401, id="session-row-deleted"),
     pytest.param(another_users_subject, 401, id="other-users-subject"),
+    pytest.param(signed_out, 401, id="signed-out"),
     pytest.param(lambda ctx: Attempt(body=BOOKING), 401, id="valid-body-without-session"),
     pytest.param(
         lambda ctx: Attempt(raw_body=b"{not json", headers={"Content-Type": "application/json"}),

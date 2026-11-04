@@ -7,7 +7,7 @@ import { clearToken, getToken, setToken } from "../../src/api/session";
 import { AuthProvider, useAuth } from "../../src/components/AuthProvider";
 import { RequireAuth } from "../../src/components/RequireAuth";
 
-vi.mock("../../src/api/auth", () => ({ login: vi.fn(), me: vi.fn() }));
+vi.mock("../../src/api/auth", () => ({ login: vi.fn(), logout: vi.fn(), me: vi.fn() }));
 
 const meMock = vi.mocked(me);
 const mounted = vi.fn();
@@ -62,6 +62,17 @@ describe("RequireAuth", () => {
     expect(mounted).not.toHaveBeenCalled();
     answer({ id: 2, name: "Ravi" });
     expect(await screen.findByText("Hello Ravi")).toBeInTheDocument();
+  });
+
+  it("shows the header with the name and Sign out above the protected route", async () => {
+    setToken("token-value");
+    meMock.mockResolvedValue({ id: 2, name: "Ravi" });
+
+    renderGuarded();
+
+    await screen.findByText("Hello Ravi");
+    expect(screen.getByRole("banner")).toHaveTextContent("Ravi");
+    expect(screen.getByRole("button", { name: "Sign out" })).toBeInTheDocument();
   });
 
   it("takes the user's name from the server, never from storage", async () => {

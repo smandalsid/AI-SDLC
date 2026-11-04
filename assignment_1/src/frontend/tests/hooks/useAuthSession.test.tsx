@@ -1,13 +1,14 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { login, me } from "../../src/api/auth";
+import { login, logout, me } from "../../src/api/auth";
 import { ApiError } from "../../src/api/errors";
 import { clearToken, expire, getToken, setToken } from "../../src/api/session";
 import { useAuthSession } from "../../src/hooks/useAuthSession";
 
-vi.mock("../../src/api/auth", () => ({ login: vi.fn(), me: vi.fn() }));
+vi.mock("../../src/api/auth", () => ({ login: vi.fn(), logout: vi.fn(), me: vi.fn() }));
 
 const loginMock = vi.mocked(login);
+const logoutMock = vi.mocked(logout);
 const meMock = vi.mocked(me);
 
 const SUCCESS = {
@@ -59,6 +60,7 @@ describe("useAuthSession", () => {
 
   it("clears the token and the state on sign-out", async () => {
     loginMock.mockResolvedValue(SUCCESS);
+    logoutMock.mockResolvedValue(undefined);
     const { result } = renderHook(() => useAuthSession());
     await act(async () => {
       await result.current.signIn("asha", "secret");
@@ -70,6 +72,51 @@ describe("useAuthSession", () => {
 
     expect(result.current.state).toEqual({ status: "signedOut" });
     expect(getToken()).toBeNull();
+  });
+});
+
+describe("useAuthSession sign-out", () => {
+  async function signedIn() {
+    loginMock.mockResolvedValue(SUCCESS);
+    const hook = renderHook(() => useAuthSession());
+    await act(async () => {
+      await hook.result.current.signIn("asha", "secret");
+    });
+    return hook;
+  }
+
+  it("calls the sign-out endpoint once, while the token is still stored", async () => {
+    let tokenDuringCall: string | null = null;
+    logoutMock.mockImplementation(() => {
+      tokenDuringCall = getToken();
+      return Promise.resolve();
+    });
+    const { result } = await signedIn();
+
+    await act(async () => {
+      await result.current.signOut();
+    });
+
+    expect(logoutMock).toHaveBeenCalledTimes(1);
+    expect(tokenDuringCall).toBe("token-value");
+    expect(getToken()).toBeNull();
+    expect(result.current.state).toEqual({ status: "signedOut" });
+  });
+
+  it.each([
+    ["a network failure", new ApiError("unavailable", 0, "network_error", "unreachable")],
+    ["a 401", new ApiError("unauthenticated", 401, "unauthenticated", "x")],
+    ["a 503", new ApiError("unavailable", 503, "service_unavailable", "down")],
+  ])("still clears the storage and the state after %s", async (_label, error) => {
+    logoutMock.mockRejectedValue(error);
+    const { result } = await signedIn();
+
+    await act(async () => {
+      await result.current.signOut();
+    });
+
+    expect(getToken()).toBeNull();
+    expect(result.current.state).toEqual({ status: "signedOut" });
   });
 });
 
