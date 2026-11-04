@@ -118,6 +118,14 @@ This phase added tests for behaviour that already existed, so most of them passe
 
 Phase checkpoint T127: integrity, lint, security, test (694 backend, 161 frontend, coverage 98.5% line and 93.6% branch backend, 99.6% frontend), build, e2e (33 Playwright tests) and `pytest -m perf` (6 latency tests: sign-in p95, session-check overhead on a read and a booking, uniform sign-in timing, and the 001 read and write targets with authentication in place) pass. T117 to T118, T125 and T126 are documentation and evidence only (`evidence/001-seat-booking/README.md`, `README.md`, the traceability tables below, one sentence in `quickstart.md`).
 
+### Phase 10 Recorded harness runs (T129-T130)
+
+First recorded run `.harness/run.sh` (folder `evidence/harness-results/20261104T145728Z`, taken after the `002-initial-generation` snapshot): all six gates passed on the first attempt (integrity, lint, security, test, build, e2e; 694 backend tests, 161 frontend tests, 33 Playwright tests; coverage 98.5% line and 93.6% branch backend, 99.6% frontend). The folder holds the per-gate outputs, `summary.json`, the JUnit files, and the coverage reports, and a row was appended to the run table.
+
+Secret check of that folder (a script compared it with the values of `JWT_SECRET`, `DB_PASSWORD`, and every `MOCK_USER_PASSWORDS` entry without printing them): 0 occurrences of any of those values, 0 session tokens, 0 `Bearer` credentials. The only `$argon2` text is the fixed test id `test_an_invalid_or_locked_hash_never_verifies_and_never_raises[$argon2id$broken]` in `junit-backend.xml`, a deliberately broken string and not a hash of a user.
+
+T130: no gate failed, so no repair was needed.
+
 ## Quickstart validation
 
 Filled by T131.
@@ -274,3 +282,4 @@ Recorded by the human at T134. The agent MUST NOT write the decision.
 
 | Timestamp | Integrity | Lint | Security | Tests | Build | E2E | Result | Evidence |
 |-----------|-----------|------|----------|-------|-------|-----|--------|----------|
+| 2026-11-04T15:01:46Z | PASS | PASS | PASS | PASS | PASS | PASS | PASS | evidence/harness-results/20261104T145728Z |
