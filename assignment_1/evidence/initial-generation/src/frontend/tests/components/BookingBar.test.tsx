@@ -5,7 +5,6 @@ import { BookingBar } from "../../src/components/BookingBar";
 
 interface Overrides {
   selectedSeats?: number[];
-  hasUser?: boolean;
   submitting?: boolean;
   limitReached?: boolean;
   onConfirm?: () => void;
@@ -15,7 +14,6 @@ function renderBar(overrides: Overrides = {}): void {
   render(
     <BookingBar
       selectedSeats={overrides.selectedSeats ?? [3, 4]}
-      hasUser={overrides.hasUser ?? true}
       submitting={overrides.submitting ?? false}
       limitReached={overrides.limitReached ?? false}
       onConfirm={overrides.onConfirm ?? vi.fn()}
@@ -32,17 +30,11 @@ describe("BookingBar", () => {
     expect(screen.getByText("Selected seats: 3, 4")).toBeInTheDocument();
   });
 
-  it("is enabled when a user and at least one seat are chosen", () => {
-    renderBar();
+  it("is enabled by at least one selected seat alone", () => {
+    renderBar({ selectedSeats: [3] });
 
     expect(confirm()).toBeEnabled();
-  });
-
-  it("is disabled without a user and hints to choose one", () => {
-    renderBar({ hasUser: false });
-
-    expect(confirm()).toBeDisabled();
-    expect(screen.getByText("Choose a user to book as.")).toBeInTheDocument();
+    expect(screen.queryByText(/choose a user/i)).not.toBeInTheDocument();
   });
 
   it("is disabled with no seats selected", () => {

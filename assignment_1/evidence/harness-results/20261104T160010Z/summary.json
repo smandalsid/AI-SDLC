@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-11-04T16:04:13Z",
+  "result": "PASS",
+  "gates": {
+    "integrity": {
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    "lint": {
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    "security": {
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    "test": {
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    "build": {
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    "e2e": {
+      "exit_code": 0,
+      "status": "PASS"
+    }
+  },
+  "failures": [],
+  "coverage": {
+    "backend_line": 98.5,
+    "backend_branch": 93.0,
+    "frontend_line": 99.6
+  }
+}

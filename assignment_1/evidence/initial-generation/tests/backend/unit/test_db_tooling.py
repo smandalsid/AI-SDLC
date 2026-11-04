@@ -50,6 +50,7 @@ def test_drop_and_create_rejects_an_invalid_name_even_when_it_ends_in_test(
         drop_and_create_database(get_settings(), "bad-name_test")
 
 
+# SQLAlchemy's mssql.dialect() ships without type hints.
 DIALECT = mssql.dialect()  # type: ignore[no-untyped-call]
 
 

@@ -3,23 +3,19 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "../../src/api/errors";
 import { getBus } from "../../src/api/buses";
-import { listUsers } from "../../src/api/users";
 import { BusSeatsPage } from "../../src/pages/BusSeatsPage";
-import { makeBusDetail, makeUsers, page, renderAt } from "../helpers";
+import { makeBusDetail, renderSignedIn } from "../helpers";
 
 vi.mock("../../src/api/buses", () => ({ listBuses: vi.fn(), getBus: vi.fn() }));
-vi.mock("../../src/api/users", () => ({ listUsers: vi.fn() }));
 
 const getBusMock = vi.mocked(getBus);
-const listUsersMock = vi.mocked(listUsers);
 
 function renderPage(route = "/buses/1"): void {
-  renderAt(route, "/buses/:busId", <BusSeatsPage />);
+  renderSignedIn(route, "/buses/:busId", <BusSeatsPage />);
 }
 
 beforeEach(() => {
   vi.resetAllMocks();
-  listUsersMock.mockResolvedValue(page(makeUsers()));
 });
 
 describe("BusSeatsPage (viewing)", () => {
@@ -74,25 +70,16 @@ describe("BusSeatsPage (viewing)", () => {
   );
 });
 
-describe("BusSeatsPage (choosing the user)", () => {
-  it("lists the users in a selector once the seats are shown", async () => {
+describe("BusSeatsPage (no user selector)", () => {
+  it("renders no user selector and no input holding the signed-in name", async () => {
     getBusMock.mockResolvedValue(makeBusDetail());
 
     renderPage();
 
-    const select = await screen.findByLabelText("Booking as");
-    const options = screen.getAllByRole("option").map((option) => option.textContent);
-    expect(options).toEqual(["Choose a user", "Asha", "Ravi", "Meera"]);
-    expect(select).toHaveValue("");
-  });
-
-  it("keeps the chosen user selected", async () => {
-    getBusMock.mockResolvedValue(makeBusDetail());
-    renderPage();
-
-    const select = await screen.findByLabelText("Booking as");
-    await userEvent.selectOptions(select, "Ravi");
-
-    expect(select).toHaveValue("2");
+    await screen.findByRole("button", { name: "Seat 1, available" });
+    expect(screen.queryByLabelText("Booking as")).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Asha")).not.toBeInTheDocument();
   });
 });

@@ -1,17 +1,14 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getBus } from "../../src/api/buses";
 import { createBookings } from "../../src/api/bookings";
 import { ApiError } from "../../src/api/errors";
 import type { BookingResult } from "../../src/api/types";
-import { listUsers } from "../../src/api/users";
 import { BusSeatsPage } from "../../src/pages/BusSeatsPage";
-import { makeBusDetail, makeUsers, page } from "../helpers";
+import { makeBusDetail, renderSignedIn } from "../helpers";
 
 vi.mock("../../src/api/buses", () => ({ listBuses: vi.fn(), getBus: vi.fn() }));
-vi.mock("../../src/api/users", () => ({ listUsers: vi.fn() }));
 vi.mock("../../src/api/bookings", () => ({ createBookings: vi.fn() }));
 
 const getBusMock = vi.mocked(getBus);
@@ -28,27 +25,19 @@ const result: BookingResult = {
 };
 
 function renderPage(): ReturnType<typeof render> {
-  return render(
-    <MemoryRouter initialEntries={["/buses/1"]}>
-      <Routes>
-        <Route path="/buses/:busId" element={<BusSeatsPage />} />
-      </Routes>
-    </MemoryRouter>,
-  );
+  return renderSignedIn("/buses/1", "/buses/:busId", <BusSeatsPage />);
 }
 
 const seat = (number: number, state = "available"): Promise<HTMLElement> =>
   screen.findByRole("button", { name: `Seat ${number}, ${state}` });
 const confirm = (): HTMLElement => screen.getByRole("button", { name: "Confirm booking" });
 
-async function chooseRaviAndSeats(...seats: number[]): Promise<void> {
-  await userEvent.selectOptions(await screen.findByLabelText("Booking as"), "Ravi");
+async function chooseSeats(...seats: number[]): Promise<void> {
   for (const number of seats) await userEvent.click(await seat(number));
 }
 
 beforeEach(() => {
   vi.resetAllMocks();
-  vi.mocked(listUsers).mockResolvedValue(page(makeUsers()));
   getBusMock.mockResolvedValue(makeBusDetail());
 });
 
@@ -57,11 +46,11 @@ describe("BusSeatsPage (booking)", () => {
     let finish: (value: BookingResult) => void = () => undefined;
     createBookingsMock.mockReturnValue(new Promise((resolve) => (finish = resolve)));
     renderPage();
-    await chooseRaviAndSeats(3, 4);
+    await chooseSeats(3, 4);
 
     await userEvent.click(confirm());
 
-    expect(createBookingsMock).toHaveBeenCalledWith({ bus_id: 1, user_id: 2, seat_numbers: [3, 4] });
+    expect(createBookingsMock).toHaveBeenCalledWith({ bus_id: 1, seat_numbers: [3, 4] });
     expect(screen.getByRole("status")).toHaveTextContent("Booking seats");
     expect(confirm()).toBeDisabled();
 
@@ -78,7 +67,7 @@ describe("BusSeatsPage (booking)", () => {
   it("sends only one request when Confirm is clicked twice", async () => {
     createBookingsMock.mockReturnValue(new Promise(() => undefined));
     renderPage();
-    await chooseRaviAndSeats(3);
+    await chooseSeats(3);
 
     await userEvent.click(confirm());
     await userEvent.click(confirm());
@@ -88,7 +77,7 @@ describe("BusSeatsPage (booking)", () => {
 
   it("cannot select a seventh seat", async () => {
     renderPage();
-    await chooseRaviAndSeats(1, 2, 3, 4, 5, 6);
+    await chooseSeats(1, 2, 3, 4, 5, 6);
 
     await userEvent.click(await seat(7));
 
@@ -97,20 +86,31 @@ describe("BusSeatsPage (booking)", () => {
     expect(screen.getByText("You can book up to 6 seats at a time.")).toBeInTheDocument();
   });
 
-  it("disables Confirm without a user or without seats", async () => {
+  it("enables Confirm with one selected seat alone and disables it again without seats", async () => {
     renderPage();
-    await userEvent.click(await seat(3, "available"));
+    await screen.findByRole("button", { name: "Seat 3, available" });
     expect(confirm()).toBeDisabled();
 
-    await userEvent.selectOptions(screen.getByLabelText("Booking as"), "Ravi");
+    await userEvent.click(await seat(3, "available"));
     expect(confirm()).toBeEnabled();
     await userEvent.click(await seat(3, "selected"));
     expect(confirm()).toBeDisabled();
   });
 
+  it("sends a body with exactly bus_id and seat_numbers, never a user id", async () => {
+    createBookingsMock.mockResolvedValue(result);
+    renderPage();
+    await chooseSeats(5);
+
+    await userEvent.click(confirm());
+
+    const body = createBookingsMock.mock.calls[0]?.[0];
+    expect(Object.keys(body ?? {}).sort()).toEqual(["bus_id", "seat_numbers"]);
+  });
+
   it("discards an unconfirmed selection when the page is reloaded", async () => {
     const first = renderPage();
-    await chooseRaviAndSeats(3, 4);
+    await chooseSeats(3, 4);
     first.unmount();
 
     renderPage();
@@ -128,7 +128,7 @@ describe("BusSeatsPage (failed bookings)", () => {
       new ApiError("conflict", 409, "seat_unavailable", "taken"),
     );
     renderPage();
-    await chooseRaviAndSeats(3, 4);
+    await chooseSeats(3, 4);
     getBusMock.mockResolvedValue(makeBusDetail([3]));
 
     await userEvent.click(confirm());
@@ -145,7 +145,7 @@ describe("BusSeatsPage (failed bookings)", () => {
   ])("on %s shows Service unavailable and keeps the selection", async (_label, error) => {
     createBookingsMock.mockRejectedValue(error);
     renderPage();
-    await chooseRaviAndSeats(3, 4);
+    await chooseSeats(3, 4);
 
     await userEvent.click(confirm());
 
@@ -159,7 +159,7 @@ describe("BusSeatsPage (failed bookings)", () => {
   it.each([400, 422])("on a %i response shows Invalid request", async (status) => {
     createBookingsMock.mockRejectedValue(new ApiError("invalid", status, "validation_error", "bad"));
     renderPage();
-    await chooseRaviAndSeats(3);
+    await chooseSeats(3);
 
     await userEvent.click(confirm());
 
