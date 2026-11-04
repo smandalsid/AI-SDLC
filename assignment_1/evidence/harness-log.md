@@ -140,7 +140,27 @@ Phase checkpoint T143: integrity, lint, security, test (702 backend, 164 fronten
 
 ## Quickstart validation
 
-Filled by T131.
+Run against the live stack started with `scripts/dev.sh` (API on 8000, UI on 5173, development database reseeded at start-up) on 2026-11-04. The passwords were typed by the user with `read -rs` in their own terminal; no password, token, or hash is recorded here.
+
+### API scenarios
+
+| Scenario | Observed |
+|----------|----------|
+| 1 Sign in (US1) | 200; keys `access_token`, `expires_at`, `token_type`, `user`; `token_type` bearer; `user` `{id 1, name Asha}`; `expires_at` 30 minutes ahead; no password or hash in the body |
+| 2 Wrong credentials (US1) | Wrong password for `asha`, wrong password for `ravi`, unknown `nobody`, `ASHA`, ` asha`, and `asha' OR '1'='1` all returned 401 with the identical body (`invalid_credentials`, "Invalid username or password."); empty username, empty password, a 129-character password, and an extra field returned 422 `validation_error` |
+| 3 Protection (US2) | Without a header `GET /buses` and `GET /buses/1` 401 `unauthenticated`; `POST /bookings` with a valid body and with malformed JSON 401; a made-up token, an altered token, and a token with one character changed 401; `GET /users` 404 `not_found`; `GET /health` and `GET /health/ready` 200 |
+| 4 Book as the signed-in user (US3) | `asha` booked seats 3 and 4: 201, both rows `user_id` 1; the same request with `"user_id": 2` added: 422, nothing stored; `ravi` booked seat 5: `user_id` 2 |
+| 5 Sign out (US4) | Logout 204; the old token then 401 on `GET /buses` and on a second logout; signing in again returned a different token that worked (200) while the old one stayed 401 |
+| 6 Expiry (US5) | Not practical by hand; covered by the clock-controlled tests (`test_session_expiry.py`, `test_auth_service_authenticate.py`) and the intercepted-401 end-to-end test |
+| 7 Throttle (US6) | Live: five wrong passwords for `asha`, then the right password: 429 with `retry-after: 60`; `ravi` signed in meanwhile (200, `{id 2, name Ravi}`); 61 seconds later `asha` signed in again. Five wrong passwords for `meera` and for the unknown username `ghost` each gave the same 429 body and `retry-after: 60` on the sixth attempt |
+
+### UI scenarios
+
+Recorded by the user (T131): see the table below.
+
+| Scenario | Observed |
+|----------|----------|
+| UI 1 to 8 | Pending the user's confirmation; the same behaviours are covered by the passing Playwright tests (`auth.spec.ts`, `booking-persistence.spec.ts`, `responsive.spec.ts`, `usability.spec.ts`) in the recorded runs |
 
 ## Convergence results
 
@@ -305,6 +325,32 @@ Every requirement, success criterion, acceptance scenario, and edge case of `spe
 ## Final decision
 
 Recorded by the human at T134. The agent MUST NOT write the decision.
+
+### Draft for the human review (written by the agent at T133; not a decision)
+
+**Known limitations**
+
+- Tokens travel over plain HTTP in local development and there is no Content-Security-Policy header; a real deployment needs TLS and a CSP.
+- The token is kept in `sessionStorage` (per tab), so script injection in the page could read it.
+- Anyone who knows a username can keep that user locked out for 60 seconds at a time (per-username throttle); simultaneous wrong guesses can slip a few attempts past the count (no row lock, `research.md` section 8).
+- No job deletes expired `sessions` rows or old `sign_in_attempts` rows.
+- `/docs` and `/openapi.json` are served without a credential (documented; `/redoc` and the OAuth redirect are switched off).
+- The database account is the `sa` account of the local container, and the Azure SQL Edge image is retired.
+- A malformed JSON body with a valid session is a 422 with the shared error body; with any unusable credential it is a 401 (the convergence fix G-01).
+
+**Proposal (not applied by the agent)**: retire the mock-user exemption sentence of constitution Principle VII through a PATCH amendment, because this feature satisfies it (real credentials, hashing, server-side sessions).
+
+**Plan wording to correct (not edited by the agent)**: the "Error Handling" section of `plan.md` mentions logging sign-in outcomes by username; `spec.md` US1.9 forbids the username in any log line and the code follows the spec (finding G-07).
+
+**Unplanned helper files** (named in no spec, plan, or task; added to keep the harness rules or to share code)
+
+- `src/frontend/src/components/TextField.tsx` and `src/frontend/src/hooks/useLoginForm.ts`: split out of `LoginForm` to meet the 40-line function rule (Phase 3 failure log).
+- `src/backend/app/api/routing.py`: `SessionFirstRoute`, the convergence fix for G-01 (task T139, Phase 11).
+- `tests/backend/integration/perf_support.py`: shared helpers of the latency tests.
+- `tests/backend/unit/test_documentation.py`: checks `.env.example` placeholders and the README claims.
+- Test helper `find_auth_switches` in `tests/backend/unit/layer_scan.py` and the `make_app` fixture in `tests/backend/conftest.py` (extra app instances over one database).
+- Kept from feature 001 without a 002 task: `tests/backend/unit/harness_loader.py`, `test_bundle_size_check.py`, `test_dev_script.py`, `src/frontend/e2e/global-setup.ts`, `.harness/check_coverage.py`.
+- Unused by any caller but kept because T081 says to keep them: `UserReader` and `UserRepository.get`.
 
 ## Harness run table
 
