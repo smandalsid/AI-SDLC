@@ -132,7 +132,23 @@ Filled by T131.
 
 ## Convergence results
 
-Filled by T132.
+`/speckit-converge` assessment (T132) of the code at tag `002-initial-generation` plus the recorded run `20261104T145728Z`, against spec, plan, tasks, and constitution v1.4.1. An independent read-only review produced 9 findings (0 CRITICAL, 0 HIGH, 3 MEDIUM, 6 LOW); each was checked by hand and G-01 was reproduced with a throwaway test (a validly signed token of an ended session plus malformed JSON on `POST /bookings` returns 422, not 401).
+
+| ID | Type | Severity | Source | Finding | Outcome |
+|----|------|----------|--------|---------|---------|
+| G-01 | contradicts | MEDIUM | FR-014, FR-015, US2.3, NFR-001 | The gate only checks the signature; FastAPI decodes a malformed JSON body before `require_session` runs, so a signed-out, expired, or deleted-user credential with a malformed body gets 422 instead of 401. | Phase 11: T135, T139 |
+| G-02 | contradicts | MEDIUM | FR-012, FR-016, SC-003 | `/redoc` and `/docs/oauth2-redirect` were served without a credential besides the documented `/docs` and `/openapi.json`. | Phase 11: T136, T140 |
+| G-03 | missing | MEDIUM | T131-T134 | Process tasks still open when the review ran. | Closed by T131, T133 and the human T134 |
+| G-04 | partial | LOW | FR-026, FR-027 | The throttle count is read and written without a lock, so simultaneous wrong guesses can pass 5. | Accepted: already recorded as a known limit in `research.md` section 8; listed in the known limitations of T133 |
+| G-05 | partial | LOW | NFR-011 | Field errors of the sign-in form are not announced (no `role="alert"`). | Phase 11: T137, T141 |
+| G-06 | partial | LOW | FR-030 | In the `checking` and `unavailable` states of `RequireAuth` there is no Sign out and no Retry. | Phase 11: T137, T141 |
+| G-07 | contradicts | LOW | plan "Error Handling" vs spec US1.9 | The plan mentions logging sign-in outcomes by username; the spec forbids the username in any log line. The code follows the spec (outcomes live in `sign_in_attempts`; `test_no_username_or_password_reaches_a_log_line`). | No code change; the plan sentence is for the human to amend (plans are not edited by the agent) |
+| G-08 | unrequested | LOW | tasks T081 | `UserReader` and `UserRepository.get` have no caller; T081 explicitly keeps them. | Accepted; listed with the unplanned helper files |
+| G-09 | partial | LOW | NFR-014, constitution XIII | The last paragraph of `README.md` names the 001 tag form, and `quickstart.md` still says "(agent task)". | Phase 11: T142 |
+
+Checked and found no gap: default-deny on every `/api/v1` route except login and the two health checks; no client-supplied user id anywhere; no secret in tracked files; layering and function-length rules.
+
+Counts: all 35 FR, 14 NFR, 10 SC, the acceptance scenarios of 6 user stories, 11 edge cases, the plan decisions, all 134 tasks, and the constitution principles were assessed. Findings by type: missing 1, partial 4, contradicts 3, unrequested 1. New tasks: T135-T143 in Phase 11.
 
 ## Acceptance traceability
 

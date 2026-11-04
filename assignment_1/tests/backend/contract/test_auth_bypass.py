@@ -236,3 +236,62 @@ def test_a_session_whose_user_no_longer_exists_is_refused(
 
     assert response.status_code == 401
     assert response.json() == UNAUTHENTICATED
+
+
+MALFORMED = b"{not json"
+
+
+def malformed_booking(client: TestClient, headers: dict[str, str]) -> Response:
+    return client.post(
+        f"{API}/bookings",
+        content=MALFORMED,
+        headers={**headers, "Content-Type": "application/json"},
+    )
+
+
+@pytest.mark.parametrize("technique", [signed_out, expired], ids=["signed-out", "expired"])
+def test_a_malformed_body_with_an_unusable_credential_gets_401_not_422(
+    client: TestClient,
+    session_factory: sessionmaker[Session],
+    context: Context,
+    technique: Technique,
+) -> None:
+    headers = technique(context).headers
+    before = counts(session_factory)
+
+    response = malformed_booking(client, headers)
+
+    assert response.status_code == 401
+    assert response.json() == UNAUTHENTICATED
+    assert counts(session_factory) == before
+
+
+def test_a_malformed_body_with_a_deleted_users_credential_gets_401_not_422(
+    client: TestClient, session_factory: sessionmaker[Session], context: Context
+) -> None:
+    with session_factory() as session:
+        session.execute(text("ALTER TABLE sessions NOCHECK CONSTRAINT ALL"))
+        session.execute(text("DELETE FROM users WHERE id = 1"))
+        session.commit()
+    try:
+        response = malformed_booking(client, bearer(context.token))
+    finally:
+        with session_factory() as session:
+            session.execute(text("DELETE FROM sessions"))
+            session.execute(text("ALTER TABLE sessions WITH CHECK CHECK CONSTRAINT ALL"))
+            session.commit()
+
+    assert response.status_code == 401
+    assert response.json() == UNAUTHENTICATED
+
+
+def test_a_malformed_body_with_a_valid_session_is_still_a_422_and_stores_nothing(
+    client: TestClient, session_factory: sessionmaker[Session], context: Context
+) -> None:
+    before = counts(session_factory)
+
+    response = malformed_booking(client, bearer(context.token))
+
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "validation_error"
+    assert counts(session_factory) == before

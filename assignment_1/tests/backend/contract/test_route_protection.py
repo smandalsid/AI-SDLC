@@ -88,3 +88,17 @@ def test_users_is_not_a_route_so_even_a_forged_credential_reaches_a_404(
         assert response.status_code == 404
         assert response.json()["error"]["code"] == "not_found"
         assert "Asha" not in response.text
+
+
+@pytest.mark.parametrize("address", ["/redoc", "/docs/oauth2-redirect"])
+def test_only_docs_and_openapi_are_served_as_documentation_without_a_credential(
+    client: TestClient, address: str
+) -> None:
+    assert client.get(address).status_code == 404
+
+
+@pytest.mark.parametrize("address", ["/docs", "/openapi.json"])
+def test_the_two_documented_public_documentation_addresses_stay_available(
+    client: TestClient, address: str
+) -> None:
+    assert client.get(address).status_code == 200
