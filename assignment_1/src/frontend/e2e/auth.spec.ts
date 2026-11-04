@@ -153,3 +153,17 @@ test("a plain first visit to the sign-in screen shows no expiry message", async 
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
   await expect(page.getByRole("alert")).toHaveCount(0);
 });
+
+test("closing a tab forgets the session: a new tab starts at the sign-in screen", async ({
+  page,
+}) => {
+  await signIn(page, "asha");
+  const context = page.context();
+
+  await page.close();
+  const reopened = await context.newPage();
+  await reopened.goto("/");
+
+  await expectOnlySignIn(reopened);
+  expect(await reopened.evaluate((key) => sessionStorage.getItem(key), TOKEN_KEY)).toBeNull();
+});

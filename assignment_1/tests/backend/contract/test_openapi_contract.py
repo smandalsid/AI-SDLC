@@ -17,13 +17,6 @@ CONTRACT_PATH = (
 SERVER_PREFIX = "/api/v1"
 METHODS = {"get", "post", "put", "patch", "delete"}
 
-# Differences between the 002 contract and the app that a later story still delivers. Each story
-# checkpoint deletes its entries; test_no_pending_contract_items (T124) requires all to be empty.
-PENDING_OPERATIONS_NOT_IN_APP: set[tuple[str, str]] = set()
-PENDING_OPERATIONS_ONLY_IN_APP: set[tuple[str, str]] = set()
-PENDING_ERROR_CODES_ONLY_IN_APP: set[str] = set()
-PENDING_BODY_FIELDS_ONLY_IN_APP: set[str] = set()
-
 # Parsed JSON and YAML documents have no fixed shape.
 Document = dict[str, Any]
 Operation = tuple[str, str]
@@ -44,9 +37,12 @@ def resolve(document: Document, node: Document) -> Document:
 
 
 def shape(document: Document, schema: Document) -> Document:
-    """Property names, required lists, and array items; the names of schemas are irrelevant."""
+    """Types, constraints, property names, required lists, items; schema names are irrelevant."""
     schema = resolve(document, schema)
     result: Document = {}
+    for keyword in ("type", "enum", "format", "minimum", "maximum", "minLength", "maxLength"):
+        if keyword in schema:
+            result[keyword] = schema[keyword]
     if "properties" in schema:
         result["properties"] = {
             name: shape(document, sub) for name, sub in schema["properties"].items()
@@ -62,22 +58,6 @@ def body_shape(document: Document, container: Document) -> Document | None:
     content = resolve(document, container).get("content", {})
     schema = content.get("application/json", {}).get("schema")
     return None if schema is None else shape(document, schema)
-
-
-def without_fields(node: Document, names: set[str]) -> Document:
-    """Drops pending field names from a request body shape (properties and required lists)."""
-    result: Document = {}
-    if "properties" in node:
-        result["properties"] = {
-            name: without_fields(sub, names)
-            for name, sub in node["properties"].items()
-            if name not in names
-        }
-    if "required" in node:
-        result["required"] = [name for name in node["required"] if name not in names]
-    if "items" in node:
-        result["items"] = without_fields(node["items"], names)
-    return result
 
 
 def operations(document: Document, prefix: str) -> dict[Operation, Document]:
@@ -109,14 +89,10 @@ OPERATION_IDS = [f"{method} {path}" for method, path in CONTRACT_OPERATIONS]
 
 
 def test_contract_paths_and_methods_are_exactly_the_apps() -> None:
-    assert set(APP_OPERATIONS) - PENDING_OPERATIONS_ONLY_IN_APP == (
-        set(CONTRACT_OPERATIONS) - PENDING_OPERATIONS_NOT_IN_APP
-    )
+    assert set(APP_OPERATIONS) == set(CONTRACT_OPERATIONS)
 
 
-COMPARED_OPERATIONS = [
-    key for key in CONTRACT_OPERATIONS if key not in PENDING_OPERATIONS_NOT_IN_APP
-]
+COMPARED_OPERATIONS = list(CONTRACT_OPERATIONS)
 
 
 @pytest.fixture(
@@ -154,7 +130,7 @@ def test_request_body_schemas_match(pair: tuple[Document, Document]) -> None:
         app_shape = body_shape(APP, app_body)
         contract_shape = body_shape(CONTRACT, contract_body)
         assert app_shape is not None and contract_shape is not None
-        assert without_fields(app_shape, PENDING_BODY_FIELDS_ONLY_IN_APP) == contract_shape
+        assert app_shape == contract_shape
         assert app_body.get("required", False) == contract_body.get("required", False)
 
 
@@ -178,7 +154,7 @@ def test_the_contract_lists_exactly_the_error_codes_the_app_defines() -> None:
         | {"validation_error", "service_unavailable", "internal_error"}
     )
 
-    assert contract_error_codes() == defined - PENDING_ERROR_CODES_ONLY_IN_APP
+    assert contract_error_codes() == defined
 
 
 def test_unknown_routes_and_wrong_methods_return_codes_from_the_contract() -> None:
@@ -190,3 +166,23 @@ def test_unknown_routes_and_wrong_methods_return_codes_from_the_contract() -> No
     }
 
     assert returned <= contract_error_codes()
+
+
+def test_no_pending_contract_items() -> None:
+    """The generated OpenAPI equals the contract, operation by operation and schema by schema."""
+    assert set(APP_OPERATIONS) == set(CONTRACT_OPERATIONS)
+    for key, contract in CONTRACT_OPERATIONS.items():
+        app = APP_OPERATIONS[key]
+        assert set(app["responses"]) == set(contract["responses"]), key
+        assert response_shapes(APP, app) == response_shapes(CONTRACT, contract), key
+        assert parameter_set(APP, app) == parameter_set(CONTRACT, contract), key
+        app_body, contract_body = app.get("requestBody"), contract.get("requestBody")
+        assert (app_body is None) == (contract_body is None), key
+        if app_body is not None and contract_body is not None:
+            assert body_shape(APP, app_body) == body_shape(CONTRACT, contract_body), key
+    assert contract_error_codes() == (
+        set(STATUS_BY_CODE)
+        | set(CODE_BY_HTTP_STATUS.values())
+        | {"validation_error", "service_unavailable", "internal_error"}
+    )
+    assert not [name for name in globals() if name.startswith("PENDING_")]

@@ -1,7 +1,10 @@
 from collections.abc import Callable
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
+from app.api.deps import get_clock
+from app.core.clock import Clock
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from httpx2 import Response
 from sqlalchemy import text
@@ -95,3 +98,42 @@ def test_the_session_is_still_valid_just_before_thirty_minutes_and_use_does_not_
 
     fake_clock.current += timedelta(seconds=2)
     assert client.get(f"{API}/auth/me", headers=headers).status_code == 401
+
+
+class FlipClock:
+    """Reads one time for the first call of a request and another for every later call."""
+
+    def __init__(self, first: datetime, later: datetime) -> None:
+        self.first, self.later, self.calls = first, later, 0
+
+    def now(self) -> datetime:
+        self.calls += 1
+        return self.first if self.calls == 1 else self.later
+
+
+def test_a_booking_that_meets_the_expiry_is_stored_whole_or_refused_with_nothing_stored(
+    app: FastAPI,
+    client: TestClient,
+    fake_clock: FakeClock,
+    session_factory: sessionmaker[Session],
+    auth_headers: Callable[[str], dict[str, str]],
+) -> None:
+    headers = auth_headers("asha")
+    expires = fake_clock.current + timedelta(minutes=30)
+    flip = FlipClock(expires - timedelta(seconds=1), expires + timedelta(seconds=1))
+
+    def provide() -> Clock:
+        return flip
+
+    app.dependency_overrides[get_clock] = provide
+    body = {"bus_id": 1, "seat_numbers": [3, 4]}
+
+    decided_before = client.post(f"{API}/bookings", json=body, headers=headers)
+    decided_after = client.post(
+        f"{API}/bookings", json={"bus_id": 1, "seat_numbers": [5]}, headers=headers
+    )
+
+    assert decided_before.status_code == 201
+    assert len(decided_before.json()["bookings"]) == 2
+    assert decided_after.status_code == 401
+    assert counts(session_factory)[0] == 2

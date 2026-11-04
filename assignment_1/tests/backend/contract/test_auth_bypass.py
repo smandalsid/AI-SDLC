@@ -214,3 +214,25 @@ def test_a_trailing_slash_reveals_no_data_without_a_credential(client: TestClien
     followed = client.get(f"{API}/buses/")
     assert followed.status_code in (401, 404)
     assert "Bus A" not in followed.text
+
+
+def test_a_session_whose_user_no_longer_exists_is_refused(
+    client: TestClient,
+    session_factory: sessionmaker[Session],
+    auth_headers: Callable[[str], dict[str, str]],
+) -> None:
+    headers = auth_headers("meera")
+    with session_factory() as session:
+        session.execute(text("ALTER TABLE sessions NOCHECK CONSTRAINT ALL"))
+        session.execute(text("DELETE FROM users WHERE username = 'meera'"))
+        session.commit()
+    try:
+        response = client.get(f"{API}/auth/me", headers=headers)
+    finally:
+        with session_factory() as session:
+            session.execute(text("DELETE FROM sessions"))
+            session.execute(text("ALTER TABLE sessions WITH CHECK CHECK CONSTRAINT ALL"))
+            session.commit()
+
+    assert response.status_code == 401
+    assert response.json() == UNAUTHENTICATED

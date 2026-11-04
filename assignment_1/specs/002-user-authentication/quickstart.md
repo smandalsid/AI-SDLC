@@ -80,7 +80,7 @@ TOKEN=$(curl -s -X POST localhost:8000/api/v1/auth/login -H 'content-type: appli
 4. Open Bus A, select seats 7 and 8, Confirm: success message; reload the tab: still signed in and the seats show booked.
 5. Click Sign out: the sign-in screen appears; press the browser Back button: still the sign-in screen, no bus data.
 6. Open the application in a second tab: it shows the sign-in screen (sign-in belongs to one tab).
-7. In the browser developer tools set `sessionStorage` to a made-up token and reload: you are returned to sign-in.
+7. In the browser developer tools set `sessionStorage` to a made-up token and reload: you are returned to sign-in, with the message "Your session has expired. Please sign in again." (a stored token the server does not accept is treated as an expired session).
 8. Resize to 320 px: the sign-in screen and the header (name and Sign out) have no horizontal scroll.
 
 ## How the test database is populated (automated checks)

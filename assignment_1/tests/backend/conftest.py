@@ -96,24 +96,35 @@ def fake_clock() -> FakeClock:
 
 
 @pytest.fixture
-def app(
+def make_app(
     session_factory: sessionmaker[Session], fake_clock: FakeClock, password_hasher: Argon2Hasher
-) -> Iterator[FastAPI]:
-    application = create_app(wait_for_db=lambda: None)
+) -> Callable[[], FastAPI]:
+    """Builds one more app instance over the same test database, clock and hasher."""
 
-    def override_session() -> Iterator[Session]:
-        with unit_of_work(session_factory) as session:
-            yield session
+    def build() -> FastAPI:
+        application = create_app(wait_for_db=lambda: None)
 
-    def override_clock() -> Clock:
-        return fake_clock
+        def override_session() -> Iterator[Session]:
+            with unit_of_work(session_factory) as session:
+                yield session
 
-    def override_verifier() -> PasswordVerifier:
-        return password_hasher
+        def override_clock() -> Clock:
+            return fake_clock
 
-    application.dependency_overrides[get_session] = override_session
-    application.dependency_overrides[get_clock] = override_clock
-    application.dependency_overrides[get_password_verifier] = override_verifier
+        def override_verifier() -> PasswordVerifier:
+            return password_hasher
+
+        application.dependency_overrides[get_session] = override_session
+        application.dependency_overrides[get_clock] = override_clock
+        application.dependency_overrides[get_password_verifier] = override_verifier
+        return application
+
+    return build
+
+
+@pytest.fixture
+def app(make_app: Callable[[], FastAPI]) -> Iterator[FastAPI]:
+    application = make_app()
     yield application
     application.dependency_overrides.clear()
 
