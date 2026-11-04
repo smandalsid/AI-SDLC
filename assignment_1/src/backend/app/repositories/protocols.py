@@ -31,3 +31,17 @@ class UserReader(Protocol):
     def count(self) -> int: ...
 
     def get(self, user_id: int) -> User | None: ...
+
+
+class CredentialReader(Protocol):
+    def get_by_username(self, username: str) -> User | None: ...
+
+
+class SessionStore(Protocol):
+    def add(
+        self, session_id: str, user_id: int, started_at: datetime, expires_at: datetime
+    ) -> None: ...
+
+
+class AttemptLog(Protocol):
+    def record(self, username: str, outcome: str, at: datetime) -> None: ...

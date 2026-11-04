@@ -1,4 +1,5 @@
 import { ApiError, kindForStatus } from "./errors";
+import { getToken } from "./session";
 import type { ErrorResponse } from "./types";
 
 const configuredBase: unknown = import.meta.env.VITE_API_BASE_URL;
@@ -33,16 +34,16 @@ async function toApiError(response: Response): Promise<ApiError> {
     return new ApiError("unavailable", response.status, "unexpected_response", "Unexpected response");
   }
   const { code, message } = parsed.error;
-  return new ApiError(kindForStatus(response.status), response.status, code, message);
+  return new ApiError(kindForStatus(response.status, code), response.status, code, message);
 }
 
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const init: RequestInit = {
-    method: options.method ?? "GET",
-    headers: { Accept: "application/json" },
-  };
+  const headers: Record<string, string> = { Accept: "application/json" };
+  const token = getToken();
+  if (token !== null) headers.Authorization = `Bearer ${token}`;
+  const init: RequestInit = { method: options.method ?? "GET", headers };
   if (options.body !== undefined) {
-    init.headers = { Accept: "application/json", "Content-Type": "application/json" };
+    headers["Content-Type"] = "application/json";
     init.body = JSON.stringify(options.body);
   }
 

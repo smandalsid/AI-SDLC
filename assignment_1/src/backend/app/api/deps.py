@@ -1,13 +1,20 @@
+from functools import lru_cache
 from typing import Annotated
 
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from app.core.clock import Clock, SystemClock
+from app.core.config import AuthPolicy, get_settings
+from app.core.passwords import Argon2Hasher, PasswordVerifier
+from app.core.tokens import TokenCodec, get_token_codec
 from app.db.session import get_session
 from app.repositories.booking_repository import BookingRepository
 from app.repositories.bus_repository import BusRepository
+from app.repositories.session_repository import SessionRepository
+from app.repositories.sign_in_attempt_repository import SignInAttemptRepository
 from app.repositories.user_repository import UserRepository
+from app.services.auth_service import AuthService
 from app.services.booking_service import BookingService
 from app.services.bus_service import BusService
 from app.services.user_service import UserService
@@ -44,3 +51,33 @@ def get_booking_service(session: SessionDep, clock: ClockDep) -> BookingService:
 
 
 BookingServiceDep = Annotated[BookingService, Depends(get_booking_service)]
+
+
+@lru_cache
+def get_password_verifier() -> PasswordVerifier:
+    return Argon2Hasher()
+
+
+def get_auth_policy() -> AuthPolicy:
+    return get_settings().auth_policy
+
+
+def get_auth_service(
+    session: SessionDep,
+    clock: ClockDep,
+    verifier: Annotated[PasswordVerifier, Depends(get_password_verifier)],
+    codec: Annotated[TokenCodec, Depends(get_token_codec)],
+    policy: Annotated[AuthPolicy, Depends(get_auth_policy)],
+) -> AuthService:
+    return AuthService(
+        UserRepository(session),
+        SessionRepository(session),
+        SignInAttemptRepository(session),
+        verifier,
+        codec,
+        clock,
+        policy,
+    )
+
+
+AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]

@@ -166,3 +166,42 @@ body {
   max-width: 100%;
   font: inherit;
 }
+
+.page--narrow {
+  max-width: 26rem;
+}
+
+.login-form {
+  display: grid;
+  gap: var(--space);
+}
+
+.field {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.field label {
+  font-weight: 600;
+}
+
+.field input {
+  min-height: 2.75rem;
+  width: 100%;
+  padding: 0 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: inherit;
+  font: inherit;
+}
+
+.field input[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+.field__error {
+  margin: 0;
+  color: var(--color-error);
+  overflow-wrap: anywhere;
+}

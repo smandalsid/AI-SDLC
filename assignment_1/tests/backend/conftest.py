@@ -1,4 +1,4 @@
-from collections.abc import Iterator, Mapping
+from collections.abc import Callable, Iterator, Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 from secrets import token_urlsafe
@@ -6,16 +6,17 @@ from secrets import token_urlsafe
 import pytest
 from alembic import command
 from alembic.config import Config
-from app.api.deps import get_clock
+from app.api.deps import get_clock, get_password_verifier
 from app.core.clock import Clock
 from app.core.config import Settings, get_settings
-from app.core.passwords import Argon2Hasher
+from app.core.passwords import Argon2Hasher, PasswordVerifier
 from app.db.admin import drop_and_create_database
 from app.db.seed import USERS, reset_data
 from app.db.session import get_session, unit_of_work
 from app.main import create_app
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from httpx2 import Response
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -95,7 +96,9 @@ def fake_clock() -> FakeClock:
 
 
 @pytest.fixture
-def app(session_factory: sessionmaker[Session], fake_clock: FakeClock) -> Iterator[FastAPI]:
+def app(
+    session_factory: sessionmaker[Session], fake_clock: FakeClock, password_hasher: Argon2Hasher
+) -> Iterator[FastAPI]:
     application = create_app(wait_for_db=lambda: None)
 
     def override_session() -> Iterator[Session]:
@@ -105,8 +108,12 @@ def app(session_factory: sessionmaker[Session], fake_clock: FakeClock) -> Iterat
     def override_clock() -> Clock:
         return fake_clock
 
+    def override_verifier() -> PasswordVerifier:
+        return password_hasher
+
     application.dependency_overrides[get_session] = override_session
     application.dependency_overrides[get_clock] = override_clock
+    application.dependency_overrides[get_password_verifier] = override_verifier
     yield application
     application.dependency_overrides.clear()
 
@@ -115,3 +122,25 @@ def app(session_factory: sessionmaker[Session], fake_clock: FakeClock) -> Iterat
 def client(app: FastAPI) -> Iterator[TestClient]:
     with TestClient(app, raise_server_exceptions=False) as test_client:
         yield test_client
+
+
+@pytest.fixture
+def sign_in(client: TestClient, credentials: Mapping[str, str]) -> Callable[[str], Response]:
+    """Signs in through the real endpoint with the user's known test password."""
+
+    def _sign_in(username: str) -> Response:
+        return client.post(
+            "/api/v1/auth/login", json={"username": username, "password": credentials[username]}
+        )
+
+    return _sign_in
+
+
+@pytest.fixture
+def auth_headers(sign_in: Callable[[str], Response]) -> Callable[[str], dict[str, str]]:
+    def _auth_headers(username: str) -> dict[str, str]:
+        response = sign_in(username)
+        assert response.status_code == 200
+        return {"Authorization": f"Bearer {response.json()['access_token']}"}
+
+    return _auth_headers
