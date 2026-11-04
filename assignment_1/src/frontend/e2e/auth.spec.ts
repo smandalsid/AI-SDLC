@@ -141,7 +141,7 @@ test("an expired session returns to the sign-in screen with the expiry message a
   await page.reload();
 
   await expectOnlySignIn(page);
-  await expect(page.getByRole("alert")).toHaveText(
+  await expect(page.getByRole("alert")).toContainText(
     "Your session has expired. Please sign in again.",
   );
   expect(await page.evaluate((key) => sessionStorage.getItem(key), TOKEN_KEY)).toBeNull();

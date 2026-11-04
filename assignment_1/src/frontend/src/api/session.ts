@@ -38,6 +38,8 @@ export function subscribe(listener: Listener): () => void {
 
 /** The server no longer accepts the token: forget it and tell the app. */
 export function expire(): void {
+  // No token means the user already signed out; a late 401 is not an expiry.
+  if (getToken() === null) return;
   clearToken();
   for (const listener of [...listeners]) listener();
 }

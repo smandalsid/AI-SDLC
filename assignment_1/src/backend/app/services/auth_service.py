@@ -52,6 +52,9 @@ class AuthService:
         record = self.sessions.get_with_user(claims.session_id)
         if record is None or record.user_id != claims.user_id or record.ended_at is not None:
             raise UnauthenticatedError
+        # The stored expiry decides, never the token's own claim; use does not extend it.
+        if self.clock.now() >= record.expires_at:
+            raise UnauthenticatedError
         return Principal(record.user_id, record.user_name, record.session_id, record.username)
 
     def logout(self, principal: Principal) -> None:
