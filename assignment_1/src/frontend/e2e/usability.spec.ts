@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { resetDatabase } from "./support";
+import { resetDatabase, signIn } from "./support";
 
 const MAX_INTERACTIONS = 5;
 const BOOKING_BUDGET_MS = 30_000;
@@ -11,8 +11,8 @@ test.beforeEach(() => {
 
 // The dev server compiles modules on first request; warm it so the budgets measure steady state.
 test.beforeAll(async ({ browser }) => {
-  const page = await browser.newPage();
-  await page.goto("http://127.0.0.1:5173/");
+  const page = await browser.newPage({ baseURL: "http://127.0.0.1:5173" });
+  await signIn(page, "asha");
   await page.getByRole("link", { name: /Bus A/ }).click();
   await expect(page.getByRole("button", { name: "Seat 1, available" })).toBeVisible();
   await page.close();
@@ -33,6 +33,7 @@ function counted(): {
 }
 
 test("the bus list is visible within 2 seconds of opening the application", async ({ page }) => {
+  await signIn(page, "asha");
   const started = Date.now();
 
   await page.goto("/");
@@ -42,7 +43,7 @@ test("the bus list is visible within 2 seconds of opening the application", asyn
 });
 
 test("the seat list is visible within 2 seconds of choosing a bus", async ({ page }) => {
-  await page.goto("/");
+  await signIn(page, "asha");
   await expect(page.getByRole("link", { name: /Bus B/ })).toBeVisible();
 
   const started = Date.now();
@@ -56,7 +57,7 @@ test("the seat list is visible within 2 seconds of choosing a bus", async ({ pag
 
 test("one seat is booked in at most 5 interactions and under 30 seconds", async ({ page }) => {
   const { act, interactions } = counted();
-  await page.goto("/");
+  await signIn(page, "asha");
   await expect(page.getByRole("link", { name: /Bus A/ })).toBeVisible();
   const started = Date.now();
 

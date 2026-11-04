@@ -1,6 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getBus } from "../../src/api/buses";
 import { createBookings } from "../../src/api/bookings";
@@ -8,7 +7,7 @@ import { ApiError } from "../../src/api/errors";
 import type { BookingResult } from "../../src/api/types";
 import { listUsers } from "../../src/api/users";
 import { BusSeatsPage } from "../../src/pages/BusSeatsPage";
-import { makeBusDetail, makeUsers, page } from "../helpers";
+import { makeBusDetail, makeUsers, page, renderSignedIn } from "../helpers";
 
 vi.mock("../../src/api/buses", () => ({ listBuses: vi.fn(), getBus: vi.fn() }));
 vi.mock("../../src/api/users", () => ({ listUsers: vi.fn() }));
@@ -28,13 +27,7 @@ const result: BookingResult = {
 };
 
 function renderPage(): ReturnType<typeof render> {
-  return render(
-    <MemoryRouter initialEntries={["/buses/1"]}>
-      <Routes>
-        <Route path="/buses/:busId" element={<BusSeatsPage />} />
-      </Routes>
-    </MemoryRouter>,
-  );
+  return renderSignedIn("/buses/1", "/buses/:busId", <BusSeatsPage />);
 }
 
 const seat = (number: number, state = "available"): Promise<HTMLElement> =>

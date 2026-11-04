@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { request } from "../../src/api/client";
 import { ApiError, describeApiError } from "../../src/api/errors";
-import { clearToken, setToken } from "../../src/api/session";
+import { clearToken, getToken, setToken, subscribe } from "../../src/api/session";
 
 function respondWith(status: number, body: string): ReturnType<typeof vi.fn> {
   const fetchMock = vi.fn().mockResolvedValue(new Response(body, { status }));
@@ -133,6 +133,50 @@ describe("request", () => {
     const error = await failureOf(request("/auth/login", { method: "POST", body: {} }));
 
     expect(error.kind).toBe("throttled");
+  });
+
+  it("ends the session when a protected call returns 401 unauthenticated", async () => {
+    setToken("token-value");
+    const listener = vi.fn();
+    const unsubscribe = subscribe(listener);
+    respondWith(401, errorBody("unauthenticated"));
+
+    await failureOf(request("/buses"));
+
+    expect(getToken()).toBeNull();
+    expect(listener).toHaveBeenCalledTimes(1);
+    unsubscribe();
+  });
+
+  it("does not end the session for a refused sign-in", async () => {
+    setToken("token-value");
+    const listener = vi.fn();
+    const unsubscribe = subscribe(listener);
+    respondWith(401, errorBody("invalid_credentials"));
+
+    await failureOf(request("/auth/login", { method: "POST", body: {} }));
+
+    expect(getToken()).toBe("token-value");
+    expect(listener).not.toHaveBeenCalled();
+    unsubscribe();
+  });
+
+  it.each([503, 500])("keeps the session when a protected call fails with %i", async (status) => {
+    setToken("token-value");
+    respondWith(status, errorBody("service_unavailable"));
+
+    await failureOf(request("/buses"));
+
+    expect(getToken()).toBe("token-value");
+  });
+
+  it("keeps the session when the network fails", async () => {
+    setToken("token-value");
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("Failed to fetch")));
+
+    await failureOf(request("/buses"));
+
+    expect(getToken()).toBe("token-value");
   });
 });
 

@@ -4,14 +4,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "../../src/api/errors";
 import { listBuses } from "../../src/api/buses";
 import { BusListPage } from "../../src/pages/BusListPage";
-import { makeBuses, page, renderAt } from "../helpers";
+import { makeBuses, page, renderSignedIn } from "../helpers";
 
 vi.mock("../../src/api/buses", () => ({ listBuses: vi.fn(), getBus: vi.fn() }));
 
 const listBusesMock = vi.mocked(listBuses);
 
 function renderPage(): void {
-  renderAt("/", "/", <BusListPage />);
+  renderSignedIn("/", "/", <BusListPage />);
 }
 
 beforeEach(() => {

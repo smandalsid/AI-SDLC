@@ -1,6 +1,9 @@
+import pytest
 from fastapi.testclient import TestClient
 
 BODY = {"bus_id": 1, "user_id": 1, "seat_numbers": [5]}
+
+pytestmark = pytest.mark.usefixtures("signed_in")
 
 
 def test_the_409_body_has_the_shared_shape_and_hides_database_details(

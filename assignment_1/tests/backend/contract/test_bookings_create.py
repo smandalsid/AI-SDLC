@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session, sessionmaker
 BOOKINGS = "/api/v1/bookings"
 VALID = {"bus_id": 1, "user_id": 1, "seat_numbers": [3, 4]}
 
+pytestmark = pytest.mark.usefixtures("signed_in")
+
 
 def stored_bookings(factory: sessionmaker[Session]) -> list[tuple[int, int, int, datetime]]:
     with factory() as session:

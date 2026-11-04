@@ -5,7 +5,7 @@ import { ApiError } from "../../src/api/errors";
 import { getBus } from "../../src/api/buses";
 import { listUsers } from "../../src/api/users";
 import { BusSeatsPage } from "../../src/pages/BusSeatsPage";
-import { makeBusDetail, makeUsers, page, renderAt } from "../helpers";
+import { makeBusDetail, makeUsers, page, renderSignedIn } from "../helpers";
 
 vi.mock("../../src/api/buses", () => ({ listBuses: vi.fn(), getBus: vi.fn() }));
 vi.mock("../../src/api/users", () => ({ listUsers: vi.fn() }));
@@ -14,7 +14,7 @@ const getBusMock = vi.mocked(getBus);
 const listUsersMock = vi.mocked(listUsers);
 
 function renderPage(route = "/buses/1"): void {
-  renderAt(route, "/buses/:busId", <BusSeatsPage />);
+  renderSignedIn(route, "/buses/:busId", <BusSeatsPage />);
 }
 
 beforeEach(() => {

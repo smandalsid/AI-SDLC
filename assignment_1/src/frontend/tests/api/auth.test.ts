@@ -1,8 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { login } from "../../src/api/auth";
+import { login, me } from "../../src/api/auth";
+import { clearToken, setToken } from "../../src/api/session";
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  clearToken();
 });
 
 const RESPONSE = {
@@ -34,5 +36,22 @@ describe("login", () => {
 
     const [url] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(url).not.toMatch(/asha|pass/);
+  });
+});
+
+describe("me", () => {
+  it("gets /auth/me with the bearer token and returns the user", async () => {
+    setToken("token-value");
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ id: 1, name: "Asha" }), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const user = await me();
+
+    expect(user).toEqual({ id: 1, name: "Asha" });
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe("/api/v1/auth/me");
+    expect(new Headers(init.headers).get("authorization")).toBe("Bearer token-value");
   });
 });

@@ -1,4 +1,5 @@
 import threading
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 
 import pytest
@@ -10,6 +11,8 @@ from sqlalchemy.orm import Session, sessionmaker
 
 BOOKINGS = "/api/v1/bookings"
 SIMULTANEOUS_REQUESTS = 20
+
+pytestmark = pytest.mark.usefixtures("signed_in")
 
 
 def book(client: TestClient, seats: list[int], bus_id: int = 1, user_id: int = 1) -> Response:
@@ -92,12 +95,15 @@ def test_every_kind_of_rejected_request_leaves_the_table_identical(
 
 
 def test_twenty_simultaneous_requests_book_one_seat_exactly_once(
-    app: FastAPI, session_factory: sessionmaker[Session]
+    app: FastAPI,
+    session_factory: sessionmaker[Session],
+    auth_headers: Callable[[str], dict[str, str]],
 ) -> None:
     barrier = threading.Barrier(SIMULTANEOUS_REQUESTS)
+    headers = auth_headers("asha")
 
     def attempt(index: int) -> int:
-        own_client = TestClient(app, raise_server_exceptions=False)
+        own_client = TestClient(app, raise_server_exceptions=False, headers=headers)
         barrier.wait()
         response = book(own_client, [10], user_id=index % 3 + 1)
         return int(response.status_code)

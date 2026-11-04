@@ -7,7 +7,7 @@ import { AuthContext } from "../src/components/AuthProvider";
 import { makeBuses, page } from "./helpers";
 
 vi.mock("../src/api/buses", () => ({ listBuses: vi.fn(), getBus: vi.fn() }));
-vi.mock("../src/api/auth", () => ({ login: vi.fn() }));
+vi.mock("../src/api/auth", () => ({ login: vi.fn(), me: vi.fn() }));
 
 const listBusesMock = vi.mocked(listBuses);
 
@@ -42,5 +42,30 @@ describe("App routes for sign-in", () => {
 
     expect(await screen.findByRole("heading", { name: "Buses" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Sign in" })).not.toBeInTheDocument();
+  });
+});
+
+describe("App routes for a signed-out visitor", () => {
+  it.each(["/", "/buses/1", "/foo"])("shows only the sign-in screen at %s", async (route) => {
+    renderApp(route, false);
+
+    expect(await screen.findByRole("heading", { name: "Sign in" })).toBeInTheDocument();
+    expect(screen.queryByText("Page not found.")).not.toBeInTheDocument();
+    expect(listBusesMock).not.toHaveBeenCalled();
+    expect(screen.queryByRole("link", { name: /Bus A/ })).not.toBeInTheDocument();
+  });
+});
+
+describe("App routes for a signed-in user", () => {
+  it("shows the bus list at /", async () => {
+    renderApp("/", true);
+
+    expect(await screen.findByRole("link", { name: /Bus A/ })).toBeInTheDocument();
+  });
+
+  it("shows the not-found page for an unknown address", async () => {
+    renderApp("/foo", true);
+
+    expect(await screen.findByText("Page not found.")).toBeInTheDocument();
   });
 });

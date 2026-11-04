@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import text
 from sqlalchemy.orm import Session, sessionmaker
 
-pytestmark = pytest.mark.perf
+pytestmark = [pytest.mark.perf, pytest.mark.usefixtures("signed_in")]
 
 THRESHOLDS = Path(__file__).resolve().parents[3] / ".harness" / "config" / "thresholds.env"
 BUS_COUNT = 17
