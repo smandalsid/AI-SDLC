@@ -127,6 +127,22 @@ describe("request", () => {
     expect(error.kind).toBe("unauthenticated");
   });
 
+  it("keeps the server's throttle message and the session on a 429 from sign-in", async () => {
+    setToken("token-value");
+    const listener = vi.fn();
+    const unsubscribe = subscribe(listener);
+    const message = "Too many failed sign-in attempts. Try again in 42 seconds.";
+    respondWith(429, JSON.stringify({ error: { code: "too_many_attempts", message } }));
+
+    const error = await failureOf(request("/auth/login", { method: "POST", body: {} }));
+
+    expect(error).toMatchObject({ kind: "throttled", status: 429, message });
+    expect(describeApiError(error)).toBe(message);
+    expect(listener).not.toHaveBeenCalled();
+    expect(getToken()).toBe("token-value");
+    unsubscribe();
+  });
+
   it("maps 429 to a throttled error", async () => {
     respondWith(429, errorBody("too_many_attempts"));
 
