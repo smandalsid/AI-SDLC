@@ -22,7 +22,10 @@ approved again at T007, and the human regenerates the checksums).
 
 ## Initial generation and context
 
-Filled by T128.
+- **Snapshot commit**: `7037bf1` (`feat: authentication polish, performance and documentation`), tagged `002-initial-generation` on branch `002-user-authentication` before any recorded harness run.
+- **Snapshot copy**: `evidence/initial-generation/` holds `src/` (without `node_modules`, `dist`, caches), `tests/`, `.harness/`, and the approved `specs/spec.md`, `specs/plan.md`, `specs/tasks.md`.
+- **Context given to the coding agent**: the approved `specs/002-user-authentication/` artifacts (`spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/openapi.yaml`, `tasks.md`) and constitution v1.4.1; the agent implemented them with `/speckit-implement` phase by phase (tests first, red commit before each story), stopping at every checkpoint task.
+- **State at the snapshot**: tasks T001-T127 complete; development runs of every gate script (not evidence) passed: 694 backend tests, 161 frontend tests, 33 Playwright tests, 6 latency tests (`pytest -m perf`).
 
 ## Failure and repair log
 
