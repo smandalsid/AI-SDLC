@@ -7,7 +7,7 @@ from app.core.errors import UnauthenticatedError
 from app.core.passwords import Argon2Hasher
 from app.core.tokens import JwtTokenCodec, TokenClaims
 from app.models.user import User
-from app.repositories.protocols import SessionRecord
+from app.repositories.protocols import FailureWindow, SessionRecord
 from app.services.auth_service import AuthService
 from app.services.types import Principal
 from pydantic import SecretStr
@@ -40,6 +40,9 @@ class NoUsers:
 class NoAttempts:
     def record(self, username: str, outcome: str, at: datetime) -> None:
         return None
+
+    def failures_since(self, username: str, since: datetime) -> FailureWindow:
+        return FailureWindow(count=0, latest_at=None)
 
 
 @dataclass

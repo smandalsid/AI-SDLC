@@ -93,6 +93,17 @@ Red-first failures (the expiry tests before T104-T105) are not repair events; th
 
 Phase checkpoint T106: integrity, lint, security, test (613 backend, 159 frontend, coverage 98.5% line and 93.2% branch backend, 99.6% frontend), build, and e2e (25 Playwright tests) pass.
 
+### Phase 8 US6 throttle repeated failed sign-ins (T107-T115)
+
+Red-first failures (the throttle tests before T112-T113) are not repair events; their summary is in the commit message `test(us6): throttle tests (red)`. The entries below are the unexpected failures seen while making them pass. Fix commit for all of them: `feat(us6): throttle repeated failed sign-ins`.
+
+| # | Failing check and evidence | Expected vs observed | Change made | Re-run (unchanged checks) |
+|---|----------------------------|----------------------|-------------|---------------------------|
+| 1 | Lint gate (`.harness/lint.sh`): ruff `E501` (docstring of `failures_statement` in `repositories/sign_in_attempt_repository.py`, 101 characters) | Expected 0 violations; observed 1. | Docstring shortened; no configuration changed. | ruff exit 0 |
+| 2 | Lint gate: mypy `return-value` (`failures_statement` declared `Select[tuple[int, datetime | None]]`, SQLAlchemy types `func.max` of the column as `datetime`) | Expected 0 type errors; observed 1. | The return type is `Select[tuple[int, datetime]]`; `FailureWindow.latest_at` stays optional for an empty history. | lint exit 0 |
+
+Phase checkpoint T115: integrity, lint, security, test (646 backend, 161 frontend, coverage 98.5% line and 93.6% branch backend, 99.6% frontend), build, and e2e (25 Playwright tests) pass. The two existing fakes in `test_auth_service_login.py` and `test_auth_service_authenticate.py` gained a `failures_since` method to match the extended `AttemptLog` protocol; no assertion changed. T114 needed no change: the throttle message and a usable form came with US1.
+
 ## Quickstart validation
 
 Filled by T131.

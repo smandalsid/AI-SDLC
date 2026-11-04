@@ -1,9 +1,10 @@
+import math
 from datetime import datetime
 from uuid import uuid4
 
 from app.core.clock import Clock
 from app.core.config import AuthPolicy
-from app.core.errors import InvalidCredentialsError, UnauthenticatedError
+from app.core.errors import InvalidCredentialsError, TooManyAttemptsError, UnauthenticatedError
 from app.core.passwords import PasswordVerifier
 from app.core.tokens import InvalidTokenError, TokenClaims, TokenCodec
 from app.models.user import User
@@ -32,6 +33,10 @@ class AuthService:
 
     def login(self, username: str, password: str) -> LoginSuccess | LoginRejected:
         now = self.clock.now()
+        blocked = self._check_throttle(username, now)
+        if blocked is not None:
+            self.attempts.record(username, "throttled", now)
+            return LoginRejected(blocked)
         user = self._authenticated_user(username, password)
         if user is None:
             return self._reject(username, now)
@@ -61,6 +66,16 @@ class AuthService:
         now = self.clock.now()
         self.sessions.end(principal.session_id, now)
         self.attempts.record(principal.username, "signout", now)
+
+    def _check_throttle(self, username: str, now: datetime) -> TooManyAttemptsError | None:
+        """Runs before any user lookup, so a real and an unknown username look the same."""
+        window = self.attempts.failures_since(username, now - self.policy.failure_window)
+        if window.latest_at is None or window.count < self.policy.max_failures:
+            return None
+        remaining = window.latest_at + self.policy.lockout - now
+        if remaining.total_seconds() <= 0:
+            return None
+        return TooManyAttemptsError(math.ceil(remaining.total_seconds()))
 
     def _find_exact_user(self, username: str) -> User | None:
         user = self.users.get_by_username(username)
