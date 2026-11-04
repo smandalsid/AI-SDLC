@@ -1,7 +1,9 @@
 import { render, type RenderResult } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import type { Bus, BusDetail, Seat, User } from "../src/api/types";
+import { vi } from "vitest";
+import type { Bus, BusDetail, Seat } from "../src/api/types";
+import { AuthContext } from "../src/components/AuthProvider";
 
 export function renderAt(route: string, path: string, element: ReactElement): RenderResult {
   return render(
@@ -13,18 +15,28 @@ export function renderAt(route: string, path: string, element: ReactElement): Re
   );
 }
 
+/** Renders inside an authentication context whose user is already signed in. */
+export function renderSignedIn(route: string, path: string, element: ReactElement): RenderResult {
+  const session = {
+    state: { status: "signedIn" as const, user: { id: 1, name: "Asha" } },
+    signIn: vi.fn(),
+    signOut: vi.fn(),
+  };
+  return render(
+    <AuthContext.Provider value={session}>
+      <MemoryRouter initialEntries={[route]}>
+        <Routes>
+          <Route path={path} element={element} />
+        </Routes>
+      </MemoryRouter>
+    </AuthContext.Provider>,
+  );
+}
+
 export function makeBuses(): Bus[] {
   return [
     { id: 1, name: "Bus A", total_seats: 20 },
     { id: 2, name: "Bus B", total_seats: 30 },
-  ];
-}
-
-export function makeUsers(): User[] {
-  return [
-    { id: 1, name: "Asha" },
-    { id: 2, name: "Ravi" },
-    { id: 3, name: "Meera" },
   ];
 }
 

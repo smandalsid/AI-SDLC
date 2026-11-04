@@ -14,7 +14,7 @@ from app.db.admin import main as admin_main
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
 
-NEW_USER = "INSERT INTO users (name) VALUES ('Zed')"
+NEW_USER = "INSERT INTO users (name, username, password_hash) VALUES ('Zed', 'zed', 'x')"
 
 
 def user_names(factory: sessionmaker[Session]) -> list[str]:

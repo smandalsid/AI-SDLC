@@ -1,11 +1,11 @@
+import inspect
 from collections.abc import Sequence
 from datetime import UTC, datetime
 
 import pytest
-from app.core.errors import BusNotFoundError, InvalidSeatError, UserNotFoundError
+from app.core.errors import BusNotFoundError, InvalidSeatError
 from app.models.booking import Booking
 from app.models.bus import Bus
-from app.models.user import User
 from app.services.booking_service import BookingService
 
 NOW = datetime(2026, 1, 15, 10, 30, tzinfo=UTC)
@@ -27,17 +27,6 @@ class FakeBuses:
         return 0
 
 
-class FakeUsers:
-    def get(self, user_id: int) -> User | None:
-        return User(id=1, name="Asha") if user_id == 1 else None
-
-    def list_page(self, page: int, page_size: int) -> Sequence[User]:
-        return []
-
-    def count(self) -> int:
-        return 0
-
-
 class RecordingWriter:
     def __init__(self) -> None:
         self.calls: list[tuple[int, int, list[int], datetime]] = []
@@ -53,7 +42,7 @@ class RecordingWriter:
 
 
 def make_service(writer: RecordingWriter) -> BookingService:
-    return BookingService(FakeBuses(), FakeUsers(), writer, FakeClock())
+    return BookingService(FakeBuses(), writer, FakeClock())
 
 
 def test_books_every_seat_with_one_timestamp_from_the_clock() -> None:
@@ -95,15 +84,16 @@ def test_an_unknown_bus_is_reported_and_nothing_is_written() -> None:
     assert writer.calls == []
 
 
-def test_an_unknown_user_is_reported_and_nothing_is_written() -> None:
+def test_the_given_user_id_is_stored_without_any_user_lookup() -> None:
     writer = RecordingWriter()
 
-    with pytest.raises(UserNotFoundError):
-        make_service(writer).book_seats(bus_id=1, user_id=99, seat_numbers=[3])
+    result = make_service(writer).book_seats(bus_id=1, user_id=2, seat_numbers=[5])
 
-    assert writer.calls == []
+    assert writer.calls == [(1, 2, [5], NOW)]
+    assert [b.user_id for b in result] == [2]
 
 
-def test_the_bus_is_checked_before_the_user() -> None:
-    with pytest.raises(BusNotFoundError):
-        make_service(RecordingWriter()).book_seats(bus_id=99, user_id=99, seat_numbers=[3])
+def test_the_service_takes_only_buses_bookings_and_the_clock() -> None:
+    parameters = list(inspect.signature(BookingService).parameters)
+
+    assert parameters == ["buses", "bookings", "clock"]

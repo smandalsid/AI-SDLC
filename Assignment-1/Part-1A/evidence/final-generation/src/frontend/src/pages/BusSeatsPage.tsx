@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ApiError, describeApiError } from "../api/errors";
 import type { BusDetail } from "../api/types";
@@ -6,11 +5,9 @@ import { BookingBar } from "../components/BookingBar";
 import { BookingFeedback } from "../components/BookingFeedback";
 import { SeatGrid } from "../components/SeatGrid";
 import { StatusMessage } from "../components/StatusMessage";
-import { UserSelect } from "../components/UserSelect";
 import { useBookSeats } from "../hooks/useBookSeats";
 import { useBusDetail } from "../hooks/useBusDetail";
 import { useSeatSelection } from "../hooks/useSeatSelection";
-import { useUsers } from "../hooks/useUsers";
 
 const ID_PATTERN = /^[1-9]\d*$/;
 const MAX_ID = 2_147_483_647;
@@ -22,14 +19,11 @@ function parseBusId(raw: string | undefined): number | null {
 }
 
 function BusSeatsContent({ bus, onRefresh }: { bus: BusDetail; onRefresh: () => void }) {
-  const users = useUsers();
-  const [userId, setUserId] = useState<number | null>(null);
   const selection = useSeatSelection(bus.seats);
   const booking = useBookSeats();
 
   async function confirm(): Promise<void> {
-    if (userId === null) return;
-    const request = { bus_id: bus.id, user_id: userId, seat_numbers: selection.selected };
+    const request = { bus_id: bus.id, seat_numbers: selection.selected };
     const outcome = await booking.submit(request);
     if (outcome.kind === "success") selection.clear();
     // Success and conflict both mean the stored seats changed, so re-read them.
@@ -45,11 +39,9 @@ function BusSeatsContent({ bus, onRefresh }: { bus: BusDetail; onRefresh: () => 
     <>
       <h1>{bus.name}</h1>
       <p>{bus.total_seats} seats</p>
-      <UserSelect users={users} value={userId} onChange={setUserId} />
       <SeatGrid seats={bus.seats} selected={selection.selected} onToggle={toggle} />
       <BookingBar
         selectedSeats={selection.selected}
-        hasUser={userId !== null}
         submitting={booking.state.status === "submitting"}
         limitReached={selection.limitReached}
         onConfirm={() => void confirm()}

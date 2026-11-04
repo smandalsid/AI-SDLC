@@ -11,6 +11,8 @@ dependencies = [
     "sqlalchemy>=2.0,<2.1",
     "pymssql",
     "alembic",
+    "pyjwt>=2.15.1",
+    "argon2-cffi>=25.1.0",
 ]
 
 [dependency-groups]

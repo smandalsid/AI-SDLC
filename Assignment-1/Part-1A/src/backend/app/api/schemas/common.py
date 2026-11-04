@@ -11,8 +11,23 @@ class HealthOut(BaseModel):
     status: Literal["ok"]
 
 
+ErrorCode = Literal[
+    "validation_error",
+    "invalid_seat",
+    "bus_not_found",
+    "seat_unavailable",
+    "unauthenticated",
+    "invalid_credentials",
+    "too_many_attempts",
+    "service_unavailable",
+    "internal_error",
+    "not_found",
+    "method_not_allowed",
+]
+
+
 class ErrorBody(BaseModel):
-    code: str
+    code: ErrorCode
     message: str
 
 

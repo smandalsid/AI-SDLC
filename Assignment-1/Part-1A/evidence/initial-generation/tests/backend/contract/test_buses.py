@@ -3,6 +3,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import text
 from sqlalchemy.orm import Session, sessionmaker
 
+pytestmark = pytest.mark.usefixtures("signed_in")
+
 
 def add_booking(factory: sessionmaker[Session], bus_id: int, seat: int) -> None:
     with factory() as session:

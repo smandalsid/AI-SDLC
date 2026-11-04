@@ -2,9 +2,10 @@ from fastapi import APIRouter
 from sqlalchemy import text
 
 from app.api.deps import SessionDep
+from app.api.routing import SessionFirstRoute
 from app.api.schemas.common import HealthOut, error_responses
 
-router = APIRouter(prefix="/health", tags=["health"])
+router = APIRouter(prefix="/health", tags=["health"], route_class=SessionFirstRoute)
 
 
 @router.get("")

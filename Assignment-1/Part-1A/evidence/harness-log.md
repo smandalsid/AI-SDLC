@@ -1,6 +1,7 @@
-# Harness Log: 001-seat-booking (Bus Seat Booking)
+# Harness Log: 002-user-authentication (User Authentication for Bus Booking)
 
-Chronological record required by constitution v1.3.1 (Principles XII and XIII).
+Chronological record required by constitution v1.4.1 (Principles XII and XIII). Feature 001's record is archived,
+unedited, in `evidence/001-seat-booking/`.
 
 ## Approval
 
@@ -9,243 +10,369 @@ date. The coding agent MUST NOT write this decision.
 
 | Artifact | Last modified | Decision | Approved by | Date |
 |----------|---------------|----------|-------------|------|
-| `specs/001-seat-booking/spec.md` | 2026-11-02 | APPROVED | Siddharth | 2026-11-02 |
-| `specs/001-seat-booking/plan.md` | 2026-11-02 | APPROVED | Siddharth | 2026-11-02 |
-| `specs/001-seat-booking/tasks.md` | 2026-11-02 | APPROVED | Siddharth | 2026-11-02 |
-| `.specify/memory/constitution.md` (v1.3.1) | 2026-11-02 | APPROVED | Siddharth | 2026-11-02 |
+| `specs/002-user-authentication/spec.md` | 2026-11-03 | APPROVED | Siddharth | 2026-11-03 |
+| `specs/002-user-authentication/plan.md` | 2026-11-03 | APPROVED | Siddharth | 2026-11-03 |
+| `specs/002-user-authentication/tasks.md` | 2026-11-03 | APPROVED | Siddharth | 2026-11-03 |
+| `.specify/memory/constitution.md` (v1.4.1) | 2026-11-03 | APPROVED | Siddharth | 2026-11-03 |
+
+Decisions confirmed by the human at T001 (2026-11-03): the evidence layout (branch `002-user-authentication`,
+feature 001 evidence archived with `git mv` into `evidence/001-seat-booking/`, first generation tagged
+`002-initial-generation`) and the planned extension of `.harness/redact.sh` (tasks T006-T007; the diff is shown and
+approved again at T007, and the human regenerates the checksums).
 
 ## Initial generation and context
 
-**Snapshot**: git tag `initial-generation` on commit `0f02bdff5c2e5a3daa4ae2d164192f16c108a8a5` (`0f02bdf`, "feat: polish, performance and documentation"), created on 2026-11-03 before any recorded harness run. The tag contains tasks T001-T127 as implemented by the coding agent (Spec Kit `/speckit-implement`), phase by phase with a stop and report at every checkpoint. A copy of `src/`, `tests/`, `.harness/`, and the approved `spec.md`, `plan.md`, `tasks.md` (without `node_modules`, `dist`, and caches) is in `evidence/initial-generation/`.
-
-**Context given to the agent**:
-
-- `.specify/memory/constitution.md` v1.3.1, `specs/001-seat-booking/spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/openapi.yaml`, `quickstart.md`, and `tasks.md`, all approved by a human in the Approval table above (dated 2026-11-02).
-- The guardrails in `tasks.md`: tests first and seen failing, harness built before application code, no weakening of tests or thresholds, protected files (`.harness/`, `ruff.toml`, `mypy.ini`, `eslint.config.js`, `tsconfig.json`), no changes to `.env` or to other databases on the container.
-- Changes after the approval date: Chrome Canary replaced Edge for Playwright (Edge remote debugging is blocked by managed policy), and task T135 (DB-tooling tests) plus a "DB tooling" row in `plan.md` were added on 2026-11-03 after backend branch coverage measured 61.1% against the 80% minimum. The Approval table dates predate these two changes.
-- Phase 7 added two files not listed in `tasks.md` to close traceability gaps: `tests/backend/contract/test_input_safety.py` and `tests/backend/unit/test_bundle_size_check.py`.
-
-**Development gate results at the snapshot** (not evidence; run by hand at the T127 checkpoint): integrity, lint, security, test, build, and e2e all passed; backend 270 tests with line 98.3% and branch 88.9% coverage, frontend 74 tests with line 91.5%, initial JS 80.3 KB gzipped, 14 end-to-end specs.
-
-**Commits in the tag**:
-
-```text
-0f02bdf feat: polish, performance and documentation
-b63c71d test: acceptance traceability and two gap-closing test files (T126)
-143b8ec docs: README, quickstart uv flow, keep existing container (T123-T125)
-03fa813 feat: scripts/dev.sh single start command (T122)
-4f4f4c9 test: scripts/dev.sh branch tests written first (T122)
-c9d24fa test: responsive, usability, keyboard and architecture tests (T119-T121)
-16d21b8 test: performance and OpenAPI contract tests (T117, T118)
-65132e3 test: DB tooling tests lift backend branch coverage to 88.9% (T135)
-7819d28 docs: add T135 DB-tooling tests task
-81b2199 feat(us3): conflict protection and persistence
-2936bff feat(us3): conflict protection (browser checks blocked; T110, T115, T116 open)
-c03aca7 feat(us2): book seats
-5f757a4 test(us2): booking tests written first (T091-T096)
-90df6d2 feat(us4): choose the booking user
-ce6a55d test(us4): user list and selector tests written first (T081-T083)
-753ebdf feat(us1): view buses and seats
-feff7b0 test(us1): bus and seat view tests written first (T064-T068)
-8e12219 feat: application foundation
-e234e99 test: foundation tests written first (T031-T038)
-0e876d2 chore: deterministic harness (gates, thresholds, integrity checksums)
-73ff5d1 chore: project skeleton and tool configuration
-dd29c26 chore: added basic setup after first approval, and first phase of env and skeleton setup
-0f7696f docs: approved constitution v1.3.1, spec, plan, tasks
-9daeb6e chore(docs): ratify constitution v1.0.0 (bus booking platform, SDD harness gates)
-```
+- **Snapshot commit**: `7037bf1` (`feat: authentication polish, performance and documentation`), tagged `002-initial-generation` on branch `002-user-authentication` before any recorded harness run.
+- **Snapshot copy**: `evidence/initial-generation/` holds `src/` (without `node_modules`, `dist`, caches), `tests/`, `.harness/`, and the approved `specs/spec.md`, `specs/plan.md`, `specs/tasks.md`.
+- **Context given to the coding agent**: the approved `specs/002-user-authentication/` artifacts (`spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/openapi.yaml`, `tasks.md`) and constitution v1.4.1; the agent implemented them with `/speckit-implement` phase by phase (tests first, red commit before each story), stopping at every checkpoint task.
+- **State at the snapshot**: tasks T001-T127 complete; development runs of every gate script (not evidence) passed: 694 backend tests, 161 frontend tests, 33 Playwright tests, 6 latency tests (`pytest -m perf`).
 
 ## Failure and repair log
 
-No repair was needed. The first recorded run (`evidence/harness-results/20261103T091218Z`, row dated 2026-11-03T09:13:31Z in the run table) passed every gate on the first attempt: integrity, lint, security, test, build, and e2e all PASS with 0 failed tests. No application code, test, threshold, or harness script was changed in response to the run, and no failure was created artificially.
+Filled when failures happen (constitution XII, v1.4.1). Each phase ends with its entries or "no repair needed".
 
-**Re-run after the convergence fixes (T141)**: `/speckit-converge` (T132) found gaps that no gate detects, so the first run was not repaired. After tasks T136-T138 (justify or remove `Any` and `# type: ignore`, with a new codebase scan) and T140 (contract enum amended with user approval) were committed, `.harness/run.sh` was run again with unchanged gate scripts, thresholds, and checksums. Result: `evidence/harness-results/20261103T092135Z`, row dated 2026-11-03T09:22:42Z, all six gates PASS, 0 failed tests; backend 281 tests (line 98.3%, branch 88.9%), frontend 74 tests (line 91.5%), 14 e2e specs. Evidence supplied to the agent for these changes was the converge findings table in the Convergence results section, not a failed gate.
+### Phase 2 Foundational (T008-T030)
+
+Red-first failures (the foundation tests before T018-T029) are not repair events; their summary is in the commit message `test(auth): foundation tests (red)`. The entries below are unexpected failures seen while making them pass. Fix commit for all of them: `feat(auth): foundation (settings, hashing, tokens, schema, seed)`.
+
+| # | Failing check and evidence | Expected vs observed | Change made | Re-run (unchanged checks) |
+|---|----------------------------|----------------------|-------------|---------------------------|
+| 1 | Full backend run after T018-T028: `tests/backend/contract/test_openapi_contract.py::test_the_contract_lists_exactly_the_error_codes_the_app_defines` | Expected pass; observed the compared contract lacked the error codes the app now defines (`unauthenticated`, `invalid_credentials`, `too_many_attempts`). Loading the 002 contract then exposed a YAML syntax error (unquoted `: ` in the `access_token` description). | Test repointed to `specs/002-user-authentication/contracts/openapi.yaml` with an explicit `PENDING` list that each story checkpoint empties (the staged comparison of T035, pulled forward because the new codes made the 001 contract unusable); contract YAML fixed by quoting the description (documentation fix, no spec change). Files: `tests/backend/contract/test_openapi_contract.py`, `specs/002-user-authentication/contracts/openapi.yaml`. | 23 passed |
+| 2 | Same run: `tests/backend/unit/test_seed_credentials.py::test_seed_cli_exits_non_zero_and_prints_no_password_when_an_entry_is_missing` | Expected exit code 2 before any database access; observed a database login attempt. Dict-typed settings are merged across sources, so the real `.env` `MOCK_USER_PASSWORDS` filled the missing entries. | Test now builds `Settings(_env_file=None)` through a monkeypatch, so a unit test never reads the real `.env`. File: `tests/backend/unit/test_seed_credentials.py`. | passed |
+| 3 | Checkpoint run: `tests/backend/unit/test_architecture.py::test_gate_middleware_module_exists_without_data_layer_imports` and `src/frontend/tests/architecture.test.ts` "has the session store module" | Expected pass at the foundation checkpoint; observed failure: both assert the existence of modules delivered by later stories (`api/middleware/auth_gate.py` in US2, `api/session.ts` in US1). Test-design error: the checks belong to those stories. | Existence checks removed from the foundation tests and re-homed: the gate-module check to T053, the session-module check is implied by `session.test.ts` (T036). The layering and storage rules themselves stay in force. Files: `tests/backend/unit/test_architecture.py`, `src/frontend/tests/architecture.test.ts`. | 376 backend and 76 frontend tests passed |
+| 4 | Lint gate (`.harness/lint.sh`): ruff `S105` (`_DUMMY_SECRET` literal in `core/passwords.py`), `E501` (`db/seed.py`), mypy `arg-type` (`**dict` into the argon2 constructor in `core/passwords.py`) and mypy `misc` (`column_info` return type in `tests/backend/integration/test_auth_schema_and_seed.py`) | Expected 0 violations; observed 2 ruff and 3 mypy findings. | Dummy input generated at runtime with `secrets.token_urlsafe`; explicit argon2 default constants instead of `**dict`; message wrapped; helper typed with `ReflectedColumn`. No configuration changed. | lint exit 0 (ruff, format, mypy, function length, eslint, tsc) |
+
+Phase checkpoint T030: integrity, lint, security, test (376 backend, 76 frontend, coverage 98.3% line and 90.4% branch backend, 99.3% frontend), and build pass.
+
+### Phase 3 US1 sign in (T031-T052)
+
+Red-first failures (the sign-in tests before T040-T051) are not repair events; their summary is in the commit message `test(us1): sign-in tests (red)`. The entries below are unexpected failures seen while making them pass. Fix commit for all of them: `feat(us1): sign in with username and password`.
+
+| # | Failing check and evidence | Expected vs observed | Change made | Re-run (unchanged checks) |
+|---|----------------------------|----------------------|-------------|---------------------------|
+| 1 | `tests/backend/unit/test_type_hygiene.py::test_every_any_and_type_ignore_in_the_codebase_is_justified` (seen in the red run and again after T044) | Expected pass; observed `tests/backend/unit/test_login_schema.py:52` (and, before the red commit, `test_auth_login.py`) used an unjustified `Any` in a parametrised payload type. | Payload types changed to `dict[str, object]`; no `Any` and no rule change. Files: `tests/backend/unit/test_login_schema.py`, `tests/backend/contract/test_auth_login.py`. | 432 backend tests passed |
+| 2 | Lint gate (`.harness/lint.sh`): ruff `S106` (`token_type="bearer"` passed as a keyword literal in `api/v1/auth.py`) and eslint `max-lines-per-function` (`LoginForm`, 72 lines, limit 40) | Expected 0 violations; observed 1 ruff and 1 eslint finding. | The literal moved to a typed constant `BEARER` in `api/schemas/auth.py`; the form split into `components/TextField.tsx`, `hooks/useLoginForm.ts`, and a short `LoginForm`. No configuration changed. | lint exit 0 |
+
+Phase checkpoint T052: integrity, lint, security, test (432 backend, 113 frontend, coverage 98.5% line and 91.4% branch backend, 97.8% frontend), and build pass.
+
+### Phase 4 US2 access protection (T053-T072)
+
+Red-first failures (the access tests before T064-T071) are not repair events; their summary is in the commit message `test(us2): access protection tests (red)`. The entries below are unexpected failures seen while making them pass. Fix commit for all of them: `feat(us2): default-deny gate and session checks`.
+
+| # | Failing check and evidence | Expected vs observed | Change made | Re-run (unchanged checks) |
+|---|----------------------------|----------------------|-------------|---------------------------|
+| 1 | Full backend run after wiring T064-T069: 26 failures, among them `tests/backend/unit/test_auth_gate.py` (all refusals), `contract/test_auth_bypass.py` (wrong method, malformed JSON) | Expected 401 before any body is read; observed 200 or 422. The installed FastAPI (0.162) keeps routes added with `include_router` as nested `_IncludedRouter` objects, so a gate that walked `app.router.routes` for plain routes saw no match and let every request through. | `api/middleware/auth_gate.py` flattens nested routes (through their `effective_route_contexts()`) before matching; the same flattening builds `public_operations(router)`. File: `src/backend/app/api/middleware/auth_gate.py`. | 13 failures left, all of entries 2 and 3 |
+| 2 | `tests/backend/contract/test_route_protection.py::test_the_walk_covers_every_registered_api_route` and the two walk tests | Expected the walk to see every API operation; observed only the operations that are direct `APIRoute` objects (same cause as entry 1). | The walk lists operations from the generated OpenAPI document (public API) instead of `app.routes`; assertions unchanged. File: `tests/backend/contract/test_route_protection.py`. | passed |
+| 3 | `tests/backend/contract/test_openapi_contract.py::test_parameters_match_by_name_location_and_required[GET /buses]` (and two more) and `test_status_codes_match[GET /auth/me]` | Expected the app's operations to equal the contract; observed an extra documented `authorization` header parameter and an extra `422` from `require_session` reading the header with `Header()`. | `require_session` reads the credential through `HTTPBearer(auto_error=False)`, which documents a security scheme instead of a parameter and cannot fail validation. File: `src/backend/app/api/deps.py`. | 537 backend tests passed |
+| 4 | Lint gate (`.harness/lint.sh`): ruff `E501` (two docstrings in `auth_gate.py`) | Expected 0 violations; observed 2. | Docstrings shortened; no configuration changed. | lint exit 0 |
+
+Phase checkpoint T072: integrity, lint, security, test (537 backend, 134 frontend, coverage 98.6% line and 92.9% branch backend, 99.2% frontend), build, and e2e (18 Playwright tests) pass. The `PENDING` entries for `/auth/me` and the `401` responses are deleted from `tests/backend/contract/test_openapi_contract.py`.
+
+### Phase 5 US3 book as the signed-in user (T073-T085)
+
+No repair needed. Red-first failures (44 backend, 12 frontend) are not repair events; their summary is in the commit message `test(us3): booking as session user (red)`. After T080-T084 no unexpected failure occurred in any task run or gate run.
+
+Phase checkpoint T085: integrity, lint, security, test (538 backend, 128 frontend, coverage 98.4% line and 92.7% branch backend, 99.2% frontend), build, and e2e (19 Playwright tests) pass. The `PENDING` entries for `/users`, `user_id`, and `user_not_found` are deleted from `tests/backend/contract/test_openapi_contract.py`.
+
+### Phase 6 US4 sign out (T086-T098)
+
+Red-first failures (the sign-out tests before T093-T097) are not repair events; their summary is in the commit message `test(us4): sign-out tests (red)`. The entries below are unexpected failures seen while making them pass. Fix commit for all of them: `feat(us4): sign out ends the session`.
+
+| # | Failing check and evidence | Expected vs observed | Change made | Re-run (unchanged checks) |
+|---|----------------------------|----------------------|-------------|---------------------------|
+| 1 | Lint gate (`.harness/lint.sh`): ruff `E501` (class docstring in `api/middleware/no_store.py`, 111 characters) | Expected 0 violations; observed 1. | Docstring shortened; no configuration changed. | ruff exit 0 |
+| 2 | Lint gate: eslint `@typescript-eslint/no-invalid-void-type` (`request<void>` in `src/api/auth.ts`) | Expected 0 violations; observed 1. | `logout` is typed `Promise<undefined>` and `request<undefined>`, matching the empty `204` answer handled in `src/api/client.ts`; no rule change. | eslint exit 0 |
+| 3 | Lint gate: `tsc` TS2345 in `tests/hooks/useAuthSession.test.tsx` (mock returned `Promise<void>`, `logout` is `Promise<undefined>`) | Expected 0 type errors; observed 1. | The mock returns `Promise.resolve(undefined)`; assertions unchanged. | lint exit 0 |
+
+Phase checkpoint T098: integrity, lint, security, test (595 backend, 148 frontend, coverage 98.5% line and 93.0% branch backend, 99.6% frontend), build, and e2e (23 Playwright tests) pass. The last `PENDING` entry (`/auth/logout`) is deleted from `tests/backend/contract/test_openapi_contract.py`; the `PENDING_*` constants are now empty.
+
+### Phase 7 US5 sessions expire (T099-T106)
+
+Red-first failures (the expiry tests before T104-T105) are not repair events; their summary is in the commit message `test(us5): session expiry tests (red)`. The entry below is the only unexpected failure seen while making them pass. Fix commit: `feat(us5): sessions expire after 30 minutes`.
+
+| # | Failing check and evidence | Expected vs observed | Change made | Re-run (unchanged checks) |
+|---|----------------------------|----------------------|-------------|---------------------------|
+| 1 | Lint gate (`.harness/lint.sh`): eslint `max-lines-per-function` (`useAuthSession`, 41 lines, limit 40) after the sign-in and expiry reasons were added | Expected 0 violations; observed 1. | The session check effect moved into a small `useSessionCheck` helper in the same file; no configuration changed. | lint exit 0 |
+
+Phase checkpoint T106: integrity, lint, security, test (613 backend, 159 frontend, coverage 98.5% line and 93.2% branch backend, 99.6% frontend), build, and e2e (25 Playwright tests) pass.
+
+### Phase 8 US6 throttle repeated failed sign-ins (T107-T115)
+
+Red-first failures (the throttle tests before T112-T113) are not repair events; their summary is in the commit message `test(us6): throttle tests (red)`. The entries below are the unexpected failures seen while making them pass. Fix commit for all of them: `feat(us6): throttle repeated failed sign-ins`.
+
+| # | Failing check and evidence | Expected vs observed | Change made | Re-run (unchanged checks) |
+|---|----------------------------|----------------------|-------------|---------------------------|
+| 1 | Lint gate (`.harness/lint.sh`): ruff `E501` (docstring of `failures_statement` in `repositories/sign_in_attempt_repository.py`, 101 characters) | Expected 0 violations; observed 1. | Docstring shortened; no configuration changed. | ruff exit 0 |
+| 2 | Lint gate: mypy `return-value` (`failures_statement` declared `Select[tuple[int, datetime | None]]`, SQLAlchemy types `func.max` of the column as `datetime`) | Expected 0 type errors; observed 1. | The return type is `Select[tuple[int, datetime]]`; `FailureWindow.latest_at` stays optional for an empty history. | lint exit 0 |
+
+Phase checkpoint T115: integrity, lint, security, test (646 backend, 161 frontend, coverage 98.5% line and 93.6% branch backend, 99.6% frontend), build, and e2e (25 Playwright tests) pass. The two existing fakes in `test_auth_service_login.py` and `test_auth_service_authenticate.py` gained a `failures_since` method to match the extended `AttemptLog` protocol; no assertion changed. T114 needed no change: the throttle message and a usable form came with US1.
+
+### Phase 9 Polish and cross-cutting concerns (T116-T127)
+
+This phase added tests for behaviour that already existed, so most of them passed when first run; each guard that matters was proved by a throwaway violation that was reverted (a switch-like setting and a default password in `Settings`, a `BYPASS_AUTH` branch in the gate, a token written to the log). The entries below are the unexpected failures seen. Fix commit for all of them: `feat: authentication polish, performance and documentation`.
+
+| # | Failing check and evidence | Expected vs observed | Change made | Re-run (unchanged checks) |
+|---|----------------------------|----------------------|-------------|---------------------------|
+| 1 | T124 red run: `tests/backend/contract/test_openapi_contract.py` (`test_response_schemas_match_by_property_names_and_required_lists` for every operation, `test_no_pending_contract_items`) after the `PENDING` list was deleted and the comparison also required types, enums and bounds | Expected the generated OpenAPI to equal `contracts/openapi.yaml`; observed the app's error `code` had no enum, `BusOut.total_seats` had no 1 to 60 bounds and `SeatOut.seat_number` no minimum of 1. The contract was right (it carries the 001 rules). | `ErrorBody.code` is a `Literal` of the 11 contract codes (`api/schemas/common.py`); `BusOut.total_seats` and `SeatOut.seat_number` carry the bounds (`api/schemas/bus.py`). The test was not relaxed. | 688 backend tests passed |
+| 2 | Lint gate: ruff `E501` (docstrings in `tests/backend/integration/perf_support.py` and `tests/backend/contract/test_openapi_contract.py`) and `I001` (import block in `app/api/schemas/bus.py`) | Expected 0 violations; observed 3. | Docstrings shortened; imports sorted with `ruff check --select I --fix`; no configuration changed. | ruff exit 0 |
+
+Phase checkpoint T127: integrity, lint, security, test (694 backend, 161 frontend, coverage 98.5% line and 93.6% branch backend, 99.6% frontend), build, e2e (33 Playwright tests) and `pytest -m perf` (6 latency tests: sign-in p95, session-check overhead on a read and a booking, uniform sign-in timing, and the 001 read and write targets with authentication in place) pass. T117 to T118, T125 and T126 are documentation and evidence only (`evidence/001-seat-booking/README.md`, `README.md`, the traceability tables below, one sentence in `quickstart.md`).
+
+### Phase 10 Recorded harness runs (T129-T130)
+
+First recorded run `.harness/run.sh` (folder `evidence/harness-results/20261104T145728Z`, taken after the `002-initial-generation` snapshot): all six gates passed on the first attempt (integrity, lint, security, test, build, e2e; 694 backend tests, 161 frontend tests, 33 Playwright tests; coverage 98.5% line and 93.6% branch backend, 99.6% frontend). The folder holds the per-gate outputs, `summary.json`, the JUnit files, and the coverage reports, and a row was appended to the run table.
+
+Secret check of that folder (a script compared it with the values of `JWT_SECRET`, `DB_PASSWORD`, and every `MOCK_USER_PASSWORDS` entry without printing them): 0 occurrences of any of those values, 0 session tokens, 0 `Bearer` credentials. The only `$argon2` text is the fixed test id `test_an_invalid_or_locked_hash_never_verifies_and_never_raises[$argon2id$broken]` in `junit-backend.xml`, a deliberately broken string and not a hash of a user.
+
+T130: no gate failed, so no repair was needed.
+
+### Phase 11 Convergence fixes (T135-T143)
+
+Red-first failures (the convergence tests before T139-T142) are not repair events; their summary is in the commit message `test: convergence tests (red)`. The entry below is the only unexpected failure seen while making them pass. Fix commit: `fix: convergence gaps`.
+
+| # | Failing check and evidence | Expected vs observed | Change made | Re-run (unchanged checks) |
+|---|----------------------------|----------------------|-------------|---------------------------|
+| 1 | Test gate (Vitest): 5 tests of "App sign-out" in `src/frontend/tests/App.test.tsx` ("Unable to find role=heading and name Sign in"; the page still showed the bus list) | Expected the sign-out click to end the session; observed the test found the new Sign out button of the `checking` state (T141) and clicked it while `/auth/me` was resolving, so the button was replaced between the pointer events and no click reached it. The behaviour under test was not wrong; the test did not wait for the confirmed session. | The tests wait for the header (`banner`) before clicking its Sign out button (helper `signedInSignOut`); no assertion was weakened. | 164 Vitest tests passed |
+
+Fixes: G-01 `api/routing.py` (`SessionFirstRoute`, used by every router under `api/v1/`: a malformed JSON body is handed to FastAPI as `null` so the session check refuses first; a valid session still gets the 422), G-02 `main.py` (`/redoc` and `/docs/oauth2-redirect` switched off), G-05 and G-06 (`TextField` alert role; `RequireAuth` Sign out in `checking` and `unavailable`, Retry in `unavailable`), G-09 (README and quickstart wording).
+
+Phase checkpoint T143: integrity, lint, security, test (702 backend, 164 frontend), build, and e2e pass in individual development runs; the second recorded run `.harness/run.sh` (folder `evidence/harness-results/20261104T160010Z`, scripts unchanged) passed all six gates on the first attempt, with the same secret check as the first run (0 occurrences of any `.env` secret value, session token, `Bearer` credential, or real hash).
 
 ## Quickstart validation
 
-Run on 2026-11-03 against the stack started by `scripts/dev.sh` (existing `azure-sql-edge` container reused, `bus_db` freshly seeded: "seeded 3 buses, 3 users, 0 bookings"). Scenarios 1-5 used `curl` against http://localhost:8000; scenarios 6-7 drove http://localhost:5173 in Chrome Canary with a throwaway Playwright script (not part of the suite). Afterwards `scripts/dev.sh` was stopped with SIGINT; both processes ended and the database container kept running.
+Run against the live stack started with `scripts/dev.sh` (API on 8000, UI on 5173, development database reseeded at start-up) on 2026-11-04. The passwords were typed by the user with `read -rs` in their own terminal; no password, token, or hash is recorded here.
 
-| # | Scenario | Expected | Observed | Result |
-|---|----------|----------|----------|--------|
-| 1 | List buses | 3 buses, Bus A with 20 seats | 3 buses: Bus A 20, Bus B 30, Bus C 40 | PASS |
-| 2 | View seats of bus 1 | 20 seats, all available | 20 seats, statuses `{available}` | PASS |
-| 3 | Book seats 3 and 4 | 201, two bookings with one `booked_at` | 201; ids 1 and 2, both `booked_at` 2026-11-03T09:14:22.931500Z | PASS |
-| 4 | Reflected, then repeat | seats 3, 4 booked; repeat gives 409 `seat_unavailable` | booked seats `[3, 4]`; repeat gave 409 `seat_unavailable` | PASS |
-| 5 | Validation | empty, duplicate, 7 seats, seat 0: 422; seat 21: 400; bus 99, user 99: 404; body `{"error": {"code", "message"}}` | empty 422, duplicate 422, 7 seats 422, seat 0 422 (all `validation_error`); seat 21 400 `invalid_seat`; bus 99 404 `bus_not_found`; user 99 404 `user_not_found`; bookings unchanged (`[3, 4]`) | PASS |
-| 6 | UI booking of seats 5, 6 as Asha, then reload | success message listing 5 and 6; seats booked; still booked after reload | message "Booked seats 5, 6."; both seats booked and disabled; after reload still booked and disabled | PASS |
-| 7 | Conflict in UI (stale tab) | UI says seat no longer available and refreshes | seat 7 booked through the API (201) while a stale tab had it selected as Ravi; Confirm showed the alert "Seat no longer available. The seat list has been refreshed."; seat 7 then shown booked and disabled; API log shows 201 then 409 | PASS |
-| 8 | Reset with `scripts/db-init.sh` | seeded state | "seeded 3 buses, 3 users, 0 bookings"; no booked seats on bus 1; 3 buses | PASS |
+### API scenarios
 
-Scenario 7 booked seat 7 through a `fetch` call to the same endpoint instead of the `curl` command; the request is identical.
+| Scenario | Observed |
+|----------|----------|
+| 1 Sign in (US1) | 200; keys `access_token`, `expires_at`, `token_type`, `user`; `token_type` bearer; `user` `{id 1, name Asha}`; `expires_at` 30 minutes ahead; no password or hash in the body |
+| 2 Wrong credentials (US1) | Wrong password for `asha`, wrong password for `ravi`, unknown `nobody`, `ASHA`, ` asha`, and `asha' OR '1'='1` all returned 401 with the identical body (`invalid_credentials`, "Invalid username or password."); empty username, empty password, a 129-character password, and an extra field returned 422 `validation_error` |
+| 3 Protection (US2) | Without a header `GET /buses` and `GET /buses/1` 401 `unauthenticated`; `POST /bookings` with a valid body and with malformed JSON 401; a made-up token, an altered token, and a token with one character changed 401; `GET /users` 404 `not_found`; `GET /health` and `GET /health/ready` 200 |
+| 4 Book as the signed-in user (US3) | `asha` booked seats 3 and 4: 201, both rows `user_id` 1; the same request with `"user_id": 2` added: 422, nothing stored; `ravi` booked seat 5: `user_id` 2 |
+| 5 Sign out (US4) | Logout 204; the old token then 401 on `GET /buses` and on a second logout; signing in again returned a different token that worked (200) while the old one stayed 401 |
+| 6 Expiry (US5) | Not practical by hand; covered by the clock-controlled tests (`test_session_expiry.py`, `test_auth_service_authenticate.py`) and the intercepted-401 end-to-end test |
+| 7 Throttle (US6) | Live: five wrong passwords for `asha`, then the right password: 429 with `retry-after: 60`; `ravi` signed in meanwhile (200, `{id 2, name Ravi}`); 61 seconds later `asha` signed in again. Five wrong passwords for `meera` and for the unknown username `ghost` each gave the same 429 body and `retry-after: 60` on the sixth attempt |
+
+### UI scenarios
+
+Run by the user in the browser (T131).
+
+| Scenario | Observed |
+|----------|----------|
+| UI 1 Open `/buses/1` in a new tab | Sign-in screen only, no bus data flashed; PASS |
+| UI 2 Wrong password | Generic "Invalid username or password", password masked; PASS |
+| UI 3 Sign in as `asha` | Bus list, header with "Asha" and Sign out, no user selector on the seat page; PASS |
+| UI 4 Book seats 7 and 8, reload | Success message; still signed in after reload and the seats show booked; PASS |
+| UI 5 Sign out, then Back | Sign-in screen, no bus data after Back; PASS |
+| UI 6 Second tab | Sign-in screen (sign-in belongs to one tab); PASS |
+| UI 7 Made-up token in `sessionStorage`, reload | Returned to sign-in with the expiry message; PASS |
+| UI 8 Resize to 320 px | No horizontal scroll on the sign-in screen or the header; PASS |
+
+Reported by the user on 2026-11-04: all 8 UI scenarios pass; the same behaviours are also covered by the passing Playwright tests in the recorded runs.
 
 ## Convergence results
 
-`/speckit-converge` was run on 2026-11-03 after the first recorded harness run (`evidence/harness-results/20261103T091218Z`, all gates PASS). No extension hooks are registered (`.specify/extensions.yml` does not exist). The command only appended `## Phase 9: Convergence` (T136-T141) to `tasks.md`; no spec, plan, or application file was changed by it.
+`/speckit-converge` assessment (T132) of the code at tag `002-initial-generation` plus the recorded run `20261104T145728Z`, against spec, plan, tasks, and constitution v1.4.1. An independent read-only review produced 9 findings (0 CRITICAL, 0 HIGH, 3 MEDIUM, 6 LOW); each was checked by hand and G-01 was reproduced with a throwaway test (a validly signed token of an ended session plus malformed JSON on `POST /bookings` returns 422, not 401).
 
-**Checked**: 24 functional requirements, 11 non-functional requirements, 7 success criteria, 17 acceptance scenarios and 7 edge cases (traced to named tests in the Acceptance traceability section below); the plan's key decisions and every planned file; all 13 constitution principles.
+| ID | Type | Severity | Source | Finding | Outcome |
+|----|------|----------|--------|---------|---------|
+| G-01 | contradicts | MEDIUM | FR-014, FR-015, US2.3, NFR-001 | The gate only checks the signature; FastAPI decodes a malformed JSON body before `require_session` runs, so a signed-out, expired, or deleted-user credential with a malformed body gets 422 instead of 401. | Phase 11: T135, T139 |
+| G-02 | contradicts | MEDIUM | FR-012, FR-016, SC-003 | `/redoc` and `/docs/oauth2-redirect` were served without a credential besides the documented `/docs` and `/openapi.json`. | Phase 11: T136, T140 |
+| G-03 | missing | MEDIUM | T131-T134 | Process tasks still open when the review ran. | Closed by T131, T133 and the human T134 |
+| G-04 | partial | LOW | FR-026, FR-027 | The throttle count is read and written without a lock, so simultaneous wrong guesses can pass 5. | Accepted: already recorded as a known limit in `research.md` section 8; listed in the known limitations of T133 |
+| G-05 | partial | LOW | NFR-011 | Field errors of the sign-in form are not announced (no `role="alert"`). | Phase 11: T137, T141 |
+| G-06 | partial | LOW | FR-030 | In the `checking` and `unavailable` states of `RequireAuth` there is no Sign out and no Retry. | Phase 11: T137, T141 |
+| G-07 | contradicts | LOW | plan "Error Handling" vs spec US1.9 | The plan mentions logging sign-in outcomes by username; the spec forbids the username in any log line. The code follows the spec (outcomes live in `sign_in_attempts`; `test_no_username_or_password_reaches_a_log_line`). | No code change; the plan sentence is for the human to amend (plans are not edited by the agent) |
+| G-08 | unrequested | LOW | tasks T081 | `UserReader` and `UserRepository.get` have no caller; T081 explicitly keeps them. | Accepted; listed with the unplanned helper files |
+| G-09 | partial | LOW | NFR-014, constitution XIII | The last paragraph of `README.md` names the 001 tag form, and `quickstart.md` still says "(agent task)". | Phase 11: T142 |
 
-| ID | Gap type | Severity | Source | Evidence | Remaining work (task) |
-|----|----------|----------|--------|----------|-----------------------|
-| F1 | contradicts | CRITICAL | Constitution III | `Any` without a justification comment in `src/backend/app/db/seed.py` (lines 3, 10, 15) and `src/backend/app/api/schemas/common.py` (lines 2, 46); no gate checks this (ruff rules exclude `ANN401`, `mypy --strict` allows explicit `Any`) | T136 (test), T137 (fix) |
-| F2 | contradicts | CRITICAL | Constitution III | `Any` without justification in six backend test files, and `# type: ignore[no-untyped-call]` without justification in `tests/backend/unit/test_db_tooling.py` (line 53) | T138 |
-| F3 | partial | MEDIUM | Constitution V | T117, T119, T120, T121, and T135 were written after the code they cover (the code was built in earlier phases); each test was shown able to fail by mutation, as recorded in the commit messages, but was not observed failing before the code existed | T139 |
-| F4 | partial | LOW | FR-017, `contracts/openapi.yaml` | Unknown routes and wrong methods return the shared error shape with codes `not_found` and `method_not_allowed`, which are not in the contract's code enum; the contract test compares property names, not enum values | T140 (needs user approval) |
-| F5 | unrequested | LOW | plan.md, tasks.md | Files and options not named in the plan: `tests/backend/unit/{harness_loader,layer_scan}.py`, `.harness/check_coverage.py`, `scripts/e2e-reset.sh`, `scripts/e2e-backend.sh`, `src/frontend/e2e/{support,global-setup}.ts`, `@types/node`, `scripts/dev.sh --db-only`, `contract/test_input_safety.py`, `unit/test_bundle_size_check.py`, `unit/test_dev_script.py`, the `HealthOut` schema | no new task: T133 already requires a note on every unplanned helper file |
+Checked and found no gap: default-deny on every `/api/v1` route except login and the two health checks; no client-supplied user id anywhere; no secret in tracked files; layering and function-length rules.
 
-**Findings by gap type**: contradicts 2, partial 2, unrequested 1, missing 0. **By severity**: CRITICAL 2, MEDIUM 1, LOW 2. Tasks appended: 6 (T136-T141; T141 re-runs the harness unchanged after the fixes). Next: complete T136-T141, then T133.
-
-**Decision on F4 (T140), 2026-11-03**: the user chose to amend the contract. `contracts/openapi.yaml` now lists `not_found` and `method_not_allowed` in the `ErrorResponse` code enum, and the error table in `plan.md` has two matching rows. The contract test was extended first (two new tests, both failed before the amendment: the enum lacked the two codes) and now compares the enum with the codes the app defines. This changes two approved artifacts after the approval date in the Approval table.
+Counts: all 35 FR, 14 NFR, 10 SC, the acceptance scenarios of 6 user stories, 11 edge cases, the plan decisions, all 134 tasks, and the constitution principles were assessed. Findings by type: missing 1, partial 4, contradicts 3, unrequested 1. New tasks: T135-T143 in Phase 11.
 
 ## Acceptance traceability
 
-Filled by T126 against `specs/001-seat-booking/spec.md`. Backend tests are `tests/backend/<folder>/<file>::<test>`; frontend unit tests are `src/frontend/tests/<file>`; end-to-end specs are `src/frontend/e2e/<file>`. "BE" means `tests/backend`.
+Every requirement, success criterion, acceptance scenario, and edge case of `specs/002-user-authentication/spec.md` maps to at least one named test (T125). References are `file::test` (pytest), `file > title` (Vitest or Playwright). Result is PASS when the test passed in the T127 development run of every gate script. Process items (NFR-013, SC-010, FR-035) name the harness gate or artifact that checks them.
 
 ### Functional requirements
 
-| ID | Named tests |
-|----|-------------|
-| FR-001 | BE integration/test_schema_and_seed.py::test_schema_has_exactly_the_application_tables; BE unit/test_settings.py::test_database_url_targets_the_requested_database |
-| FR-002 | BE integration/test_schema_and_seed.py::test_total_seats_outside_1_to_60_is_rejected, ::test_duplicate_and_blank_names_are_rejected; BE unit/test_bus_service.py::test_seats_are_numbered_one_to_total_in_order |
-| FR-003 | BE integration/test_schema_and_seed.py::test_seed_yields_the_documented_mock_data; BE contract/test_users.py::test_list_returns_the_seeded_users_in_id_order |
-| FR-004 | BE contract/test_bookings_create.py::test_one_row_per_seat_is_stored_with_the_server_time; BE integration/test_schema_and_seed.py::test_seat_number_below_1_is_rejected |
-| FR-005 | BE integration/test_schema_and_seed.py::test_seed_yields_the_documented_mock_data, ::test_seed_is_idempotent_and_resets_bookings; BE integration/test_db_tooling.py::test_seed_main_reseeds_the_given_database_and_prints_only_counts |
-| FR-006 | BE integration/test_schema_and_seed.py::test_a_second_booking_for_the_same_bus_and_seat_is_rejected, ::test_same_seat_on_another_bus_is_allowed |
-| FR-007 | BE contract/test_buses.py::test_list_returns_the_three_seeded_buses, ::test_list_honours_the_requested_page_size, ::test_invalid_paging_is_rejected |
-| FR-008 | BE contract/test_buses.py::test_detail_lists_every_seat_as_available_when_nothing_is_booked, ::test_detail_marks_only_the_booked_seat; BE unit/test_bus_service.py::test_booked_numbers_map_to_booked_and_the_rest_to_available |
-| FR-009 | BE contract/test_users.py (all four tests); BE unit/test_user_service.py |
-| FR-010 | BE contract/test_bookings_create.py::test_booking_two_seats_returns_201_with_one_shared_utc_timestamp, ::test_six_seats_are_accepted |
-| FR-011 | BE contract/test_bookings_create.py::test_invalid_seat_lists_are_rejected_with_422_and_store_nothing, ::test_invalid_bodies_are_rejected_with_422_and_store_nothing, ::test_a_seat_beyond_the_bus_is_rejected_with_400, ::test_unknown_bus_is_rejected_with_404, ::test_unknown_user_is_rejected_with_404; BE unit/test_booking_schema.py; BE unit/test_booking_service.py::test_the_bus_is_checked_before_the_user |
-| FR-012 | BE contract/test_bookings_create.py::test_booking_two_seats_returns_201_with_one_shared_utc_timestamp, ::test_invalid_bodies_are_rejected_with_422_and_store_nothing (a client-supplied `booked_at` is refused); BE unit/test_booking_service.py::test_books_every_seat_with_one_timestamp_from_the_clock; BE unit/test_db_tooling.py::test_utc_datetime_stores_an_aware_datetime_as_naive_utc, ::test_utc_datetime_returns_a_utc_aware_datetime_on_read |
-| FR-013 | BE contract/test_bookings_create.py::test_one_row_per_seat_is_stored_with_the_server_time |
-| FR-014 | BE integration/test_booking_conflicts.py::test_one_taken_seat_stores_none_of_the_requested_seats, ::test_every_kind_of_rejected_request_leaves_the_table_identical |
-| FR-015 | BE integration/test_booking_conflicts.py::test_second_booking_of_a_seat_returns_409_and_changes_nothing, ::test_twenty_simultaneous_requests_book_one_seat_exactly_once |
-| FR-016 | BE contract/test_bookings_create.py::test_booking_two_seats_returns_201_with_one_shared_utc_timestamp |
-| FR-017 | BE unit/test_error_handlers.py (all four tests); BE contract/test_conflict_response.py; BE contract/test_no_secret_leak.py; BE contract/test_health.py::test_readiness_returns_503_without_leaking_details_when_the_database_fails; BE contract/test_input_safety.py::test_error_bodies_do_not_echo_the_submitted_text |
-| FR-018 | tests/components/SeatGrid.test.tsx (renders one control per seat..., disables booked seats and labels them with text, not colour alone); tests/components/BusList.test.tsx; tests/pages/BusSeatsPage.test.tsx "lists every seat with booked seats marked" |
-| FR-019 | tests/hooks/useSeatSelection.test.ts (toggles a seat on and off, cannot select a booked seat, ignores a seventh seat and reports the limit); tests/pages/BusSeatsPage.booking.test.tsx "cannot select a seventh seat"; tests/pages/BusSeatsPage.keyboard.test.tsx "shows the 6-seat limit message..." |
-| FR-020 | tests/components/UserSelect.test.tsx; tests/components/BookingBar.test.tsx (enabled/disabled cases); tests/pages/BusSeatsPage.booking.test.tsx "disables Confirm without a user or without seats" |
-| FR-021 | tests/pages/BusSeatsPage.booking.test.tsx "sends the booking, shows progress, then success, and re-reads the seats" |
-| FR-022 | tests/api/client.test.ts (error mapping); tests/pages/BusSeatsPage.booking.test.tsx "on a conflict shows an alert...", "on a 503 response / a network failure shows Service unavailable...", "on a 400/422 response shows Invalid request" |
-| FR-023 | e2e/booking-persistence.spec.ts "seats booked through the UI are still booked after a reload" |
-| FR-024 | tests/pages/BusListPage.test.tsx (loading, empty, error with Retry); tests/pages/BusSeatsPage.test.tsx "shows a loading state...", "shows an error with Retry and no partial seat list" |
+| Requirement | Test(s) | Result |
+|---|---|---|
+| FR-001 usernames, no sign-up/update/delete | `tests/backend/integration/test_auth_schema_and_seed.py::test_user_credentials_constraints_reject_bad_rows`<br>`tests/backend/integration/test_auth_schema_and_seed.py::test_a_user_without_a_username_or_hash_is_rejected`<br>`tests/backend/integration/test_migration_0002.py::test_upgrade_backfills_existing_users_and_locks_them_out`<br>`tests/backend/contract/test_openapi_contract.py::test_contract_paths_and_methods_are_exactly_the_apps` | PASS |
+| FR-002 salted one-way hash only | `tests/backend/unit/test_passwords.py::test_hash_is_an_argon2id_string_and_salted`<br>`tests/backend/integration/test_auth_schema_and_seed.py::test_seed_creates_the_three_users_with_hashes_that_verify`<br>`tests/backend/contract/test_no_secret_leak.py::test_no_password_hash_token_or_signing_key_leaks_through_any_channel`<br>`tests/backend/unit/test_harness_redact.py::test_every_mock_password_is_masked` | PASS |
+| FR-003 repeatable seed, ends sessions | `tests/backend/integration/test_auth_schema_and_seed.py::test_reset_empties_bookings_sessions_and_attempts_and_ends_every_session`<br>`tests/backend/integration/test_auth_schema_and_seed.py::test_two_consecutive_resets_give_the_same_logical_state`<br>`tests/backend/integration/test_db_tooling.py::test_seed_main_reseeds_the_given_database_and_prints_only_counts`<br>`tests/backend/unit/test_seed_credentials.py::test_seed_cli_exits_non_zero_and_prints_no_password_when_an_entry_is_missing` | PASS |
+| FR-004 001 mock users get credentials | `tests/backend/integration/test_auth_schema_and_seed.py::test_seed_creates_the_three_users_with_hashes_that_verify`<br>`tests/backend/unit/test_seed_credentials.py::test_seeded_usernames_are_asha_ravi_and_meera`<br>`tests/backend/integration/test_schema_and_seed.py::test_seed_yields_the_documented_mock_data` | PASS |
+| FR-005 sign-in operation | `tests/backend/contract/test_auth_login.py::test_a_matching_pair_returns_200_with_a_token_and_only_the_user`<br>`tests/backend/unit/test_auth_service_login.py::test_a_matching_pair_starts_a_session_that_lasts_thirty_minutes`<br>`src/frontend/tests/api/auth.test.ts > posts exactly the username and password to /auth/login and returns the response` | PASS |
+| FR-006 exact match | `tests/backend/contract/test_auth_login.py::test_every_rejected_attempt_gets_the_same_401_and_stores_no_session`<br>`tests/backend/unit/test_passwords.py::test_passwords_are_compared_exactly_as_typed`<br>`tests/backend/unit/test_login_schema.py::test_the_username_is_kept_exactly_as_typed`<br>`src/frontend/tests/components/LoginForm.test.tsx > submits the values exactly as typed` | PASS |
+| FR-007 uniform failure | `tests/backend/contract/test_auth_login.py::test_every_rejected_attempt_gets_the_same_401_and_stores_no_session`<br>`tests/backend/unit/test_auth_service_login.py::test_the_failure_is_identical_for_every_cause`<br>`tests/backend/unit/test_error_handlers.py::test_invalid_credentials_body_is_the_generic_message`<br>`tests/backend/integration/test_login_timing.py::test_unknown_usernames_and_wrong_passwords_look_and_take_the_same` | PASS |
+| FR-008 request validation before credential check | `tests/backend/contract/test_auth_login.py::test_an_invalid_body_returns_422_and_stores_nothing`<br>`tests/backend/contract/test_auth_login.py::test_a_body_that_is_not_json_returns_422_and_stores_nothing`<br>`tests/backend/unit/test_login_schema.py::test_invalid_payloads_are_rejected_naming_the_field`<br>`tests/backend/unit/test_login_schema.py::test_the_shortest_and_longest_allowed_values_are_accepted` | PASS |
+| FR-009 independent sessions | `tests/backend/contract/test_auth_login.py::test_two_sign_ins_create_two_independent_sessions`<br>`tests/backend/contract/test_auth_login.py::test_the_sign_in_stores_one_session_matching_the_token_and_the_expiry` | PASS |
+| FR-010 fixed 30-minute session | `tests/backend/unit/test_auth_service_authenticate.py::test_a_session_is_refused_from_exactly_30_minutes_on`<br>`tests/backend/unit/test_auth_service_authenticate.py::test_use_does_not_extend_the_expiry`<br>`tests/backend/contract/test_session_expiry.py::test_the_session_is_still_valid_just_before_thirty_minutes_and_use_does_not_extend_it`<br>`tests/backend/contract/test_session_expiry.py::test_after_31_minutes_every_protected_route_returns_401_and_changes_nothing` | PASS |
+| FR-011 sign-in/out records | `tests/backend/integration/test_sign_in_audit.py::test_a_successful_sign_in_adds_one_success_row`<br>`tests/backend/integration/test_sign_in_audit.py::test_a_failed_sign_in_adds_one_failure_row_that_survives_the_error_response`<br>`tests/backend/contract/test_auth_login_throttle.py::test_the_refused_attempt_is_recorded_as_throttled`<br>`tests/backend/contract/test_auth_logout.py::test_the_sign_out_is_recorded_once_with_the_username_and_the_clock_time` | PASS |
+| FR-012 every other operation needs a session | `tests/backend/contract/test_route_protection.py::test_only_the_public_operations_accept_an_unauthenticated_call`<br>`tests/backend/contract/test_route_protection.py::test_a_signed_out_credential_is_refused_by_every_protected_route`<br>`tests/backend/unit/test_auth_gate.py::test_a_protected_route_refuses_a_missing_or_bad_credential_identically` | PASS |
+| FR-013 401 `unauthenticated`, generic, no data | `tests/backend/contract/test_auth_bypass.py::test_every_technique_is_refused_on_every_protected_route_and_stores_nothing`<br>`tests/backend/unit/test_error_handlers.py::test_every_unauthenticated_cause_produces_the_identical_response`<br>`tests/backend/unit/test_error_handlers.py::test_unauthenticated_response_carries_the_bearer_challenge` | PASS |
+| FR-014 check first, server-side only | `tests/backend/unit/test_auth_gate.py::test_a_rejected_request_never_reads_its_body`<br>`tests/backend/contract/test_bookings_create.py::test_without_a_session_a_body_naming_a_user_gets_401_first`<br>`tests/backend/contract/test_auth_bypass.py::test_every_technique_is_refused_on_every_protected_route_and_stores_nothing` (malformed-json, identity-header, identity-query, cookies, identity-in-body) | PASS |
+| FR-015 forged/altered/empty/malformed/expired/ended credentials | `tests/backend/unit/test_tokens.py::test_a_token_with_one_character_changed_is_rejected`<br>`tests/backend/unit/test_tokens.py::test_a_token_signed_with_another_key_is_rejected`<br>`tests/backend/unit/test_auth_service_authenticate.py::test_every_refusal_raises_the_same_generic_error`<br>`tests/backend/contract/test_auth_bypass.py::test_every_technique_is_refused_on_every_protected_route_and_stores_nothing`<br>`tests/backend/contract/test_auth_bypass.py::test_a_session_whose_user_no_longer_exists_is_refused` | PASS |
+| FR-016 no shortcut/default/debug switch | `tests/backend/contract/test_no_auth_switch.py::test_unauthenticated_calls_are_refused_whatever_the_environment`<br>`tests/backend/contract/test_no_auth_switch.py::test_no_empty_or_default_credential_signs_in_whatever_the_environment`<br>`tests/backend/unit/test_architecture.py::test_application_has_no_authentication_switch_and_no_default_credential` | PASS |
+| FR-017 protected by default + enumeration check | `tests/backend/contract/test_route_protection.py::test_a_route_registered_directly_on_the_app_is_protected_by_default`<br>`tests/backend/unit/test_auth_gate.py::test_a_route_added_outside_the_public_router_is_protected_by_default`<br>`tests/backend/contract/test_route_protection.py::test_the_public_set_is_exactly_the_login_and_the_two_health_checks` | PASS |
+| FR-018 user list removed, no other-user data | `tests/backend/contract/test_users_removed.py::test_the_user_list_is_gone_for_a_signed_in_caller`<br>`tests/backend/contract/test_users_removed.py::test_the_user_list_is_gone_for_a_signed_out_caller`<br>`tests/backend/contract/test_auth_me.py::test_a_valid_session_gets_only_the_id_and_the_name`<br>`src/frontend/tests/pages/BusSeatsPage.test.tsx > renders no user selector and no input holding the signed-in name` | PASS |
+| FR-019 booking user only from session | `tests/backend/unit/test_booking_schema.py::test_a_user_id_is_rejected_whatever_its_value`<br>`tests/backend/contract/test_bookings_create.py::test_a_body_naming_a_user_is_rejected_with_422_and_stores_nothing`<br>`tests/backend/contract/test_bookings_create.py::test_a_booking_by_ravi_stores_user_2_and_one_by_asha_stores_user_1`<br>`src/frontend/tests/pages/BusSeatsPage.booking.test.tsx > sends a body with exactly bus_id and seat_numbers, never a user id` | PASS |
+| FR-020 001 booking rules unchanged | `tests/backend/contract/test_bookings_create.py::test_booking_two_seats_returns_201_with_one_shared_utc_timestamp`<br>`tests/backend/contract/test_bookings_create.py::test_invalid_seat_lists_are_rejected_with_422_and_store_nothing`<br>`tests/backend/integration/test_booking_conflicts.py::test_twenty_simultaneous_requests_book_one_seat_exactly_once`<br>`tests/backend/contract/test_conflict_response.py::test_the_409_body_has_the_shared_shape_and_hides_database_details` | PASS |
+| FR-021 nothing on behalf of another user | `tests/backend/contract/test_bookings_create.py::test_a_body_naming_a_user_is_rejected_with_422_and_stores_nothing`<br>`tests/backend/contract/test_bookings_create.py::test_a_booking_by_ravi_stores_user_2_and_one_by_asha_stores_user_1`<br>`tests/backend/integration/test_booking_conflicts.py::test_two_signed_in_users_book_different_seats_at_once_each_under_their_own_id` (no operation exists to view bookings) | PASS |
+| FR-022 sign-out ends session on server (204) | `tests/backend/contract/test_auth_logout.py::test_a_valid_session_gets_204_with_an_empty_body`<br>`tests/backend/contract/test_auth_logout.py::test_the_old_token_is_refused_by_every_protected_route_afterwards`<br>`tests/backend/contract/test_auth_logout.py::test_the_session_row_is_ended_at_the_clock_time_of_the_sign_out`<br>`tests/backend/contract/test_route_protection.py::test_a_signed_out_credential_is_refused_by_every_protected_route` | PASS |
+| FR-023 only current session ends | `tests/backend/contract/test_auth_logout.py::test_only_the_current_session_ends_and_a_second_session_of_the_user_stays_valid`<br>`tests/backend/contract/test_auth_logout.py::test_another_users_session_is_not_ended`<br>`src/frontend/e2e/auth.spec.ts > a sign-out in one tab leaves the session of a second tab alone` | PASS |
+| FR-024 sign-out without session is 401 | `tests/backend/contract/test_auth_logout.py::test_without_a_session_the_answer_is_401`<br>`tests/backend/contract/test_auth_logout.py::test_a_second_logout_with_the_same_token_is_401` | PASS |
+| FR-025 re-authenticate after sign-out/expiry | `tests/backend/integration/test_sign_out_immediacy.py::test_signing_in_again_gives_a_different_working_token_and_the_old_one_stays_refused`<br>`tests/backend/contract/test_session_expiry.py::test_signing_in_again_after_expiry_returns_a_fresh_working_token`<br>`src/frontend/e2e/auth.spec.ts > signing in again after a sign-out works and issues a new token` | PASS |
+| FR-026 per-username throttle | `tests/backend/contract/test_auth_login_throttle.py::test_five_wrong_passwords_then_the_right_one_is_refused_with_429_and_a_retry_after`<br>`tests/backend/contract/test_auth_login_throttle.py::test_the_wait_shrinks_with_the_clock_and_asha_signs_in_after_60_seconds`<br>`tests/backend/unit/test_auth_service_throttle.py::test_five_failures_block_the_sixth_attempt_whatever_the_password`<br>`tests/backend/unit/test_auth_service_throttle.py::test_failures_older_than_five_minutes_do_not_count` | PASS |
+| FR-027 throttle covers unknown users, isolated, resets | `tests/backend/contract/test_auth_login_throttle.py::test_five_failures_for_an_unknown_username_give_the_same_429_shape`<br>`tests/backend/contract/test_auth_login_throttle.py::test_another_user_still_signs_in_meanwhile`<br>`tests/backend/contract/test_auth_login_throttle.py::test_a_success_resets_the_count`<br>`tests/backend/unit/test_auth_service_throttle.py::test_an_unknown_username_is_throttled_exactly_like_a_real_one` | PASS |
+| FR-028 UI shows only sign-in when signed out | `src/frontend/tests/App.test.tsx > shows only the sign-in screen at %s`<br>`src/frontend/tests/components/RequireAuth.test.tsx > redirects to /login without a token and mounts nothing protected`<br>`src/frontend/e2e/auth.spec.ts > a signed-out visit to ${address} shows only the sign-in screen` (`/`, `/buses/1`) | PASS |
+| FR-029 sign-in screen fields and messages | `src/frontend/tests/components/LoginForm.test.tsx > has labelled username and masked password fields`<br>`src/frontend/tests/components/LoginForm.test.tsx > disables the button while a request is in flight and sends only one request`<br>`src/frontend/tests/components/LoginForm.test.tsx > shows an alert for a %s failure and stays usable` (credentials, throttled, invalid, unavailable)<br>`src/frontend/tests/components/LoginForm.test.tsx > shows the server's throttle message with the seconds and lets the user try again` | PASS |
+| FR-030 header, name, Sign out, no selector | `src/frontend/tests/components/AppHeader.test.tsx > shows the signed-in user's name and a Sign out button`<br>`src/frontend/tests/App.test.tsx > shows the name and Sign out at %s`<br>`src/frontend/tests/pages/BusSeatsPage.test.tsx > renders no user selector and no input holding the signed-in name`<br>`src/frontend/e2e/auth.spec.ts > the header with the name and Sign out is visible on the bus list and the seat page` | PASS |
+| FR-031 Sign out clears everything, even on call failure | `src/frontend/tests/App.test.tsx > at %s calls the endpoint, clears storage and shows only the sign-in screen`<br>`src/frontend/tests/App.test.tsx > shows the sign-in screen even when the sign-out call fails`<br>`src/frontend/tests/hooks/useAuthSession.test.tsx > still clears the storage and the state after %s`<br>`src/frontend/e2e/auth.spec.ts > after sign-out Back shows only the sign-in screen and the old token is refused` | PASS |
+| FR-032 any 401 returns to sign-in with expiry message | `src/frontend/tests/api/client.test.ts > ends the session when a protected call returns 401 unauthenticated`<br>`src/frontend/tests/App.test.tsx > returns to /login with the expiry message when a call at %s finds the session expired`<br>`src/frontend/tests/pages/LoginPage.test.tsx > shows the expiry message as an alert after a session expired`<br>`src/frontend/e2e/auth.spec.ts > an expired session returns to the sign-in screen with the expiry message and no bus data` | PASS |
+| FR-033 reload keeps, new tab does not (per tab) | `src/frontend/tests/components/RequireAuth.test.tsx > shows only a loading line until /auth/me answers, then renders the route`<br>`src/frontend/tests/api/session.test.ts > keeps only the token, in sessionStorage under one key`<br>`src/frontend/e2e/booking-persistence.spec.ts > seats booked through the UI are still booked after a reload`<br>`src/frontend/e2e/auth.spec.ts > a second tab does not share the session of the first` | PASS |
+| FR-034 loading/error/responsive/a11y rules | `src/frontend/e2e/responsive.spec.ts > the sign-in screen does not scroll horizontally at ${width}px` (320/768/1280)<br>`src/frontend/e2e/responsive.spec.ts > the signed-in header with the name and Sign out fits at ${width}px`<br>`src/frontend/tests/components/LoginForm.test.tsx > is operable with the keyboard alone`<br>`src/frontend/tests/components/AppHeader.test.tsx > is reached with Tab and operated with the key %j` | PASS |
+| FR-035 supersession (process/review) | Process item: the list of updated 001 tests is reviewed in `evidence/harness-log.md` and the git diff; no removed assertion for unchanged behaviour.<br>Superseded behaviour pinned by `tests/backend/contract/test_users_removed.py::test_the_users_path_is_absent_from_the_openapi_document`<br>`tests/backend/unit/test_booking_schema.py::test_the_schema_has_no_user_id_field`<br>`src/frontend/tests/pages/BusSeatsPage.test.tsx > renders no user selector and no input holding the signed-in name` | PASS |
 
 ### Non-functional requirements
 
-| ID | Named tests or checks |
-|----|-----------------------|
-| NFR-001 | BE integration/test_performance.py::test_bus_detail_p95_is_under_the_read_limit (limit from `READ_P95_MS`) |
-| NFR-002 | BE integration/test_performance.py::test_six_seat_booking_p95_is_under_the_write_limit (limit from `WRITE_P95_MS`) |
-| NFR-003 | BE integration/test_booking_conflicts.py::test_twenty_simultaneous_requests_book_one_seat_exactly_once |
-| NFR-004 | BE contract/test_no_secret_leak.py; BE unit/test_settings.py::test_password_never_appears_in_repr_str_or_database_url_text; BE contract/test_input_safety.py (injection text in identifiers, seats, and paths); BE unit/test_db_tooling.py::test_validated_name_rejects_anything_else; security gate (`bandit`, `pip-audit`, `npm audit`, `gitleaks`) |
-| NFR-005 | BE integration/test_booking_conflicts.py::test_every_kind_of_rejected_request_leaves_the_table_identical; BE integration/test_db_tooling.py::test_unit_of_work_rolls_back_and_reraises_when_the_block_fails, ::test_get_session_rolls_back_when_the_request_fails |
-| NFR-006 | e2e/responsive.spec.ts (bus list, seat page, and a booking at 320, 768, 1280 px) |
-| NFR-007 | BE unit/test_bundle_size_check.py (the checker used by the build gate fails above the limit); build gate `.harness/build.sh` (200 KB gzipped budget from `BUNDLE_MAX_KB_GZIP`); e2e/usability.spec.ts "the bus list is visible within 2 seconds of opening the application" |
-| NFR-008 | e2e/usability.spec.ts "one seat is booked in at most 5 interactions and under 30 seconds" |
-| NFR-009 | tests/components/SeatGrid.test.tsx (text label and keyboard reachability); tests/pages/BusSeatsPage.keyboard.test.tsx (Tab, Space, Enter, Tab to Confirm) |
-| NFR-010 | test gate `.harness/test.sh` (backend line 85%, backend branch 80%, frontend line 80%, no skipped tests); lint gate; security gate; BE unit/test_architecture.py; BE unit/test_check_function_length.py; tests/architecture.test.ts |
-| NFR-011 | BE unit/test_dev_script.py (database branches of `scripts/dev.sh`); `scripts/dev.sh` and README.md document the single command |
+| Requirement | Test(s) | Result |
+|---|---|---|
+| NFR-001 bypass resistance (≥10 techniques) | `tests/backend/contract/test_auth_bypass.py::test_every_technique_is_refused_on_every_protected_route_and_stores_nothing` (19 techniques × 5 routes)<br>`tests/backend/contract/test_auth_bypass.py::test_a_wrong_method_on_a_protected_address_is_refused_as_unauthenticated`<br>`tests/backend/contract/test_auth_bypass.py::test_an_address_that_matches_no_route_is_a_plain_404_without_data`<br>`tests/backend/contract/test_route_protection.py::test_only_the_public_operations_accept_an_unauthenticated_call` | PASS |
+| NFR-002 no secrets in code/logs/responses/evidence | `tests/backend/contract/test_no_secret_leak.py::test_no_password_hash_token_or_signing_key_leaks_through_any_channel`<br>`tests/backend/unit/test_settings.py::test_jwt_secret_is_loaded_and_hidden_from_repr_and_str`<br>`tests/backend/unit/test_harness_redact.py::test_every_mock_password_is_masked`<br>`tests/backend/unit/test_architecture.py::test_application_has_no_authentication_switch_and_no_default_credential`<br>Process: secret-scan gate `.harness/security.sh`; `.env.example` lists names only (README review)<br>`tests/backend/unit/test_documentation.py::test_the_example_environment_file_lists_the_names_with_placeholders_only`<br>`tests/backend/unit/test_documentation.py::test_the_real_environment_file_is_never_committed` | PASS |
+| NFR-003 uniform failure, p95 within 50 ms | `tests/backend/integration/test_login_timing.py::test_unknown_usernames_and_wrong_passwords_look_and_take_the_same` (1,000 attempts)<br>`tests/backend/contract/test_auth_login.py::test_every_rejected_attempt_gets_the_same_401_and_stores_no_session`<br>`tests/backend/unit/test_auth_service_login.py::test_exactly_one_hash_verification_happens_on_every_path` | PASS |
+| NFR-004 browser session storage and URLs | `src/frontend/tests/api/session.test.ts > keeps only the token, in sessionStorage under one key`<br>`src/frontend/tests/architecture.test.ts > never uses localStorage, even in the session store`<br>`src/frontend/tests/api/auth.test.ts > keeps the credentials out of the URL`<br>`src/frontend/e2e/auth.spec.ts > an expired session returns to the sign-in screen with the expiry message and no bus data` (storage removed) | PASS |
+| NFR-005 sign-in p95 < 500 ms | `tests/backend/integration/test_auth_performance.py::test_sign_in_p95_is_under_500_ms_with_the_production_cost_hasher` | PASS |
+| NFR-006 session check ≤ 50 ms | `tests/backend/integration/test_auth_performance.py::test_the_session_check_adds_at_most_50_ms_to_a_seat_list_read`<br>`tests/backend/integration/test_auth_performance.py::test_the_session_check_adds_at_most_50_ms_to_a_six_seat_booking`<br>`tests/backend/integration/test_performance.py::test_bus_detail_p95_is_under_the_read_limit`<br>`tests/backend/integration/test_performance.py::test_six_seat_booking_p95_is_under_the_write_limit` | PASS |
+| NFR-007 sign-out immediacy (0 of 100) | `tests/backend/integration/test_sign_out_immediacy.py::test_after_the_response_one_hundred_protected_calls_all_return_401_and_no_data`<br>`tests/backend/integration/test_sign_out_immediacy.py::test_a_booking_with_the_old_token_after_sign_out_returns_401_and_stores_nothing` | PASS |
+| NFR-008 refusals change no data | `tests/backend/contract/test_auth_bypass.py::test_every_technique_is_refused_on_every_protected_route_and_stores_nothing` (row counts unchanged)<br>`tests/backend/integration/test_booking_conflicts.py::test_every_kind_of_rejected_request_leaves_the_table_identical`<br>`tests/backend/contract/test_session_expiry.py::test_a_booking_sent_after_expiry_returns_401_and_stores_nothing`<br>`tests/backend/contract/test_auth_login.py::test_an_invalid_body_returns_422_and_stores_nothing` | PASS |
+| NFR-009 stateless server | `tests/backend/unit/test_architecture.py::test_application_holds_no_module_level_session_or_counter_state`<br>`tests/backend/integration/test_stateless_instances.py::test_two_instances_give_the_same_answer_to_the_same_token`<br>`tests/backend/integration/test_stateless_instances.py::test_a_sign_out_on_one_instance_ends_the_session_on_the_other`<br>`tests/backend/integration/test_stateless_instances.py::test_the_throttle_count_is_shared_by_two_instances` | PASS |
+| NFR-010 ≤3 interactions to list and to book | `src/frontend/e2e/usability.spec.ts > the bus list is reached from the sign-in screen in at most 3 interactions`<br>`src/frontend/e2e/usability.spec.ts > one seat is booked in at most 3 interactions and under 30 seconds` | PASS |
+| NFR-011 responsive and accessible | `src/frontend/e2e/responsive.spec.ts > the sign-in screen does not scroll horizontally at ${width}px`<br>`src/frontend/e2e/responsive.spec.ts > the signed-in header with the name and Sign out fits at ${width}px`<br>`src/frontend/tests/components/LoginForm.test.tsx > shows an alert for a %s failure and stays usable`<br>`src/frontend/e2e/usability.spec.ts > sign-in works with the keyboard alone` | PASS |
+| NFR-012 one audit record per event | `tests/backend/integration/test_sign_in_audit.py::test_a_successful_sign_in_adds_one_success_row`<br>`tests/backend/integration/test_sign_in_audit.py::test_no_row_holds_a_password`<br>`tests/backend/contract/test_auth_login_throttle.py::test_the_refused_attempt_is_recorded_as_throttled`<br>`tests/backend/contract/test_auth_logout.py::test_the_sign_out_is_recorded_once_with_the_username_and_the_clock_time` | PASS |
+| NFR-013 tests first, coverage, quality gates (process) | Process item, checked by the harness: `.harness/test.sh` and `.harness/check_coverage.py` (coverage thresholds in `.harness/config/thresholds.env`), `.harness/lint.sh`, `.harness/security.sh`, `.harness/integrity.sh`; red/green commits and `evidence/harness-log.md`.<br>Helper tests: `tests/backend/unit/test_check_function_length.py::test_function_of_41_lines_fails_and_is_reported`<br>`tests/backend/unit/test_type_hygiene.py::test_every_any_and_type_ignore_in_the_codebase_is_justified`<br>`tests/backend/unit/test_harness_summarize.py::test_all_green_run_passes`<br>`tests/backend/contract/test_openapi_contract.py::test_no_pending_contract_items` | PASS |
+| NFR-014 reproducibility (documentation/process) | Process item: README sections on `.env`, mock usernames and `MOCK_USER_PASSWORDS`, plus `scripts/dev.sh` and `scripts/db-init.sh`.<br>Script tests: `tests/backend/unit/test_dev_script.py::test_a_missing_container_is_created_without_the_password_on_the_command_line`<br>`tests/backend/unit/test_seed_credentials.py::test_every_seeded_user_gets_a_hash_that_verifies_with_its_password`<br>`tests/backend/integration/test_db_tooling.py::test_seed_main_reseeds_the_given_database_and_prints_only_counts`<br>`tests/backend/unit/test_documentation.py::test_the_readme_documents_the_names_the_commands_and_the_rules` | PASS |
 
 ### Success criteria
 
-| ID | Named tests or checks |
-|----|-----------------------|
-| SC-001 | e2e/usability.spec.ts "the seat list is visible within 2 seconds of choosing a bus" |
-| SC-002 | e2e/usability.spec.ts "one seat is booked in at most 5 interactions and under 30 seconds" |
-| SC-003 | e2e/booking-persistence.spec.ts "seats booked through the UI are still booked after a reload"; BE contract/test_buses.py::test_detail_marks_only_the_booked_seat |
-| SC-004 | BE integration/test_booking_conflicts.py::test_twenty_simultaneous_requests_book_one_seat_exactly_once |
-| SC-005 | BE contract/test_bookings_create.py (invalid seat lists, bodies, seat beyond the bus, unknown bus, unknown user); BE integration/test_booking_conflicts.py::test_every_kind_of_rejected_request_leaves_the_table_identical |
-| SC-006 | e2e/responsive.spec.ts |
-| SC-007 | this table; test gate `.harness/test.sh` and the other gates run by `.harness/run.sh` |
+| Criterion | Test(s) | Result |
+|---|---|---|
+| SC-001 correct pair succeeds, every other pair fails identically | `tests/backend/contract/test_auth_login.py::test_a_matching_pair_returns_200_with_a_token_and_only_the_user`<br>`tests/backend/contract/test_auth_login.py::test_every_rejected_attempt_gets_the_same_401_and_stores_no_session`<br>`tests/backend/contract/test_no_auth_switch.py::test_no_empty_or_default_credential_signs_in_whatever_the_environment`<br>`src/frontend/tests/pages/LoginPage.test.tsx > shows the generic failure and stays on the page when the credentials are refused` | PASS |
+| SC-002 0 bypasses succeed | `tests/backend/contract/test_auth_bypass.py::test_every_technique_is_refused_on_every_protected_route_and_stores_nothing`<br>`tests/backend/contract/test_auth_bypass.py::test_a_wrong_method_on_a_protected_address_is_refused_as_unauthenticated` | PASS |
+| SC-003 100% of operations refuse unauthenticated | `tests/backend/contract/test_route_protection.py::test_only_the_public_operations_accept_an_unauthenticated_call`<br>`tests/backend/contract/test_route_protection.py::test_the_walk_covers_every_registered_api_route`<br>`tests/backend/contract/test_route_protection.py::test_a_route_registered_directly_on_the_app_is_protected_by_default` | PASS |
+| SC-004 after sign-out 0 of 100 succeed; Back shows nothing | `tests/backend/integration/test_sign_out_immediacy.py::test_after_the_response_one_hundred_protected_calls_all_return_401_and_no_data`<br>`src/frontend/e2e/auth.spec.ts > after sign-out Back shows only the sign-in screen and the old token is refused`<br>`tests/backend/contract/test_no_store.py::test_a_200_carries_no_store` | PASS |
+| SC-005 bookings carry the signed-in user | `tests/backend/contract/test_bookings_create.py::test_a_booking_by_ravi_stores_user_2_and_one_by_asha_stores_user_1`<br>`tests/backend/contract/test_bookings_create.py::test_a_body_naming_a_user_is_rejected_with_422_and_stores_nothing`<br>`src/frontend/tests/pages/BusSeatsPage.booking.test.tsx > sends a body with exactly bus_id and seat_numbers, never a user id`<br>`tests/backend/integration/test_booking_conflicts.py::test_two_signed_in_users_book_different_seats_at_once_each_under_their_own_id` | PASS |
+| SC-006 ≤3 interactions and 2 s to list; 3 to book | `src/frontend/e2e/usability.spec.ts > the bus list is reached from the sign-in screen in at most 3 interactions`<br>`src/frontend/e2e/usability.spec.ts > the bus list is visible within 2 seconds of opening the application`<br>`src/frontend/e2e/usability.spec.ts > one seat is booked in at most 3 interactions and under 30 seconds`<br>`src/frontend/e2e/usability.spec.ts > the bus list is reached from the sign-in screen in at most 3 interactions` | PASS |
+| SC-007 throttle after 5 wrong passwords | `tests/backend/contract/test_auth_login_throttle.py::test_five_wrong_passwords_then_the_right_one_is_refused_with_429_and_a_retry_after`<br>`tests/backend/contract/test_auth_login_throttle.py::test_another_user_still_signs_in_meanwhile`<br>`tests/backend/unit/test_auth_service_throttle.py::test_five_failures_block_the_sixth_attempt_whatever_the_password`<br>`tests/backend/unit/test_auth_service_throttle.py::test_another_username_is_not_affected` | PASS |
+| SC-008 sessions over 30 min refused | `tests/backend/contract/test_session_expiry.py::test_after_31_minutes_every_protected_route_returns_401_and_changes_nothing`<br>`tests/backend/unit/test_auth_service_authenticate.py::test_a_session_is_refused_from_exactly_30_minutes_on`<br>`tests/backend/unit/test_auth_service_authenticate.py::test_a_session_is_accepted_29_minutes_59_seconds_after_sign_in` | PASS |
+| SC-009 usable at 320/768/1280 px | `src/frontend/e2e/responsive.spec.ts > the sign-in screen does not scroll horizontally at ${width}px`<br>`src/frontend/e2e/responsive.spec.ts > the signed-in header with the name and Sign out fits at ${width}px`<br>`src/frontend/e2e/responsive.spec.ts > the bus list does not scroll horizontally at ${width}px`<br>`src/frontend/e2e/responsive.spec.ts > a booking can be made and confirmed at ${width}px` | PASS |
+| SC-010 all requirements covered, 001 unchanged, gates pass (process) | Process item: this traceability table, `evidence/harness-log.md` and the harness run (`.harness/run.sh` and the gates listed under NFR-013).<br>001 behaviour kept: `tests/backend/contract/test_buses.py::test_list_returns_the_three_seeded_buses`<br>`tests/backend/contract/test_bookings_create.py::test_booking_two_seats_returns_201_with_one_shared_utc_timestamp`<br>`tests/backend/contract/test_openapi_contract.py::test_no_pending_contract_items` | PASS |
 
 ### Acceptance scenarios
 
-| Scenario | Named tests |
-|----------|-------------|
-| US1.1 | BE contract/test_buses.py::test_detail_lists_every_seat_as_available_when_nothing_is_booked |
-| US1.2 | BE contract/test_buses.py::test_detail_marks_only_the_booked_seat; tests/pages/BusSeatsPage.test.tsx "lists every seat with booked seats marked" |
-| US1.3 | BE contract/test_buses.py::test_list_returns_the_three_seeded_buses; tests/pages/BusListPage.test.tsx "lists every bus with its seat count" |
-| US1.4 | BE contract/test_buses.py::test_unknown_bus_returns_404; tests/pages/BusSeatsPage.test.tsx "shows a readable message when the bus does not exist" |
-| US2.1 | BE contract/test_bookings_create.py::test_booking_two_seats_returns_201_with_one_shared_utc_timestamp, ::test_one_row_per_seat_is_stored_with_the_server_time; tests/pages/BusSeatsPage.booking.test.tsx "sends the booking, shows progress, then success, and re-reads the seats" |
-| US2.2 | tests/components/BookingBar.test.tsx "is disabled with no seats selected"; BE contract/test_bookings_create.py::test_invalid_seat_lists_are_rejected_with_422_and_store_nothing (empty list) |
-| US2.3 | BE contract/test_bookings_create.py::test_invalid_seat_lists_are_rejected_with_422_and_store_nothing (duplicate seat) |
-| US2.4 | BE contract/test_bookings_create.py::test_a_seat_beyond_the_bus_is_rejected_with_400, ::test_invalid_seat_lists_are_rejected_with_422_and_store_nothing (seat 0 and negative) |
-| US2.5 | BE contract/test_bookings_create.py::test_unknown_bus_is_rejected_with_404, ::test_unknown_user_is_rejected_with_404 |
-| US2.6 | BE contract/test_bookings_create.py::test_invalid_seat_lists_are_rejected_with_422_and_store_nothing (seven seats) |
-| US3.1 | e2e/booking-persistence.spec.ts "seats booked through the UI are still booked after a reload" |
-| US3.2 | BE integration/test_booking_conflicts.py::test_second_booking_of_a_seat_returns_409_and_changes_nothing; tests/pages/BusSeatsPage.booking.test.tsx "on a conflict shows an alert, refreshes the seats, and drops the taken seat" |
-| US3.3 | BE integration/test_booking_conflicts.py::test_one_taken_seat_stores_none_of_the_requested_seats |
-| US3.4 | BE integration/test_booking_conflicts.py::test_twenty_simultaneous_requests_book_one_seat_exactly_once |
-| US3.5 | BE integration/test_booking_conflicts.py::test_the_same_seat_number_on_another_bus_is_still_bookable; BE contract/test_buses.py::test_bookings_on_one_bus_do_not_affect_another |
-| US4.1 | tests/components/UserSelect.test.tsx "is a labelled select with a placeholder and every user"; tests/pages/BusSeatsPage.test.tsx "lists the users in a selector once the seats are shown"; tests/components/BookingBar.test.tsx "is disabled without a user and hints to choose one" |
-| US4.2 | tests/pages/BusSeatsPage.booking.test.tsx "sends the booking..." (Ravi's id 2 is sent); BE contract/test_bookings_create.py::test_booking_two_seats_returns_201_with_one_shared_utc_timestamp (stored `user_id`) |
+| Scenario | Test(s) | Result |
+|---|---|---|
+| US1.1 correct pair signs in | `tests/backend/contract/test_auth_login.py::test_a_matching_pair_returns_200_with_a_token_and_only_the_user`<br>`tests/backend/unit/test_auth_service_login.py::test_a_matching_pair_starts_a_session_that_lasts_thirty_minutes`<br>`src/frontend/tests/pages/LoginPage.test.tsx > signs in with the typed values and navigates to the bus list on success`<br>`src/frontend/e2e/usability.spec.ts > the bus list is reached from the sign-in screen in at most 3 interactions` | PASS |
+| US1.2 wrong password 401 | `tests/backend/contract/test_auth_login.py::test_every_rejected_attempt_gets_the_same_401_and_stores_no_session` (wrong-password)<br>`tests/backend/unit/test_auth_service_login.py::test_every_other_attempt_is_rejected_with_the_generic_error_and_no_session`<br>`src/frontend/tests/pages/LoginPage.test.tsx > shows the generic failure and stays on the page when the credentials are refused` | PASS |
+| US1.3 unknown username, identical response | `tests/backend/contract/test_auth_login.py::test_every_rejected_attempt_gets_the_same_401_and_stores_no_session` (unknown-username)<br>`tests/backend/unit/test_auth_service_login.py::test_the_failure_is_identical_for_every_cause`<br>`tests/backend/integration/test_login_timing.py::test_unknown_usernames_and_wrong_passwords_look_and_take_the_same` | PASS |
+| US1.4 other user's password refused | `tests/backend/contract/test_auth_login.py::test_every_rejected_attempt_gets_the_same_401_and_stores_no_session` (other-users-password)<br>`tests/backend/unit/test_auth_service_login.py::test_every_other_attempt_is_rejected_with_the_generic_error_and_no_session` | PASS |
+| US1.5 empty/missing field | `src/frontend/tests/components/LoginForm.test.tsx > blocks an empty submit with a message for each empty field`<br>`src/frontend/tests/components/LoginForm.test.tsx > blocks a submit that is missing only the password`<br>`tests/backend/contract/test_auth_login.py::test_an_invalid_body_returns_422_and_stores_nothing` (empty and missing cases) | PASS |
+| US1.6 length limits (50/128) | `tests/backend/contract/test_auth_login.py::test_an_invalid_body_returns_422_and_stores_nothing` (long-username, long-password)<br>`tests/backend/unit/test_login_schema.py::test_invalid_payloads_are_rejected_naming_the_field`<br>`src/frontend/tests/components/LoginForm.test.tsx > blocks values longer than the server accepts` | PASS |
+| US1.7 extra field rejected | `tests/backend/contract/test_auth_login.py::test_an_invalid_body_returns_422_and_stores_nothing` (extra-field)<br>`tests/backend/unit/test_login_schema.py::test_invalid_payloads_are_rejected_naming_the_field` | PASS |
+| US1.8 injection / case / spacing refused | `tests/backend/contract/test_auth_login.py::test_every_rejected_attempt_gets_the_same_401_and_stores_no_session` (sql-injection-text, upper-case-username, leading-space, trailing-space)<br>`tests/backend/unit/test_auth_service_login.py::test_every_other_attempt_is_rejected_with_the_generic_error_and_no_session`<br>`tests/backend/integration/test_sign_in_throttle.py::test_case_and_trailing_space_variants_share_the_count_of_the_username` | PASS |
+| US1.9 masked password, no leak in URL/history/log/error | `src/frontend/tests/components/LoginForm.test.tsx > has labelled username and masked password fields`<br>`src/frontend/tests/components/LoginForm.test.tsx > never writes the values to the URL, console, or storage`<br>`src/frontend/tests/api/auth.test.ts > keeps the credentials out of the URL`<br>`tests/backend/contract/test_auth_login.py::test_the_password_never_appears_in_responses_logs_or_the_url`<br>`tests/backend/contract/test_no_secret_leak.py::test_no_username_or_password_reaches_a_log_line` | PASS |
+| US2.1 buses unreachable; `/users` 404 | `tests/backend/contract/test_route_protection.py::test_only_the_public_operations_accept_an_unauthenticated_call`<br>`tests/backend/contract/test_auth_bypass.py::test_every_technique_is_refused_on_every_protected_route_and_stores_nothing` (list-buses, bus-detail)<br>`tests/backend/contract/test_users_removed.py::test_the_user_list_is_gone_for_a_signed_out_caller`<br>`tests/backend/contract/test_users_removed.py::test_the_user_list_is_gone_for_a_signed_in_caller` | PASS |
+| US2.2 booking without session refused, nothing stored | `tests/backend/contract/test_auth_bypass.py::test_every_technique_is_refused_on_every_protected_route_and_stores_nothing` (valid-body-without-session, create-booking)<br>`tests/backend/contract/test_no_auth_switch.py::test_unauthenticated_calls_are_refused_whatever_the_environment` | PASS |
+| US2.3 401 before 422 | `tests/backend/contract/test_auth_bypass.py::test_every_technique_is_refused_on_every_protected_route_and_stores_nothing` (malformed-json-without-session)<br>`tests/backend/unit/test_auth_gate.py::test_a_rejected_request_never_reads_its_body`<br>`tests/backend/contract/test_bookings_create.py::test_without_a_session_a_body_naming_a_user_gets_401_first` | PASS |
+| US2.4 never-issued/altered/empty/wrong-form/deleted-user credential | `tests/backend/contract/test_auth_bypass.py::test_every_technique_is_refused_on_every_protected_route_and_stores_nothing` (random-token, one-character-changed, empty-header, bearer-only, basic-scheme, session-row-deleted)<br>`tests/backend/unit/test_tokens.py::test_garbage_is_rejected`<br>`tests/backend/unit/test_auth_service_authenticate.py::test_every_refusal_raises_the_same_generic_error`<br>`tests/backend/contract/test_auth_bypass.py::test_a_session_whose_user_no_longer_exists_is_refused` | PASS |
+| US2.5 deep link shows sign-in, no data, lands on bus list | `src/frontend/tests/App.test.tsx > shows only the sign-in screen at %s`<br>`src/frontend/tests/components/RequireAuth.test.tsx > redirects to /login without a token and mounts nothing protected`<br>`src/frontend/e2e/auth.spec.ts > a signed-out visit to ${address} shows only the sign-in screen`<br>`src/frontend/tests/pages/LoginPage.test.tsx > signs in with the typed values and navigates to the bus list on success` | PASS |
+| US2.6 edited browser data ignored | `src/frontend/e2e/auth.spec.ts > a token the server never issued leads back to the sign-in screen`<br>`src/frontend/tests/components/RequireAuth.test.tsx > takes the user's name from the server, never from storage`<br>`src/frontend/tests/components/RequireAuth.test.tsx > clears the token and redirects when /auth/me says the session is not valid`<br>`tests/backend/contract/test_auth_bypass.py::test_every_technique_is_refused_on_every_protected_route_and_stores_nothing` (identity-header, identity-query, cookies) | PASS |
+| US2.7 `unauthenticated`, generic, no reason | `tests/backend/contract/test_auth_bypass.py::test_every_technique_is_refused_on_every_protected_route_and_stores_nothing`<br>`tests/backend/unit/test_error_handlers.py::test_every_unauthenticated_cause_produces_the_identical_response`<br>`tests/backend/unit/test_error_handlers.py::test_unauthenticated_response_carries_the_bearer_challenge` | PASS |
+| US2.8 automated enumeration of operations | `tests/backend/contract/test_route_protection.py::test_only_the_public_operations_accept_an_unauthenticated_call`<br>`tests/backend/contract/test_route_protection.py::test_a_route_registered_directly_on_the_app_is_protected_by_default`<br>`tests/backend/unit/test_auth_gate.py::test_a_route_added_outside_the_public_router_is_protected_by_default` | PASS |
+| US2.9 supplied user id is not proof | `tests/backend/contract/test_bookings_create.py::test_without_a_session_a_body_naming_a_user_gets_401_first`<br>`tests/backend/contract/test_auth_bypass.py::test_every_technique_is_refused_on_every_protected_route_and_stores_nothing` (identity-in-body, identity-header, identity-query) | PASS |
+| US3.1 signed-in booking stored for the user, success shown | `tests/backend/contract/test_bookings_create.py::test_booking_two_seats_returns_201_with_one_shared_utc_timestamp`<br>`tests/backend/contract/test_bookings_create.py::test_one_row_per_seat_is_stored_with_the_server_time`<br>`src/frontend/tests/pages/BusSeatsPage.booking.test.tsx > sends the booking, shows progress, then success, and re-reads the seats`<br>`src/frontend/e2e/booking-persistence.spec.ts > seats booked through the UI are still booked after a reload` | PASS |
+| US3.2 no user selector, shows signed-in name | `src/frontend/tests/pages/BusSeatsPage.test.tsx > renders no user selector and no input holding the signed-in name`<br>`src/frontend/tests/components/AppHeader.test.tsx > shows the signed-in user's name and a Sign out button`<br>`src/frontend/e2e/auth.spec.ts > the header with the name and Sign out is visible on the bus list and the seat page` | PASS |
+| US3.3 body with user id → 422 | `tests/backend/contract/test_bookings_create.py::test_a_body_naming_a_user_is_rejected_with_422_and_stores_nothing`<br>`tests/backend/contract/test_bookings_create.py::test_invalid_bodies_are_rejected_with_422_and_store_nothing`<br>`tests/backend/unit/test_booking_schema.py::test_a_user_id_is_rejected_whatever_its_value` | PASS |
+| US3.4 seat taken by another user → 409 | `tests/backend/integration/test_booking_conflicts.py::test_second_booking_of_a_seat_returns_409_and_changes_nothing` (Asha books, Ravi refused)<br>`tests/backend/integration/test_booking_conflicts.py::test_the_same_seat_booked_at_once_by_two_users_gives_one_booking_and_one_conflict`<br>`tests/backend/contract/test_conflict_response.py::test_the_409_body_has_the_shared_shape_and_hides_database_details` | PASS |
+| US3.5 two users at once, independent | `tests/backend/integration/test_booking_conflicts.py::test_two_signed_in_users_book_different_seats_at_once_each_under_their_own_id`<br>`tests/backend/contract/test_bookings_create.py::test_a_booking_by_ravi_stores_user_2_and_one_by_asha_stores_user_1`<br>`tests/backend/contract/test_auth_me.py::test_each_user_sees_their_own_identity`<br>`src/frontend/e2e/auth.spec.ts > a sign-out in one tab leaves the session of a second tab alone` | PASS |
+| US3.6 001 booking rules unchanged | `tests/backend/contract/test_bookings_create.py::test_six_seats_are_accepted`<br>`tests/backend/contract/test_bookings_create.py::test_invalid_seat_lists_are_rejected_with_422_and_store_nothing`<br>`tests/backend/contract/test_bookings_create.py::test_a_seat_beyond_the_bus_is_rejected_with_400`<br>`tests/backend/integration/test_booking_conflicts.py::test_twenty_simultaneous_requests_book_one_seat_exactly_once` | PASS |
+| US4.1 sign-out 204, UI to sign-in, no data | `tests/backend/contract/test_auth_logout.py::test_a_valid_session_gets_204_with_an_empty_body`<br>`src/frontend/tests/App.test.tsx > at %s calls the endpoint, clears storage and shows only the sign-in screen`<br>`src/frontend/tests/hooks/useAuthSession.test.tsx > calls the sign-out endpoint once, while the token is still stored`<br>`src/frontend/tests/api/auth.test.ts > posts to /auth/logout with the bearer token and accepts the empty 204 answer` | PASS |
+| US4.2 old credential refused everywhere | `tests/backend/contract/test_auth_logout.py::test_the_old_token_is_refused_by_every_protected_route_afterwards`<br>`tests/backend/integration/test_sign_out_immediacy.py::test_after_the_response_one_hundred_protected_calls_all_return_401_and_no_data`<br>`tests/backend/integration/test_sign_out_immediacy.py::test_a_booking_with_the_old_token_after_sign_out_returns_401_and_stores_nothing`<br>`tests/backend/contract/test_route_protection.py::test_a_signed_out_credential_is_refused_by_every_protected_route` | PASS |
+| US4.3 Back/direct address shows sign-in, no data | `src/frontend/e2e/auth.spec.ts > after sign-out Back shows only the sign-in screen and the old token is refused`<br>`src/frontend/tests/App.test.tsx > at %s calls the endpoint, clears storage and shows only the sign-in screen`<br>`tests/backend/contract/test_no_store.py::test_a_200_carries_no_store` | PASS |
+| US4.4 sign in again, new session, old refused | `src/frontend/e2e/auth.spec.ts > signing in again after a sign-out works and issues a new token`<br>`tests/backend/integration/test_sign_out_immediacy.py::test_signing_in_again_gives_a_different_working_token_and_the_old_one_stays_refused` | PASS |
+| US4.5 two sessions, one signs out | `tests/backend/contract/test_auth_logout.py::test_only_the_current_session_ends_and_a_second_session_of_the_user_stays_valid`<br>`tests/backend/integration/test_stateless_instances.py::test_a_sign_out_on_one_instance_ends_the_session_on_the_other`<br>`src/frontend/e2e/auth.spec.ts > a sign-out in one tab leaves the session of a second tab alone` | PASS |
+| US4.6 sign-out without session 401; UI returns to sign-in on invalid session | `tests/backend/contract/test_auth_logout.py::test_without_a_session_the_answer_is_401`<br>`src/frontend/tests/api/client.test.ts > ends the session when a protected call returns 401 unauthenticated`<br>`src/frontend/tests/components/RequireAuth.test.tsx > clears the token and redirects when /auth/me says the session is not valid`<br>`src/frontend/tests/hooks/useAuthSession.test.tsx > forgets a token the server does not accept` | PASS |
+| US4.7 Sign out and name visible/keyboard-operable from 320 px | `src/frontend/e2e/responsive.spec.ts > the signed-in header with the name and Sign out fits at ${width}px`<br>`src/frontend/e2e/auth.spec.ts > the header with the name and Sign out is visible on the bus list and the seat page`<br>`src/frontend/tests/components/AppHeader.test.tsx > is reached with Tab and operated with the key %j`<br>`src/frontend/tests/App.test.tsx > shows the name and Sign out at %s` | PASS |
+| US4.8 new tab shows sign-in (per-tab) | `src/frontend/e2e/auth.spec.ts > a second tab does not share the session of the first`<br>`src/frontend/tests/api/session.test.ts > keeps only the token, in sessionStorage under one key`<br>`src/frontend/tests/architecture.test.ts > never uses localStorage, even in the session store` | PASS |
+| US5.1 30 min 1 s refused | `tests/backend/unit/test_auth_service_authenticate.py::test_a_session_is_refused_from_exactly_30_minutes_on`<br>`tests/backend/contract/test_session_expiry.py::test_after_31_minutes_every_protected_route_returns_401_and_changes_nothing` | PASS |
+| US5.2 29 min allowed | `tests/backend/unit/test_auth_service_authenticate.py::test_a_session_is_accepted_29_minutes_59_seconds_after_sign_in`<br>`tests/backend/contract/test_session_expiry.py::test_the_session_is_still_valid_just_before_thirty_minutes_and_use_does_not_extend_it` | PASS |
+| US5.3 expiry while booking → 401, message, to sign-in | `tests/backend/contract/test_session_expiry.py::test_a_booking_sent_after_expiry_returns_401_and_stores_nothing`<br>`src/frontend/tests/App.test.tsx > returns to /login with the expiry message when a call at %s finds the session expired`<br>`src/frontend/tests/pages/LoginPage.test.tsx > shows the expiry message as an alert after a session expired`<br>`src/frontend/e2e/auth.spec.ts > an expired session returns to the sign-in screen with the expiry message and no bus data` | PASS |
+| US5.4 sign in again after expiry | `tests/backend/contract/test_session_expiry.py::test_signing_in_again_after_expiry_returns_a_fresh_working_token`<br>`src/frontend/tests/hooks/useAuthSession.test.tsx > clears the reason when a sign-in is attempted, whether it succeeds or not` | PASS |
+| US6.1 sixth attempt → 429 `too_many_attempts` | `tests/backend/contract/test_auth_login_throttle.py::test_five_wrong_passwords_then_the_right_one_is_refused_with_429_and_a_retry_after`<br>`tests/backend/unit/test_auth_service_throttle.py::test_five_failures_block_the_sixth_attempt_whatever_the_password`<br>`tests/backend/unit/test_auth_service_throttle.py::test_failures_older_than_five_minutes_do_not_count`<br>`tests/backend/integration/test_sign_in_throttle.py::test_only_failure_rows_newer_than_the_window_count` | PASS |
+| US6.2 allowed after 60 s | `tests/backend/contract/test_auth_login_throttle.py::test_the_wait_shrinks_with_the_clock_and_asha_signs_in_after_60_seconds`<br>`tests/backend/unit/test_auth_service_throttle.py::test_at_exactly_60_seconds_the_right_password_succeeds`<br>`tests/backend/contract/test_auth_login_throttle.py::test_throttled_attempts_do_not_extend_the_wait` | PASS |
+| US6.3 other usernames unaffected | `tests/backend/contract/test_auth_login_throttle.py::test_another_user_still_signs_in_meanwhile`<br>`tests/backend/unit/test_auth_service_throttle.py::test_another_username_is_not_affected` | PASS |
+| US6.4 success resets the count | `tests/backend/contract/test_auth_login_throttle.py::test_a_success_resets_the_count`<br>`tests/backend/unit/test_auth_service_throttle.py::test_four_failures_then_the_right_password_succeeds_and_resets_the_count`<br>`tests/backend/integration/test_sign_in_throttle.py::test_only_failures_after_the_latest_success_of_the_same_username_count` | PASS |
+| US6.5 unknown username throttled the same | `tests/backend/contract/test_auth_login_throttle.py::test_five_failures_for_an_unknown_username_give_the_same_429_shape`<br>`tests/backend/unit/test_auth_service_throttle.py::test_an_unknown_username_is_throttled_exactly_like_a_real_one` | PASS |
 
 ### Edge cases
 
-| Edge case | Named tests |
-|-----------|-------------|
-| Backend unreachable while loading | tests/pages/BusSeatsPage.test.tsx "shows an error with Retry and no partial seat list"; tests/pages/BusListPage.test.tsx "shows an error with Retry, and Retry loads the buses" |
-| Backend unreachable while booking | tests/pages/BusSeatsPage.booking.test.tsx "on a 503 response / a network failure shows Service unavailable and keeps the selection" |
-| Seat taken between view and confirm | tests/pages/BusSeatsPage.booking.test.tsx "on a conflict shows an alert, refreshes the seats, and drops the taken seat" |
-| Reload before confirming | tests/pages/BusSeatsPage.booking.test.tsx "discards an unconfirmed selection when the page is reloaded"; e2e/booking-persistence.spec.ts "an unconfirmed selection is discarded on reload and nothing is stored" |
-| Double click on Confirm | tests/pages/BusSeatsPage.booking.test.tsx "sends only one request when Confirm is clicked twice" |
-| Malformed or oversized identifiers | BE contract/test_buses.py::test_malformed_or_oversized_bus_id_is_rejected_with_422; BE unit/test_booking_schema.py::test_invalid_ids_are_rejected; tests/pages/BusSeatsPage.test.tsx (ids "abc", "0", "99999999999999999999") |
-| 320 px screens | e2e/responsive.spec.ts |
-
-Gaps found while tracing and closed with new tests: NFR-004 (injection text) by `contract/test_input_safety.py`, and NFR-007 (bundle budget checker) by `unit/test_bundle_size_check.py`. No criterion was reduced.
+| Edge case | Test(s) | Result |
+|---|---|---|
+| Edge 1 backend/DB unreachable at sign-in | `src/frontend/tests/components/LoginForm.test.tsx > shows an alert for a %s failure and stays usable` (unavailable row)<br>`src/frontend/tests/api/client.test.ts > maps a network failure to an unavailable error`<br>`src/frontend/tests/api/client.test.ts > maps %i to an unavailable error`<br>`src/frontend/tests/hooks/useAuthSession.test.tsx > leaves storage empty and the state signed out after a failed sign-in` | PASS |
+| Edge 2 backend unreachable while signed in: keep session, sign out only on 401 | `src/frontend/tests/api/client.test.ts > keeps the session when a protected call fails with %i`<br>`src/frontend/tests/api/client.test.ts > keeps the session when the network fails`<br>`src/frontend/tests/components/RequireAuth.test.tsx > keeps the token and shows the service message when the check cannot be answered`<br>`src/frontend/tests/pages/BusSeatsPage.booking.test.tsx > on %s shows Service unavailable and keeps the selection` | PASS |
+| Edge 3 double-click on sign-in | `src/frontend/tests/components/LoginForm.test.tsx > disables the button while a request is in flight and sends only one request`<br>`src/frontend/tests/pages/LoginPage.test.tsx > sends one request for a double click and keeps the credentials out of the URL` | PASS |
+| Edge 4 second tab while signed in elsewhere | `src/frontend/e2e/auth.spec.ts > a second tab does not share the session of the first`<br>`src/frontend/e2e/auth.spec.ts > a sign-out in one tab leaves the session of a second tab alone`<br>`tests/backend/contract/test_auth_login.py::test_two_sign_ins_create_two_independent_sessions` | PASS |
+| Edge 5 tab closed without sign-out | `src/frontend/tests/api/session.test.ts > keeps only the token, in sessionStorage under one key`<br>`src/frontend/tests/architecture.test.ts > never uses localStorage, even in the session store`<br>`src/frontend/e2e/auth.spec.ts > a second tab does not share the session of the first`<br>`tests/backend/unit/test_auth_service_authenticate.py::test_a_session_is_refused_from_exactly_30_minutes_on` (server session ends at expiry)<br>`src/frontend/e2e/auth.spec.ts > closing a tab forgets the session: a new tab starts at the sign-in screen` | PASS |
+| Edge 6 sign-out while a booking is in flight | `tests/backend/integration/test_sign_out_immediacy.py::test_a_sign_out_and_a_booking_in_flight_together_never_store_a_booking_after_the_refusal`<br>`tests/backend/integration/test_sign_out_immediacy.py::test_a_booking_with_the_old_token_after_sign_out_returns_401_and_stores_nothing` | PASS |
+| Edge 7 booking and expiry at the same moment | `tests/backend/unit/test_auth_service_authenticate.py::test_a_session_is_accepted_29_minutes_59_seconds_after_sign_in`<br>`tests/backend/unit/test_auth_service_authenticate.py::test_a_session_is_refused_from_exactly_30_minutes_on`<br>`tests/backend/contract/test_session_expiry.py::test_a_booking_sent_after_expiry_returns_401_and_stores_nothing`<br>`tests/backend/contract/test_session_expiry.py::test_a_booking_that_meets_the_expiry_is_stored_whole_or_refused_with_nothing_stored` | PASS |
+| Edge 8 browser blocks/clears stored data | `src/frontend/tests/components/RequireAuth.test.tsx > shows the sign-in screen without an error when sessionStorage is unavailable`<br>`src/frontend/tests/api/session.test.ts > treats unavailable storage as no token and never throws`<br>`src/frontend/e2e/auth.spec.ts > a token the server never issued leads back to the sign-in screen` | PASS |
+| Edge 9 password with spaces/accents/exactly 128; 129th rejected | `tests/backend/unit/test_passwords.py::test_passwords_are_compared_exactly_as_typed` (128 chars, accents, spaces)<br>`tests/backend/unit/test_login_schema.py::test_the_password_is_kept_exactly_as_typed`<br>`tests/backend/unit/test_login_schema.py::test_the_shortest_and_longest_allowed_values_are_accepted`<br>`tests/backend/contract/test_auth_login.py::test_an_invalid_body_returns_422_and_stores_nothing` (long-password = 129) | PASS |
+| Edge 10 320 px sign-in screen and header | `src/frontend/e2e/responsive.spec.ts > the sign-in screen does not scroll horizontally at ${width}px` (320)<br>`src/frontend/e2e/responsive.spec.ts > the signed-in header with the name and Sign out fits at ${width}px` (320) | PASS |
+| Edge 11 health checks callable without sign-in | `tests/backend/contract/test_route_protection.py::test_the_public_set_is_exactly_the_login_and_the_two_health_checks`<br>`tests/backend/contract/test_health.py::test_liveness_is_ok_even_when_the_database_dependency_fails`<br>`tests/backend/contract/test_health.py::test_readiness_is_ok_against_the_test_database`<br>`tests/backend/contract/test_no_store.py::test_the_health_checks_carry_no_store` | PASS |
 
 ## Final decision
 
-_Recorded by a human only (T134): ACCEPT or REJECT, known limitations (T133 drafts them), and justification. The agent MUST NOT write the decision._
+Recorded by the human at T134. The agent MUST NOT write the decision.
+
+### Draft for the human review (written by the agent at T133; not a decision)
 
 **Decision**: ACCEPT
 
 **Decided by**: Siddharth
 
-**Date**: 2026-11-03
+**Date**: 2026-11-04
 
-**Justification**: "All six gates pass on two recorded runs; every requirement has a named test; limitations 1–13 are acceptable for a mock-user first feature. Authentication and authorisation will be tackled in a separate feature. Application runs with expected features."
+**Justification**: "All six gates pass. All 8 scenarios and furthur combinations tried on the app and they run as expected. Limitations are understood and accepted for now."
 
-**Limitations confirmed**: The draft below is acceptable and has solid coverage.
-
-### Draft by the agent (T133, 2026-11-03): known limitations and unplanned files
-
-This draft is for the human to confirm or edit in T134. It records no decision.
-
-**State at drafting**: tag `initial-generation` is commit `0f02bdf`. Two recorded harness runs exist, both all-PASS: `evidence/harness-results/20261103T091218Z` (first run) and `evidence/harness-results/20261103T092135Z` (after the convergence fixes T136-T138 and T140). `evidence/final-generation/` holds `src/` and `tests/` as of commit `21cc6a7`. `gitleaks dir` (project and `evidence/`) and `gitleaks git` (32 commits) with `.harness/config/gitleaks.toml` report no leaks.
 
 **Known limitations**
 
-1. The application connects as the SQL Server `sa` account and has no authentication or authorisation; the spec scopes both out (mock users chosen from a list).
-2. The database image, Azure SQL Edge, is retired but still pullable. The compose file was only validated as YAML because the `docker compose` plugin is not installed; `scripts/dev.sh` falls back to `docker run`, and its database branches are tested only with stub `docker` and `colima` commands plus a real run against the existing container.
-3. The existing hand-started `azure-sql-edge` container is used as is (decision T125); the compose-managed container was never created.
-4. Playwright runs on the manually installed Google Chrome Canary (`channel: "chrome-canary"`) because the Chromium download is blocked by the corporate proxy and Edge forbids remote debugging by managed policy. The e2e gate needs that browser and free ports 8000 and 5173.
-5. The latency checks (NFR-001, NFR-002) call the application in process through the test client against the real database; they exclude the HTTP server and network. The usability timings (NFR-007, NFR-008) run against the Vite dev server after a warm-up request.
-6. The 20-simultaneous-request test uses threads inside one test process, not separate server processes; the guarantee itself comes from the database unique index.
-7. uvicorn itself logs the traceback of an unhandled exception; the application's own logging never writes the exception message.
-8. `src/backend/ruff.toml` also ignores S105 and S106 (hard-coded password strings) under `tests/`, and the tests contain fake password literals (`tests/backend/unit/conftest.py`, `tests/backend/unit/test_dev_script.py`) that `gitleaks` accepts. Two test subprocess calls carry an inline `# noqa: S603` with a comment (`unit/test_dev_script.py`, `unit/test_bundle_size_check.py`).
-9. `.specify/memory/constitution.md` still contains a "remove before commit" Sync Impact comment.
-10. The Approval table dates (2026-11-02) predate four later changes: Chrome Canary replacing Edge, task T135 and a "DB tooling" row in `plan.md` (2026-11-03), the convergence tasks T136-T141, and the contract enum amendment with two matching rows in the `plan.md` error table (T140, approved by the user on 2026-11-03).
-11. Tests written after the code they cover (Constitution V, converge finding F3, T139): T117 (performance), T119 (responsive e2e), T120 (keyboard, limit message, no-`fetch` architecture check), T121 (usability e2e), and T135 (DB tooling) were written after the code existed, which was built in earlier phases. Each was shown able to fail by mutating the code or an input; the commit messages `test: DB tooling tests lift backend branch coverage to 88.9% (T135)`, `test: performance and OpenAPI contract tests (T117, T118)`, and `test: responsive, usability, keyboard and architecture tests (T119-T121)` record the mutations. T118, T122, T136, and T140 were committed red first.
-12. Running a backend unit test file before an integration test file in one pytest invocation leaves fake `DB_*` values in the environment for the later tests. The default directory order (contract, integration, unit) is unaffected, and the new integration tests patch `get_settings` explicitly.
-13. Vite serves the frontend on `localhost` only (not `127.0.0.1`), matching the default `CORS_ORIGINS`.
+- Tokens travel over plain HTTP in local development and there is no Content-Security-Policy header; a real deployment needs TLS and a CSP.
+- The token is kept in `sessionStorage` (per tab), so script injection in the page could read it.
+- Anyone who knows a username can keep that user locked out for 60 seconds at a time (per-username throttle); simultaneous wrong guesses can slip a few attempts past the count (no row lock, `research.md` section 8).
+- No job deletes expired `sessions` rows or old `sign_in_attempts` rows.
+- `/docs` and `/openapi.json` are served without a credential (documented; `/redoc` and the OAuth redirect are switched off).
+- The database account is the `sa` account of the local container, and the Azure SQL Edge image is retired.
+- A malformed JSON body with a valid session is a 422 with the shared error body; with any unusable credential it is a 401 (the convergence fix G-01).
 
-**Unplanned helper files and options (not named in `plan.md` or `tasks.md`)**
+**Proposal (not applied by the agent)**: retire the mock-user exemption sentence of constitution Principle VII through a PATCH amendment, because this feature satisfies it (real credentials, hashing, server-side sessions).
 
-- `tests/backend/unit/harness_loader.py` and `tests/backend/unit/layer_scan.py`: helpers for the harness and architecture tests.
-- `.harness/check_coverage.py`: computes the coverage figures for `test.sh`.
-- `scripts/e2e-reset.sh` and `scripts/e2e-backend.sh`: reset the test database and start the backend on it for Playwright.
-- `src/frontend/e2e/support.ts` and `src/frontend/e2e/global-setup.ts`: reset the test database for the e2e specs.
-- `@types/node` dev dependency in `src/frontend` for those e2e helpers.
-- `scripts/dev.sh --check` and `--db-only` options (the task text names only `--check`); `--db-only` makes the database branches testable.
-- `tests/backend/unit/test_dev_script.py`, `tests/backend/unit/test_bundle_size_check.py`, `tests/backend/contract/test_input_safety.py`, and `tests/backend/unit/test_type_hygiene.py`: tests added to close traceability and convergence gaps.
-- `HealthOut` schema in `src/backend/app/api/schemas/common.py`: documents the health responses so the generated OpenAPI matches the contract (T118).
+**Plan wording to correct (not edited by the agent)**: the "Error Handling" section of `plan.md` mentions logging sign-in outcomes by username; `spec.md` US1.9 forbids the username in any log line and the code follows the spec (finding G-07).
+
+**Unplanned helper files** (named in no spec, plan, or task; added to keep the harness rules or to share code)
+
+- `src/frontend/src/components/TextField.tsx` and `src/frontend/src/hooks/useLoginForm.ts`: split out of `LoginForm` to meet the 40-line function rule (Phase 3 failure log).
+- `src/backend/app/api/routing.py`: `SessionFirstRoute`, the convergence fix for G-01 (task T139, Phase 11).
+- `tests/backend/integration/perf_support.py`: shared helpers of the latency tests.
+- `tests/backend/unit/test_documentation.py`: checks `.env.example` placeholders and the README claims.
+- Test helper `find_auth_switches` in `tests/backend/unit/layer_scan.py` and the `make_app` fixture in `tests/backend/conftest.py` (extra app instances over one database).
+- Kept from feature 001 without a 002 task: `tests/backend/unit/harness_loader.py`, `test_bundle_size_check.py`, `test_dev_script.py`, `src/frontend/e2e/global-setup.ts`, `.harness/check_coverage.py`.
+- Unused by any caller but kept because T081 says to keep them: `UserReader` and `UserRepository.get`.
 
 ## Harness run table
 
-Rows are appended by `.harness/run.sh`; do not edit by hand.
-
 | Timestamp | Integrity | Lint | Security | Tests | Build | E2E | Result | Evidence |
 |-----------|-----------|------|----------|-------|-------|-----|--------|----------|
-| 2026-11-03T09:13:31Z | PASS | PASS | PASS | PASS | PASS | PASS | PASS | evidence/harness-results/20261103T091218Z |
-| 2026-11-03T09:22:42Z | PASS | PASS | PASS | PASS | PASS | PASS | PASS | evidence/harness-results/20261103T092135Z |
+| 2026-11-04T15:01:46Z | PASS | PASS | PASS | PASS | PASS | PASS | PASS | evidence/harness-results/20261104T145728Z |
+| 2026-11-04T16:04:13Z | PASS | PASS | PASS | PASS | PASS | PASS | PASS | evidence/harness-results/20261104T160010Z |

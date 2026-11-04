@@ -11,8 +11,23 @@ class HealthOut(BaseModel):
     status: Literal["ok"]
 
 
+ErrorCode = Literal[
+    "validation_error",
+    "invalid_seat",
+    "bus_not_found",
+    "seat_unavailable",
+    "unauthenticated",
+    "invalid_credentials",
+    "too_many_attempts",
+    "service_unavailable",
+    "internal_error",
+    "not_found",
+    "method_not_allowed",
+]
+
+
 class ErrorBody(BaseModel):
-    code: str
+    code: ErrorCode
     message: str
 
 
@@ -43,6 +58,7 @@ def page_params(
 PageParamsDep = Annotated[PageParams, Depends(page_params)]
 
 
+# FastAPI types the entries of its `responses` argument as dict[str, Any].
 def error_responses(*statuses: int) -> dict[int | str, dict[str, Any]]:
     """OpenAPI documentation of the shared error body for the given status codes."""
     return {status: {"model": ErrorResponse} for status in statuses}

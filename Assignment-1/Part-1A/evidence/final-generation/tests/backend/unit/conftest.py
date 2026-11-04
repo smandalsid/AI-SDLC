@@ -10,6 +10,9 @@ FAKE_ENV = {
     "DB_HOST": "localhost",
     "DB_PORT": "1433",
     "CORS_ORIGINS": "http://localhost:5173",
+    # Built at runtime so no key-like literal sits in the source.
+    "JWT_SECRET": "unit-test-signing-" + "k" * 24,
+    "MOCK_USER_PASSWORDS": "{}",
 }
 
 

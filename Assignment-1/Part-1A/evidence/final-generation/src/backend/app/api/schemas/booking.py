@@ -14,7 +14,6 @@ class BookingCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     bus_id: Identifier
-    user_id: Identifier
     seat_numbers: Annotated[list[Identifier], Field(min_length=1, max_length=MAX_SEATS_PER_REQUEST)]
 
     @field_validator("seat_numbers")
