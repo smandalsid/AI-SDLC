@@ -9,6 +9,7 @@ from app.core.passwords import Argon2Hasher
 from app.core.tokens import JwtTokenCodec
 from app.db.seed import USERS
 from app.models.user import User
+from app.repositories.protocols import SessionRecord
 from app.services.auth_service import AuthService
 from app.services.types import LoginRejected, LoginSuccess
 from pydantic import SecretStr
@@ -55,6 +56,9 @@ class RecordingSessions:
         self, session_id: str, user_id: int, started_at: datetime, expires_at: datetime
     ) -> None:
         self.added.append(StoredSession(session_id, user_id, started_at, expires_at))
+
+    def get_with_user(self, session_id: str) -> SessionRecord | None:
+        return None
 
 
 @dataclass

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { resetDatabase } from "./support";
+import { resetDatabase, signIn } from "./support";
 
 const WIDTHS = [320, 768, 1280];
 const HEIGHT = 800;
@@ -19,6 +19,7 @@ async function expectNoHorizontalScroll(page: Page): Promise<void> {
 for (const width of WIDTHS) {
   test(`the bus list does not scroll horizontally at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: HEIGHT });
+    await signIn(page, "asha");
 
     await page.goto("/");
 
@@ -28,6 +29,7 @@ for (const width of WIDTHS) {
 
   test(`the seat page does not scroll horizontally at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: HEIGHT });
+    await signIn(page, "asha");
 
     // Bus C has the most seats (40), so it is the widest grid.
     await page.goto("/buses/3");
@@ -38,6 +40,7 @@ for (const width of WIDTHS) {
 
   test(`a booking can be made and confirmed at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: HEIGHT });
+    await signIn(page, "meera");
     await page.goto("/buses/3");
 
     await page.getByLabel("Booking as").selectOption({ label: "Meera" });

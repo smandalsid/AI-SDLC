@@ -1,6 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
 
+pytestmark = pytest.mark.usefixtures("signed_in")
+
 
 def test_list_returns_the_seeded_users_in_id_order(client: TestClient) -> None:
     response = client.get("/api/v1/users")

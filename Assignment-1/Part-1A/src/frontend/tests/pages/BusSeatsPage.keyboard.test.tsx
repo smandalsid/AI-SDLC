@@ -1,12 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createBookings } from "../../src/api/bookings";
 import { getBus } from "../../src/api/buses";
 import { listUsers } from "../../src/api/users";
 import { BusSeatsPage } from "../../src/pages/BusSeatsPage";
-import { makeBusDetail, makeUsers, page } from "../helpers";
+import { makeBusDetail, makeUsers, page, renderSignedIn } from "../helpers";
 
 vi.mock("../../src/api/buses", () => ({ listBuses: vi.fn(), getBus: vi.fn() }));
 vi.mock("../../src/api/users", () => ({ listUsers: vi.fn() }));
@@ -16,13 +15,7 @@ const createBookingsMock = vi.mocked(createBookings);
 const MAX_TABS = 60;
 
 function renderPage(): void {
-  render(
-    <MemoryRouter initialEntries={["/buses/1"]}>
-      <Routes>
-        <Route path="/buses/:busId" element={<BusSeatsPage />} />
-      </Routes>
-    </MemoryRouter>,
-  );
+  renderSignedIn("/buses/1", "/buses/:busId", <BusSeatsPage />);
 }
 
 const seat = (number: number): HTMLElement =>

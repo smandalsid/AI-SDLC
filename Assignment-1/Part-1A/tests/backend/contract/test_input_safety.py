@@ -4,6 +4,8 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import Engine, inspect, text
 
+pytestmark = pytest.mark.usefixtures("signed_in")
+
 INJECTIONS = [
     "1; DROP TABLE bookings;--",
     "1 OR 1=1",

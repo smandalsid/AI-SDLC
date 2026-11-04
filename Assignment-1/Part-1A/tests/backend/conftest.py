@@ -144,3 +144,9 @@ def auth_headers(sign_in: Callable[[str], Response]) -> Callable[[str], dict[str
         return {"Authorization": f"Bearer {response.json()['access_token']}"}
 
     return _auth_headers
+
+
+@pytest.fixture
+def signed_in(client: TestClient, auth_headers: Callable[[str], dict[str, str]]) -> None:
+    """Every call of the client carries Asha's session token."""
+    client.headers.update(auth_headers("asha"))

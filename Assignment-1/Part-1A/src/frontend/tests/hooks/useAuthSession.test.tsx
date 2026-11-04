@@ -1,13 +1,14 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { login } from "../../src/api/auth";
+import { login, me } from "../../src/api/auth";
 import { ApiError } from "../../src/api/errors";
-import { clearToken, getToken } from "../../src/api/session";
+import { clearToken, expire, getToken, setToken } from "../../src/api/session";
 import { useAuthSession } from "../../src/hooks/useAuthSession";
 
-vi.mock("../../src/api/auth", () => ({ login: vi.fn() }));
+vi.mock("../../src/api/auth", () => ({ login: vi.fn(), me: vi.fn() }));
 
 const loginMock = vi.mocked(login);
+const meMock = vi.mocked(me);
 
 const SUCCESS = {
   access_token: "token-value",
@@ -66,6 +67,53 @@ describe("useAuthSession", () => {
     await act(async () => {
       await result.current.signOut();
     });
+
+    expect(result.current.state).toEqual({ status: "signedOut" });
+    expect(getToken()).toBeNull();
+  });
+});
+
+describe("useAuthSession with a stored token", () => {
+  it("checks the token with the server and takes the user from the answer", async () => {
+    setToken("token-value");
+    meMock.mockResolvedValue({ id: 2, name: "Ravi" });
+
+    const { result } = renderHook(() => useAuthSession());
+
+    expect(result.current.state).toEqual({ status: "checking" });
+    await vi.waitFor(() =>
+      expect(result.current.state).toEqual({ status: "signedIn", user: { id: 2, name: "Ravi" } }),
+    );
+  });
+
+  it("forgets a token the server does not accept", async () => {
+    setToken("made-up-token");
+    meMock.mockRejectedValue(new ApiError("unauthenticated", 401, "unauthenticated", "x"));
+
+    const { result } = renderHook(() => useAuthSession());
+
+    await vi.waitFor(() => expect(result.current.state).toEqual({ status: "signedOut" }));
+    expect(getToken()).toBeNull();
+  });
+
+  it("keeps the token when the check cannot be answered", async () => {
+    setToken("token-value");
+    meMock.mockRejectedValue(new ApiError("unavailable", 503, "service_unavailable", "x"));
+
+    const { result } = renderHook(() => useAuthSession());
+
+    await vi.waitFor(() => expect(result.current.state).toEqual({ status: "unavailable" }));
+    expect(getToken()).toBe("token-value");
+  });
+
+  it("becomes signed out when the session store reports an expired session", async () => {
+    loginMock.mockResolvedValue(SUCCESS);
+    const { result } = renderHook(() => useAuthSession());
+    await act(async () => {
+      await result.current.signIn("asha", "secret");
+    });
+
+    act(() => expire());
 
     expect(result.current.state).toEqual({ status: "signedOut" });
     expect(getToken()).toBeNull();
