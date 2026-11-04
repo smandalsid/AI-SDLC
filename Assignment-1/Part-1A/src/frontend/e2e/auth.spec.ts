@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { resetDatabase, signIn } from "./support";
+import { authorization, mockPassword, resetDatabase, signIn } from "./support";
 
 // Same key as src/api/session.ts; the page is given a token the server never issued.
 const TOKEN_KEY = "bus-booking.session-token";
@@ -50,4 +50,75 @@ test("a second tab does not share the session of the first", async ({ page }) =>
 
   await expectOnlySignIn(second);
   await expect(page.getByRole("heading", { name: "Buses" })).toBeVisible();
+});
+
+async function expectHeader(page: Page, name: string): Promise<void> {
+  await expect(page.getByRole("banner")).toContainText(name);
+  await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
+}
+
+test("the header with the name and Sign out is visible on the bus list and the seat page", async ({
+  page,
+}) => {
+  await signIn(page, "ravi");
+  await expectHeader(page, "Ravi");
+
+  await page.getByRole("link", { name: /Bus A/ }).click();
+
+  await expect(page.getByRole("button", { name: "Seat 1, available" })).toBeVisible();
+  await expectHeader(page, "Ravi");
+});
+
+test("after sign-out Back shows only the sign-in screen and the old token is refused", async ({
+  page,
+  request,
+}) => {
+  await signIn(page, "asha");
+  await page.getByRole("link", { name: /Bus A/ }).click();
+  await expect(page.getByRole("button", { name: "Seat 1, available" })).toBeVisible();
+  const token = await page.evaluate((key) => sessionStorage.getItem(key), TOKEN_KEY);
+  expect(token).not.toBeNull();
+
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await expectOnlySignIn(page);
+  await page.goBack();
+
+  await expectOnlySignIn(page);
+  expect(await page.evaluate((key) => sessionStorage.getItem(key), TOKEN_KEY)).toBeNull();
+  const replay = await request.get("/api/v1/buses", {
+    headers: { Authorization: `Bearer ${token ?? ""}` },
+  });
+  expect(replay.status()).toBe(401);
+});
+
+test("signing in again after a sign-out works and issues a new token", async ({ page, request }) => {
+  await signIn(page, "asha");
+  const first = await page.evaluate((key) => sessionStorage.getItem(key), TOKEN_KEY);
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await expectOnlySignIn(page);
+
+  await signIn(page, "asha");
+
+  const second = await page.evaluate((key) => sessionStorage.getItem(key), TOKEN_KEY);
+  expect(second).not.toBeNull();
+  expect(second).not.toBe(first);
+  await expectHeader(page, "Asha");
+  const headers = await authorization(request, "asha");
+  expect((await request.get("/api/v1/buses", { headers })).status()).toBe(200);
+});
+
+test("a sign-out in one tab leaves the session of a second tab alone", async ({ page }) => {
+  await signIn(page, "asha");
+  const second = await page.context().newPage();
+  await second.goto("/login");
+  await second.getByLabel("Username").fill("ravi");
+  await second.getByLabel("Password").fill(mockPassword("ravi"));
+  await second.getByRole("button", { name: "Sign in" }).click();
+  await expect(second.getByRole("heading", { name: "Buses" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Sign out" }).click();
+
+  await expectOnlySignIn(page);
+  await second.reload();
+  await expect(second.getByRole("heading", { name: "Buses" })).toBeVisible();
 });

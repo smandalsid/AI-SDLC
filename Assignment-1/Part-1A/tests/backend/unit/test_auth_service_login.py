@@ -11,7 +11,7 @@ from app.db.seed import USERS
 from app.models.user import User
 from app.repositories.protocols import SessionRecord
 from app.services.auth_service import AuthService
-from app.services.types import LoginRejected, LoginSuccess
+from app.services.types import LoginRejected, LoginSuccess, Principal
 from pydantic import SecretStr
 
 NOW = datetime(2026, 1, 15, 10, 30, tzinfo=UTC)
@@ -51,6 +51,7 @@ class StoredSession:
 @dataclass
 class RecordingSessions:
     added: list[StoredSession] = field(default_factory=list)
+    ended: list[tuple[str, datetime]] = field(default_factory=list)
 
     def add(
         self, session_id: str, user_id: int, started_at: datetime, expires_at: datetime
@@ -59,6 +60,9 @@ class RecordingSessions:
 
     def get_with_user(self, session_id: str) -> SessionRecord | None:
         return None
+
+    def end(self, session_id: str, ended_at: datetime) -> None:
+        self.ended.append((session_id, ended_at))
 
 
 @dataclass
@@ -210,3 +214,15 @@ def test_a_locked_account_hash_can_never_sign_in(
     for password in (credentials["asha"], "!", ""):
         assert isinstance(locked.service.login("asha", password), LoginRejected)
     assert locked.sessions.added == []
+
+
+def test_logout_ends_only_the_principals_session_and_records_one_signout_attempt(
+    rig: Rig,
+) -> None:
+    principal = Principal(user_id=1, name="Asha", session_id="c" * 32, username="asha")
+
+    rig.service.logout(principal)
+
+    assert rig.sessions.ended == [("c" * 32, NOW)]
+    assert rig.attempts.rows == [("asha", "signout", NOW)]
+    assert rig.sessions.added == []

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { login, me } from "../../src/api/auth";
+import { login, logout, me } from "../../src/api/auth";
 import { clearToken, setToken } from "../../src/api/session";
 
 afterEach(() => {
@@ -53,5 +53,29 @@ describe("me", () => {
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(url).toBe("/api/v1/auth/me");
     expect(new Headers(init.headers).get("authorization")).toBe("Bearer token-value");
+  });
+});
+
+describe("logout", () => {
+  it("posts to /auth/logout with the bearer token and accepts the empty 204 answer", async () => {
+    setToken("token-value");
+    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(logout()).resolves.toBeUndefined();
+
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe("/api/v1/auth/logout");
+    expect(init.method).toBe("POST");
+    expect(init.body).toBeUndefined();
+    expect(new Headers(init.headers).get("authorization")).toBe("Bearer token-value");
+  });
+
+  it("rejects when the server answers 401", async () => {
+    setToken("token-value");
+    const body = { error: { code: "unauthenticated", message: "Authentication required." } };
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify(body), { status: 401 })));
+
+    await expect(logout()).rejects.toMatchObject({ status: 401 });
   });
 });

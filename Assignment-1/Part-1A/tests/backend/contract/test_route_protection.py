@@ -1,3 +1,5 @@
+from collections.abc import Callable
+
 import pytest
 from app.api.middleware.auth_gate import public_operations
 from app.api.v1.router import public_router
@@ -42,6 +44,21 @@ def test_the_walk_covers_every_registered_api_route(app: FastAPI) -> None:
 def test_only_the_public_operations_accept_an_unauthenticated_call(
     app: FastAPI, client: TestClient, headers: dict[str, str]
 ) -> None:
+    accepted = {
+        (method, path)
+        for method, path in api_operations(app)
+        if client.request(method, concrete(path), headers=headers).status_code != 401
+    }
+
+    assert accepted == PUBLIC
+
+
+def test_a_signed_out_credential_is_refused_by_every_protected_route(
+    app: FastAPI, client: TestClient, auth_headers: Callable[[str], dict[str, str]]
+) -> None:
+    headers = auth_headers("asha")
+    assert client.post(f"{API}/auth/logout", headers=headers).status_code == 204
+
     accepted = {
         (method, path)
         for method, path in api_operations(app)
