@@ -21,7 +21,13 @@ def create_app(wait_for_db: Callable[[], None] = wait_for_database) -> FastAPI:
         await run_in_threadpool(wait_for_db)
         yield
 
-    app = FastAPI(title="Bus Booking API", version="1.0.0", lifespan=lifespan)
+    app = FastAPI(
+        title="Bus Booking API",
+        version="1.0.0",
+        lifespan=lifespan,
+        redoc_url=None,
+        swagger_ui_oauth2_redirect_url=None,
+    )
     app.add_middleware(
         AuthGateMiddleware, public_routes=public_operations(public_router), codec=get_token_codec()
     )

@@ -27,7 +27,7 @@ export function TextField({ id, name, label, type, autoComplete, value, error, o
         aria-describedby={error !== undefined ? errorId : undefined}
       />
       {error !== undefined && (
-        <p id={errorId} className="field__error">
+        <p id={errorId} className="field__error" role="alert">
           {error}
         </p>
       )}

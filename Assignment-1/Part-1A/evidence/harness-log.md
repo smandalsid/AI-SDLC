@@ -126,6 +126,18 @@ Secret check of that folder (a script compared it with the values of `JWT_SECRET
 
 T130: no gate failed, so no repair was needed.
 
+### Phase 11 Convergence fixes (T135-T143)
+
+Red-first failures (the convergence tests before T139-T142) are not repair events; their summary is in the commit message `test: convergence tests (red)`. The entry below is the only unexpected failure seen while making them pass. Fix commit: `fix: convergence gaps`.
+
+| # | Failing check and evidence | Expected vs observed | Change made | Re-run (unchanged checks) |
+|---|----------------------------|----------------------|-------------|---------------------------|
+| 1 | Test gate (Vitest): 5 tests of "App sign-out" in `src/frontend/tests/App.test.tsx` ("Unable to find role=heading and name Sign in"; the page still showed the bus list) | Expected the sign-out click to end the session; observed the test found the new Sign out button of the `checking` state (T141) and clicked it while `/auth/me` was resolving, so the button was replaced between the pointer events and no click reached it. The behaviour under test was not wrong; the test did not wait for the confirmed session. | The tests wait for the header (`banner`) before clicking its Sign out button (helper `signedInSignOut`); no assertion was weakened. | 164 Vitest tests passed |
+
+Fixes: G-01 `api/routing.py` (`SessionFirstRoute`, used by every router under `api/v1/`: a malformed JSON body is handed to FastAPI as `null` so the session check refuses first; a valid session still gets the 422), G-02 `main.py` (`/redoc` and `/docs/oauth2-redirect` switched off), G-05 and G-06 (`TextField` alert role; `RequireAuth` Sign out in `checking` and `unavailable`, Retry in `unavailable`), G-09 (README and quickstart wording).
+
+Phase checkpoint T143: integrity, lint, security, test (702 backend, 164 frontend), build, and e2e pass in individual development runs; the second recorded run `.harness/run.sh` (folder `evidence/harness-results/20261104T160010Z`, scripts unchanged) passed all six gates on the first attempt, with the same secret check as the first run (0 occurrences of any `.env` secret value, session token, `Bearer` credential, or real hash).
+
 ## Quickstart validation
 
 Filled by T131.
@@ -299,3 +311,4 @@ Recorded by the human at T134. The agent MUST NOT write the decision.
 | Timestamp | Integrity | Lint | Security | Tests | Build | E2E | Result | Evidence |
 |-----------|-----------|------|----------|-------|-------|-----|--------|----------|
 | 2026-11-04T15:01:46Z | PASS | PASS | PASS | PASS | PASS | PASS | PASS | evidence/harness-results/20261104T145728Z |
+| 2026-11-04T16:04:13Z | PASS | PASS | PASS | PASS | PASS | PASS | PASS | evidence/harness-results/20261104T160010Z |

@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -86,6 +86,12 @@ describe("App header for a signed-in user", () => {
   });
 });
 
+// The header only exists once the session is confirmed; the checking state has its own Sign out.
+async function signedInSignOut(): Promise<HTMLElement> {
+  const header = await screen.findByRole("banner");
+  return within(header).getByRole("button", { name: "Sign out" });
+}
+
 describe("App sign-out", () => {
   function renderWithRealSession(route: string): void {
     setToken("token-value");
@@ -110,7 +116,7 @@ describe("App sign-out", () => {
       logoutMock.mockResolvedValue(undefined);
       renderWithRealSession(route);
 
-      await userEvent.click(await screen.findByRole("button", { name: "Sign out" }));
+      await userEvent.click(await signedInSignOut());
 
       expect(await screen.findByRole("heading", { name: "Sign in" })).toBeInTheDocument();
       expect(logoutMock).toHaveBeenCalledOnce();
@@ -125,7 +131,7 @@ describe("App sign-out", () => {
     logoutMock.mockRejectedValue(new Error("network"));
     renderWithRealSession("/");
 
-    await userEvent.click(await screen.findByRole("button", { name: "Sign out" }));
+    await userEvent.click(await signedInSignOut());
 
     expect(await screen.findByRole("heading", { name: "Sign in" })).toBeInTheDocument();
     expect(getToken()).toBeNull();
@@ -135,7 +141,7 @@ describe("App sign-out", () => {
     "returns to /login with the expiry message when a call at %s finds the session expired",
     async (route) => {
       renderWithRealSession(route);
-      await screen.findByRole("button", { name: "Sign out" });
+      await signedInSignOut();
 
       act(() => expire());
 
@@ -153,7 +159,7 @@ describe("App sign-out", () => {
     logoutMock.mockResolvedValue(undefined);
     renderWithRealSession("/");
 
-    await userEvent.click(await screen.findByRole("button", { name: "Sign out" }));
+    await userEvent.click(await signedInSignOut());
 
     expect(await screen.findByRole("heading", { name: "Sign in" })).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();

@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="164" failures="0" errors="0" time="7.550980125">
+    <testsuite name="tests/App.test.tsx" timestamp="2026-11-04T16:02:36.273Z" hostname="HWHX52N0QG" tests="17" failures="0" errors="0" skipped="0" time="1.042090084">
+        <testcase classname="tests/App.test.tsx" name="App routes for sign-in &gt; renders the sign-in page at /login" time="0.426061292">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App routes for sign-in &gt; redirects a signed-in user who visits /login to the bus list" time="0.037268875">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App routes for a signed-out visitor &gt; shows only the sign-in screen at /" time="0.013581333">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App routes for a signed-out visitor &gt; shows only the sign-in screen at /buses/1" time="0.012378917">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App routes for a signed-out visitor &gt; shows only the sign-in screen at /foo" time="0.009582875">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App routes for a signed-in user &gt; shows the bus list at /" time="0.018738792">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App routes for a signed-in user &gt; shows the not-found page for an unknown address" time="0.006903375">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App header for a signed-in user &gt; shows the name and Sign out at /" time="0.018195917">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App header for a signed-in user &gt; shows the name and Sign out at /buses/1" time="0.314385542">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App header for a signed-in user &gt; shows the name and Sign out at /foo" time="0.006317375">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App sign-out &gt; at / calls the endpoint, clears storage and shows only the sign-in screen" time="0.035592667">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App sign-out &gt; at /buses/1 calls the endpoint, clears storage and shows only the sign-in screen" time="0.031210833">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App sign-out &gt; at /foo calls the endpoint, clears storage and shows only the sign-in screen" time="0.025721875">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App sign-out &gt; shows the sign-in screen even when the sign-out call fails" time="0.020467833">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App sign-out &gt; returns to /login with the expiry message when a call at / finds the session expired" time="0.018827709">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App sign-out &gt; returns to /login with the expiry message when a call at /buses/1 finds the session expired" time="0.023865417">
+        </testcase>
+        <testcase classname="tests/App.test.tsx" name="App sign-out &gt; shows no expiry message after a deliberate sign-out" time="0.020449">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/auth.test.ts" timestamp="2026-11-04T16:02:36.275Z" hostname="HWHX52N0QG" tests="5" failures="0" errors="0" skipped="0" time="0.009835083">
+        <testcase classname="tests/api/auth.test.ts" name="login &gt; posts exactly the username and password to /auth/login and returns the response" time="0.005537958">
+        </testcase>
+        <testcase classname="tests/api/auth.test.ts" name="login &gt; keeps the credentials out of the URL" time="0.000505459">
+        </testcase>
+        <testcase classname="tests/api/auth.test.ts" name="me &gt; gets /auth/me with the bearer token and returns the user" time="0.000891042">
+        </testcase>
+        <testcase classname="tests/api/auth.test.ts" name="logout &gt; posts to /auth/logout with the bearer token and accepts the empty 204 answer" time="0.00076925">
+        </testcase>
+        <testcase classname="tests/api/auth.test.ts" name="logout &gt; rejects when the server answers 401" time="0.000883666">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/client.test.ts" timestamp="2026-11-04T16:02:36.275Z" hostname="HWHX52N0QG" tests="28" failures="0" errors="0" skipped="0" time="0.017892667">
+        <testcase classname="tests/api/client.test.ts" name="request &gt; returns parsed JSON for a 2xx response from the /api/v1 base" time="0.006624417">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; sends a JSON body with the content type for POST requests" time="0.001407375">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 409 seat_unavailable to a conflict error" time="0.000593083">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 400 to an invalid error" time="0.000329333">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 404 to an invalid error" time="0.000231625">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 422 to an invalid error" time="0.000184792">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 500 to an unavailable error" time="0.000213958">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 503 to an unavailable error" time="0.000189333">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps a network failure to an unavailable error" time="0.000292791">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps a non-JSON error body to an unavailable error" time="0.000277083">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; sends the bearer token when a session exists" time="0.0004495">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; sends no authorization header without a session" time="0.000261583">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 401 invalid_credentials to a credentials error" time="0.000219">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 401 unauthenticated to its own kind" time="0.000223208">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; keeps the server&apos;s throttle message and the session on a 429 from sign-in" time="0.001331291">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; maps 429 to a throttled error" time="0.0003935">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; ends the session when a protected call returns 401 unauthenticated" time="0.000379333">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; reports no expiry for a 401 when the token was already cleared by a sign-out" time="0.000356375">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; does not end the session for a refused sign-in" time="0.000431125">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; keeps the session when a protected call fails with 503" time="0.000225333">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; keeps the session when a protected call fails with 500" time="0.000166166">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="request &gt; keeps the session when the network fails" time="0.000165">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="describeApiError &gt; describes a conflict error" time="0.000207625">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="describeApiError &gt; describes a invalid error" time="0.000074667">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="describeApiError &gt; describes a unavailable error" time="0.00006125">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="describeApiError &gt; describes a credentials error without saying which part was wrong" time="0.000077875">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="describeApiError &gt; shows the server message for a throttled error" time="0.000069125">
+        </testcase>
+        <testcase classname="tests/api/client.test.ts" name="describeApiError &gt; describes an unknown error as service unavailable" time="0.000334333">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/session.test.ts" timestamp="2026-11-04T16:02:36.277Z" hostname="HWHX52N0QG" tests="7" failures="0" errors="0" skipped="0" time="0.006694417">
+        <testcase classname="tests/api/session.test.ts" name="session store &gt; has no token at first" time="0.001678833">
+        </testcase>
+        <testcase classname="tests/api/session.test.ts" name="session store &gt; keeps only the token, in sessionStorage under one key" time="0.000525375">
+        </testcase>
+        <testcase classname="tests/api/session.test.ts" name="session store &gt; clears the token" time="0.000144667">
+        </testcase>
+        <testcase classname="tests/api/session.test.ts" name="session store &gt; expire() clears the token and tells every subscriber once" time="0.000748916">
+        </testcase>
+        <testcase classname="tests/api/session.test.ts" name="session store &gt; expire() says nothing when no token is stored, so a late 401 after sign-out is not an expiry" time="0.000696166">
+        </testcase>
+        <testcase classname="tests/api/session.test.ts" name="session store &gt; stops notifying a subscriber that unsubscribed" time="0.000195083">
+        </testcase>
+        <testcase classname="tests/api/session.test.ts" name="session store &gt; treats unavailable storage as no token and never throws" time="0.001358584">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/architecture.test.ts" timestamp="2026-11-04T16:02:36.277Z" hostname="HWHX52N0QG" tests="4" failures="0" errors="0" skipped="0" time="0.003212291">
+        <testcase classname="tests/architecture.test.ts" name="architecture: components, pages, and hooks never call the network directly &gt; scans the component, page, and hook sources" time="0.001247792">
+        </testcase>
+        <testcase classname="tests/architecture.test.ts" name="architecture: components, pages, and hooks never call the network directly &gt; contains no fetch call in src/components, src/pages, or src/hooks" time="0.000562916">
+        </testcase>
+        <testcase classname="tests/architecture.test.ts" name="architecture: only the session store touches browser storage &gt; contains no sessionStorage or localStorage access outside src/api/session.ts" time="0.000223666">
+        </testcase>
+        <testcase classname="tests/architecture.test.ts" name="architecture: only the session store touches browser storage &gt; never uses localStorage, even in the session store" time="0.000152333">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/components/AppHeader.test.tsx" timestamp="2026-11-04T16:02:36.278Z" hostname="HWHX52N0QG" tests="6" failures="0" errors="0" skipped="0" time="0.252405541">
+        <testcase classname="tests/components/AppHeader.test.tsx" name="AppHeader &gt; shows the signed-in user&apos;s name and a Sign out button" time="0.152948334">
+        </testcase>
+        <testcase classname="tests/components/AppHeader.test.tsx" name="AppHeader &gt; calls sign-out when the button is clicked" time="0.041699791">
+        </testcase>
+        <testcase classname="tests/components/AppHeader.test.tsx" name="AppHeader &gt; is reached with Tab and operated with the key &quot;{Enter}&quot;" time="0.026913125">
+        </testcase>
+        <testcase classname="tests/components/AppHeader.test.tsx" name="AppHeader &gt; is reached with Tab and operated with the key &quot; &quot;" time="0.024030625">
+        </testcase>
+        <testcase classname="tests/components/AppHeader.test.tsx" name="AppHeader &gt; renders nothing unless the user is signed in ({&quot;status&quot;:&quot;signedOut&quot;,&quot;reason&quot;:&quot;none&quot;})" time="0.003387458">
+        </testcase>
+        <testcase classname="tests/components/AppHeader.test.tsx" name="AppHeader &gt; renders nothing unless the user is signed in ({&quot;status&quot;:&quot;checking&quot;})" time="0.001261583">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/components/BookingBar.test.tsx" timestamp="2026-11-04T16:02:36.278Z" hostname="HWHX52N0QG" tests="6" failures="0" errors="0" skipped="0" time="0.1872255">
+        <testcase classname="tests/components/BookingBar.test.tsx" name="BookingBar &gt; shows the selected seat numbers" time="0.026627125">
+        </testcase>
+        <testcase classname="tests/components/BookingBar.test.tsx" name="BookingBar &gt; is enabled by at least one selected seat alone" time="0.116118375">
+        </testcase>
+        <testcase classname="tests/components/BookingBar.test.tsx" name="BookingBar &gt; is disabled with no seats selected" time="0.009423209">
+        </testcase>
+        <testcase classname="tests/components/BookingBar.test.tsx" name="BookingBar &gt; is disabled while a request is in flight" time="0.006552584">
+        </testcase>
+        <testcase classname="tests/components/BookingBar.test.tsx" name="BookingBar &gt; explains the six-seat limit when it is reached" time="0.003883583">
+        </testcase>
+        <testcase classname="tests/components/BookingBar.test.tsx" name="BookingBar &gt; calls the handler when confirmed" time="0.023112625">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/components/BusList.test.tsx" timestamp="2026-11-04T16:02:36.278Z" hostname="HWHX52N0QG" tests="1" failures="0" errors="0" skipped="0" time="0.157401">
+        <testcase classname="tests/components/BusList.test.tsx" name="BusList &gt; renders each bus name and seat count as a link to its seat page" time="0.155457334">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/components/ErrorBoundary.test.tsx" timestamp="2026-11-04T16:02:36.279Z" hostname="HWHX52N0QG" tests="2" failures="0" errors="0" skipped="0" time="0.134417417">
+        <testcase classname="tests/components/ErrorBoundary.test.tsx" name="ErrorBoundary &gt; renders its children when nothing fails" time="0.0275115">
+        </testcase>
+        <testcase classname="tests/components/ErrorBoundary.test.tsx" name="ErrorBoundary &gt; shows a readable fallback instead of crashing when a child throws" time="0.10498225">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/components/LoginForm.test.tsx" timestamp="2026-11-04T16:02:36.279Z" hostname="HWHX52N0QG" tests="14" failures="0" errors="0" skipped="0" time="1.377772708">
+        <testcase classname="tests/components/LoginForm.test.tsx" name="LoginForm &gt; has labelled username and masked password fields" time="0.044035959">
+        </testcase>
+        <testcase classname="tests/components/LoginForm.test.tsx" name="LoginForm &gt; blocks an empty submit with a message for each empty field" time="0.187728917">
+        </testcase>
+        <testcase classname="tests/components/LoginForm.test.tsx" name="LoginForm &gt; announces each field error to assistive technology" time="0.039105666">
+        </testcase>
+        <testcase classname="tests/components/LoginForm.test.tsx" name="LoginForm &gt; blocks a submit that is missing only the password" time="0.054989167">
+        </testcase>
+        <testcase classname="tests/components/LoginForm.test.tsx" name="LoginForm &gt; blocks values longer than the server accepts" time="0.508918458">
+        </testcase>
+        <testcase classname="tests/components/LoginForm.test.tsx" name="LoginForm &gt; submits the values exactly as typed" time="0.056125625">
+        </testcase>
+        <testcase classname="tests/components/LoginForm.test.tsx" name="LoginForm &gt; disables the button while a request is in flight and sends only one request" time="0.05506975">
+        </testcase>
+        <testcase classname="tests/components/LoginForm.test.tsx" name="LoginForm &gt; shows an alert for a credentials failure and stays usable" time="0.057972084">
+        </testcase>
+        <testcase classname="tests/components/LoginForm.test.tsx" name="LoginForm &gt; shows an alert for a throttled failure and stays usable" time="0.059962667">
+        </testcase>
+        <testcase classname="tests/components/LoginForm.test.tsx" name="LoginForm &gt; shows an alert for a invalid failure and stays usable" time="0.058833041">
+        </testcase>
+        <testcase classname="tests/components/LoginForm.test.tsx" name="LoginForm &gt; shows an alert for a unavailable failure and stays usable" time="0.058573458">
+        </testcase>
+        <testcase classname="tests/components/LoginForm.test.tsx" name="LoginForm &gt; shows the server&apos;s throttle message with the seconds and lets the user try again" time="0.072212083">
+        </testcase>
+        <testcase classname="tests/components/LoginForm.test.tsx" name="LoginForm &gt; is operable with the keyboard alone" time="0.058956208">
+        </testcase>
+        <testcase classname="tests/components/LoginForm.test.tsx" name="LoginForm &gt; never writes the values to the URL, console, or storage" time="0.063285291">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/components/RequireAuth.test.tsx" timestamp="2026-11-04T16:02:36.279Z" hostname="HWHX52N0QG" tests="9" failures="0" errors="0" skipped="0" time="0.331397416">
+        <testcase classname="tests/components/RequireAuth.test.tsx" name="RequireAuth &gt; redirects to /login without a token and mounts nothing protected" time="0.046351167">
+        </testcase>
+        <testcase classname="tests/components/RequireAuth.test.tsx" name="RequireAuth &gt; shows only a loading line until /auth/me answers, then renders the route" time="0.146640709">
+        </testcase>
+        <testcase classname="tests/components/RequireAuth.test.tsx" name="RequireAuth &gt; shows the header with the name and Sign out above the protected route" time="0.030137834">
+        </testcase>
+        <testcase classname="tests/components/RequireAuth.test.tsx" name="RequireAuth &gt; takes the user&apos;s name from the server, never from storage" time="0.007504041">
+        </testcase>
+        <testcase classname="tests/components/RequireAuth.test.tsx" name="RequireAuth &gt; clears the token and redirects when /auth/me says the session is not valid" time="0.009569125">
+        </testcase>
+        <testcase classname="tests/components/RequireAuth.test.tsx" name="RequireAuth &gt; keeps the token and shows the service message when the check cannot be answered" time="0.0121285">
+        </testcase>
+        <testcase classname="tests/components/RequireAuth.test.tsx" name="RequireAuth &gt; shows the sign-in screen without an error when sessionStorage is unavailable" time="0.006402334">
+        </testcase>
+        <testcase classname="tests/components/RequireAuth.test.tsx" name="RequireAuth &gt; offers Sign out while the session is still being checked" time="0.031826583">
+        </testcase>
+        <testcase classname="tests/components/RequireAuth.test.tsx" name="RequireAuth &gt; offers Sign out and Retry when the check cannot be answered" time="0.03908775">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/components/SeatGrid.test.tsx" timestamp="2026-11-04T16:02:36.280Z" hostname="HWHX52N0QG" tests="3" failures="0" errors="0" skipped="0" time="0.232862833">
+        <testcase classname="tests/components/SeatGrid.test.tsx" name="SeatGrid &gt; renders one control per seat with an accessible name stating number and status" time="0.174530333">
+        </testcase>
+        <testcase classname="tests/components/SeatGrid.test.tsx" name="SeatGrid &gt; disables booked seats and labels them with text, not colour alone" time="0.013145583">
+        </testcase>
+        <testcase classname="tests/components/SeatGrid.test.tsx" name="SeatGrid &gt; is reachable by keyboard: Tab visits available seats and skips booked ones" time="0.043423583">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/components/StatusMessage.test.tsx" timestamp="2026-11-04T16:02:36.280Z" hostname="HWHX52N0QG" tests="7" failures="0" errors="0" skipped="0" time="0.22205175">
+        <testcase classname="tests/components/StatusMessage.test.tsx" name="StatusMessage &gt; announces loading politely" time="0.150902625">
+        </testcase>
+        <testcase classname="tests/components/StatusMessage.test.tsx" name="StatusMessage &gt; announces empty politely" time="0.017066209">
+        </testcase>
+        <testcase classname="tests/components/StatusMessage.test.tsx" name="StatusMessage &gt; announces success politely" time="0.004145542">
+        </testcase>
+        <testcase classname="tests/components/StatusMessage.test.tsx" name="StatusMessage &gt; announces error as an alert" time="0.004646209">
+        </testcase>
+        <testcase classname="tests/components/StatusMessage.test.tsx" name="StatusMessage &gt; announces conflict as an alert" time="0.003358458">
+        </testcase>
+        <testcase classname="tests/components/StatusMessage.test.tsx" name="StatusMessage &gt; offers Retry on an error and calls the handler" time="0.037508667">
+        </testcase>
+        <testcase classname="tests/components/StatusMessage.test.tsx" name="StatusMessage &gt; shows no Retry button without a handler" time="0.002123875">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/hooks/useAuthSession.test.tsx" timestamp="2026-11-04T16:02:36.281Z" hostname="HWHX52N0QG" tests="15" failures="0" errors="0" skipped="0" time="0.222613875">
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession &gt; starts signed out" time="0.019218875">
+        </testcase>
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession &gt; stores the token and takes the user from the server after a successful sign-in" time="0.003396625">
+        </testcase>
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession &gt; leaves storage empty and the state signed out after a failed sign-in" time="0.004359666">
+        </testcase>
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession &gt; clears the token and the state on sign-out" time="0.002021167">
+        </testcase>
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession sign-out &gt; calls the sign-out endpoint once, while the token is still stored" time="0.002142541">
+        </testcase>
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession sign-out &gt; still clears the storage and the state after a network failure" time="0.001948333">
+        </testcase>
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession sign-out &gt; still clears the storage and the state after a 401" time="0.001335833">
+        </testcase>
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession sign-out &gt; still clears the storage and the state after a 503" time="0.001798458">
+        </testcase>
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession expiry &gt; becomes signed out with the reason expired when a protected call ends the session" time="0.001910292">
+        </testcase>
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession expiry &gt; is not reported as expired after a deliberate sign-out, even if a late 401 arrives" time="0.00176825">
+        </testcase>
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession expiry &gt; clears the reason when a sign-in is attempted, whether it succeeds or not" time="0.002501875">
+        </testcase>
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession with a stored token &gt; checks the token with the server and takes the user from the answer" time="0.054025166">
+        </testcase>
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession with a stored token &gt; forgets a token the server does not accept" time="0.053295958">
+        </testcase>
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession with a stored token &gt; keeps the token when the check cannot be answered" time="0.052986625">
+        </testcase>
+        <testcase classname="tests/hooks/useAuthSession.test.tsx" name="useAuthSession with a stored token &gt; becomes signed out when the session store reports an expired session" time="0.018069167">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/hooks/useSeatSelection.test.ts" timestamp="2026-11-04T16:02:36.281Z" hostname="HWHX52N0QG" tests="7" failures="0" errors="0" skipped="0" time="0.030719041">
+        <testcase classname="tests/hooks/useSeatSelection.test.ts" name="useSeatSelection &gt; toggles a seat on and off" time="0.017832542">
+        </testcase>
+        <testcase classname="tests/hooks/useSeatSelection.test.ts" name="useSeatSelection &gt; keeps the selection ordered by seat number" time="0.002062792">
+        </testcase>
+        <testcase classname="tests/hooks/useSeatSelection.test.ts" name="useSeatSelection &gt; cannot select a booked seat" time="0.001657292">
+        </testcase>
+        <testcase classname="tests/hooks/useSeatSelection.test.ts" name="useSeatSelection &gt; ignores a seventh seat and reports the limit" time="0.002798166">
+        </testcase>
+        <testcase classname="tests/hooks/useSeatSelection.test.ts" name="useSeatSelection &gt; allows deselecting at the limit to free a slot" time="0.001731541">
+        </testcase>
+        <testcase classname="tests/hooks/useSeatSelection.test.ts" name="useSeatSelection &gt; clears the selection" time="0.001602541">
+        </testcase>
+        <testcase classname="tests/hooks/useSeatSelection.test.ts" name="useSeatSelection &gt; drops seats that become booked" time="0.00147225">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/pages/BusListPage.test.tsx" timestamp="2026-11-04T16:02:36.282Z" hostname="HWHX52N0QG" tests="4" failures="0" errors="0" skipped="0" time="0.290950959">
+        <testcase classname="tests/pages/BusListPage.test.tsx" name="BusListPage &gt; shows a loading state while the buses load" time="0.16947475">
+        </testcase>
+        <testcase classname="tests/pages/BusListPage.test.tsx" name="BusListPage &gt; lists every bus with its seat count" time="0.043908917">
+        </testcase>
+        <testcase classname="tests/pages/BusListPage.test.tsx" name="BusListPage &gt; shows an empty state when there are no buses" time="0.011684167">
+        </testcase>
+        <testcase classname="tests/pages/BusListPage.test.tsx" name="BusListPage &gt; shows an error with Retry, and Retry loads the buses" time="0.06291775">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/pages/BusSeatsPage.booking.test.tsx" timestamp="2026-11-04T16:02:36.282Z" hostname="HWHX52N0QG" tests="11" failures="0" errors="0" skipped="0" time="1.186855459">
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (booking) &gt; sends the booking, shows progress, then success, and re-reads the seats" time="0.358603459">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (booking) &gt; sends only one request when Confirm is clicked twice" time="0.104443667">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (booking) &gt; cannot select a seventh seat" time="0.167151541">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (booking) &gt; enables Confirm with one selected seat alone and disables it again without seats" time="0.068696709">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (booking) &gt; sends a body with exactly bus_id and seat_numbers, never a user id" time="0.049565208">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (booking) &gt; discards an unconfirmed selection when the page is reloaded" time="0.074803375">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (failed bookings) &gt; on a conflict shows an alert, refreshes the seats, and drops the taken seat" time="0.090156208">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (failed bookings) &gt; on a 503 response shows Service unavailable and keeps the selection" time="0.088453125">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (failed bookings) &gt; on a network failure shows Service unavailable and keeps the selection" time="0.079839084">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (failed bookings) &gt; on a 400 response shows Invalid request" time="0.047318666">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.booking.test.tsx" name="BusSeatsPage (failed bookings) &gt; on a 422 response shows Invalid request" time="0.056021458">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/pages/BusSeatsPage.keyboard.test.tsx" timestamp="2026-11-04T16:02:36.283Z" hostname="HWHX52N0QG" tests="3" failures="0" errors="0" skipped="0" time="0.973667584">
+        <testcase classname="tests/pages/BusSeatsPage.keyboard.test.tsx" name="BusSeatsPage (keyboard only) &gt; books seats with Tab, Space, Enter and Tab to Confirm" time="0.713442209">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.keyboard.test.tsx" name="BusSeatsPage (keyboard only) &gt; deselects a seat when Space is pressed on it again" time="0.087270417">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.keyboard.test.tsx" name="BusSeatsPage (keyboard only) &gt; shows the 6-seat limit message when a seventh seat is chosen by keyboard" time="0.1713585">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/pages/BusSeatsPage.test.tsx" timestamp="2026-11-04T16:02:36.283Z" hostname="HWHX52N0QG" tests="8" failures="0" errors="0" skipped="0" time="0.368744042">
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (viewing) &gt; shows a loading state while the bus loads" time="0.136526">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (viewing) &gt; lists every seat with booked seats marked" time="0.107877416">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (viewing) &gt; shows an error with Retry and no partial seat list" time="0.065324334">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (viewing) &gt; shows a readable message when the bus does not exist" time="0.00765975">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (viewing) &gt; shows bus not found for the malformed id abc without calling the API" time="0.0051745">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (viewing) &gt; shows bus not found for the malformed id 0 without calling the API" time="0.0050135">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (viewing) &gt; shows bus not found for the malformed id 99999999999999999999 without calling the API" time="0.003878416">
+        </testcase>
+        <testcase classname="tests/pages/BusSeatsPage.test.tsx" name="BusSeatsPage (no user selector) &gt; renders no user selector and no input holding the signed-in name" time="0.035477709">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/pages/LoginPage.test.tsx" timestamp="2026-11-04T16:02:36.283Z" hostname="HWHX52N0QG" tests="7" failures="0" errors="0" skipped="0" time="0.502170458">
+        <testcase classname="tests/pages/LoginPage.test.tsx" name="LoginPage &gt; shows the sign-in form under a heading" time="0.160452625">
+        </testcase>
+        <testcase classname="tests/pages/LoginPage.test.tsx" name="LoginPage &gt; signs in with the typed values and navigates to the bus list on success" time="0.1431395">
+        </testcase>
+        <testcase classname="tests/pages/LoginPage.test.tsx" name="LoginPage &gt; shows the generic failure and stays on the page when the credentials are refused" time="0.08636">
+        </testcase>
+        <testcase classname="tests/pages/LoginPage.test.tsx" name="LoginPage &gt; sends one request for a double click and keeps the credentials out of the URL" time="0.091910334">
+        </testcase>
+        <testcase classname="tests/pages/LoginPage.test.tsx" name="LoginPage expiry message &gt; shows the expiry message as an alert after a session expired" time="0.008436">
+        </testcase>
+        <testcase classname="tests/pages/LoginPage.test.tsx" name="LoginPage expiry message &gt; shows no message for the reason none" time="0.005565291">
+        </testcase>
+        <testcase classname="tests/pages/LoginPage.test.tsx" name="LoginPage expiry message &gt; shows no message for the reason signedOut" time="0.004697084">
+        </testcase>
+    </testsuite>
+</testsuites>

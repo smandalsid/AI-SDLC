@@ -13,7 +13,7 @@ differences are listed here.
    - `MOCK_USER_PASSWORDS`: one line of JSON mapping each seeded username to its mock password, for example
      `MOCK_USER_PASSWORDS={"asha":"<choose>","ravi":"<choose>","meera":"<choose>"}` (1-128 characters each).
    `.env.example` lists both names with placeholders only.
-2. Install the two new Python dependencies (agent task): `PyJWT` and `argon2-cffi` through `uv` into the root `.venv`,
+2. Install the two new Python dependencies (already installed): `PyJWT` and `argon2-cffi` through `uv` into the root `.venv`,
    lock file committed.
 
 ## Create or upgrade the development database
