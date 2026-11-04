@@ -9,7 +9,7 @@ from app.core.passwords import Argon2Hasher
 from app.core.tokens import JwtTokenCodec
 from app.db.seed import USERS
 from app.models.user import User
-from app.repositories.protocols import SessionRecord
+from app.repositories.protocols import FailureWindow, SessionRecord
 from app.services.auth_service import AuthService
 from app.services.types import LoginRejected, LoginSuccess, Principal
 from pydantic import SecretStr
@@ -71,6 +71,9 @@ class RecordingAttempts:
 
     def record(self, username: str, outcome: str, at: datetime) -> None:
         self.rows.append((username, outcome, at))
+
+    def failures_since(self, username: str, since: datetime) -> FailureWindow:
+        return FailureWindow(count=0, latest_at=None)
 
 
 class SpyVerifier:

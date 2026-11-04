@@ -57,5 +57,13 @@ class SessionStore(Protocol):
     def end(self, session_id: str, ended_at: datetime) -> None: ...
 
 
+@dataclass(frozen=True)
+class FailureWindow:
+    count: int
+    latest_at: datetime | None
+
+
 class AttemptLog(Protocol):
     def record(self, username: str, outcome: str, at: datetime) -> None: ...
+
+    def failures_since(self, username: str, since: datetime) -> FailureWindow: ...
