@@ -62,8 +62,12 @@ def test_a_route_registered_directly_on_the_app_is_protected_by_default(
     assert "hidden" not in response.text
 
 
-def test_users_is_not_reachable_without_a_credential(client: TestClient) -> None:
-    response = client.get(f"{API}/users")
+def test_users_is_not_a_route_so_even_a_forged_credential_reaches_a_404(
+    client: TestClient,
+) -> None:
+    for headers in ({}, {"Authorization": FORGED}):
+        response = client.get(f"{API}/users", headers=headers)
 
-    assert response.status_code == 401
-    assert "Asha" not in response.text
+        assert response.status_code == 404
+        assert response.json()["error"]["code"] == "not_found"
+        assert "Asha" not in response.text

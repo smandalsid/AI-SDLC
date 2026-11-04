@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
-import { resetDatabase, signIn } from "./support";
+import { mockPassword, resetDatabase, signIn } from "./support";
 
-const MAX_INTERACTIONS = 5;
+const MAX_INTERACTIONS = 3;
 const BOOKING_BUDGET_MS = 30_000;
 const VIEW_BUDGET_MS = 2_000;
 
@@ -55,17 +55,32 @@ test("the seat list is visible within 2 seconds of choosing a bus", async ({ pag
   expect(Date.now() - started).toBeLessThan(VIEW_BUDGET_MS);
 });
 
-test("one seat is booked in at most 5 interactions and under 30 seconds", async ({ page }) => {
+test("one seat is booked in at most 3 interactions and under 30 seconds", async ({ page }) => {
   const { act, interactions } = counted();
   await signIn(page, "asha");
   await expect(page.getByRole("link", { name: /Bus A/ })).toBeVisible();
   const started = Date.now();
 
   await act(() => page.getByRole("link", { name: /Bus A/ }).click());
-  await act(() => page.getByLabel("Booking as").selectOption({ label: "Ravi" }));
   await act(() => page.getByRole("button", { name: "Seat 2, available" }).click());
   await act(() => page.getByRole("button", { name: "Confirm booking" }).click());
   await expect(page.getByText("Booked seat 2.")).toBeVisible();
+
+  expect(interactions()).toBeLessThanOrEqual(MAX_INTERACTIONS);
+  expect(Date.now() - started).toBeLessThan(BOOKING_BUDGET_MS);
+});
+
+test("the bus list is reached from the sign-in screen in at most 3 interactions", async ({
+  page,
+}) => {
+  const { act, interactions } = counted();
+  await page.goto("/login");
+  const started = Date.now();
+
+  await act(() => page.getByLabel("Username").fill("asha"));
+  await act(() => page.getByLabel("Password").fill(mockPassword("asha")));
+  await act(() => page.getByRole("button", { name: "Sign in" }).click());
+  await expect(page.getByRole("heading", { name: "Buses" })).toBeVisible();
 
   expect(interactions()).toBeLessThanOrEqual(MAX_INTERACTIONS);
   expect(Date.now() - started).toBeLessThan(BOOKING_BUDGET_MS);

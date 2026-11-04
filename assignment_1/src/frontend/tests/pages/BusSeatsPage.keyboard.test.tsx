@@ -3,12 +3,10 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createBookings } from "../../src/api/bookings";
 import { getBus } from "../../src/api/buses";
-import { listUsers } from "../../src/api/users";
 import { BusSeatsPage } from "../../src/pages/BusSeatsPage";
-import { makeBusDetail, makeUsers, page, renderSignedIn } from "../helpers";
+import { makeBusDetail, renderSignedIn } from "../helpers";
 
 vi.mock("../../src/api/buses", () => ({ listBuses: vi.fn(), getBus: vi.fn() }));
-vi.mock("../../src/api/users", () => ({ listUsers: vi.fn() }));
 vi.mock("../../src/api/bookings", () => ({ createBookings: vi.fn() }));
 
 const createBookingsMock = vi.mocked(createBookings);
@@ -31,7 +29,6 @@ async function tabTo(user: ReturnType<typeof userEvent.setup>, find: () => HTMLE
 
 beforeEach(() => {
   vi.resetAllMocks();
-  vi.mocked(listUsers).mockResolvedValue(page(makeUsers()));
   vi.mocked(getBus).mockResolvedValue(makeBusDetail());
   createBookingsMock.mockResolvedValue({ bookings: [] });
 });
@@ -40,8 +37,7 @@ describe("BusSeatsPage (keyboard only)", () => {
   it("books seats with Tab, Space, Enter and Tab to Confirm", async () => {
     const user = userEvent.setup();
     renderPage();
-    // jsdom has no native <select> keyboard handling, so the user is chosen programmatically.
-    await user.selectOptions(await screen.findByLabelText("Booking as"), "Asha");
+    await screen.findByRole("button", { name: "Seat 1, available" });
 
     await tabTo(user, () => seat(3));
     await user.keyboard(" ");
@@ -53,7 +49,7 @@ describe("BusSeatsPage (keyboard only)", () => {
     await tabTo(user, () => screen.getByRole("button", { name: "Confirm booking" }));
     await user.keyboard("{Enter}");
 
-    expect(createBookingsMock).toHaveBeenCalledWith({ bus_id: 1, user_id: 1, seat_numbers: [3, 4] });
+    expect(createBookingsMock).toHaveBeenCalledWith({ bus_id: 1, seat_numbers: [3, 4] });
   });
 
   it("deselects a seat when Space is pressed on it again", async () => {

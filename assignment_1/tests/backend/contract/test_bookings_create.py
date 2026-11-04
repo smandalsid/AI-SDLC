@@ -1,12 +1,14 @@
+from collections.abc import Callable
 from datetime import datetime
 
 import pytest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import text
 from sqlalchemy.orm import Session, sessionmaker
 
 BOOKINGS = "/api/v1/bookings"
-VALID = {"bus_id": 1, "user_id": 1, "seat_numbers": [3, 4]}
+VALID = {"bus_id": 1, "seat_numbers": [3, 4]}
 
 pytestmark = pytest.mark.usefixtures("signed_in")
 
@@ -79,14 +81,14 @@ def test_invalid_seat_lists_are_rejected_with_422_and_store_nothing(
         {**VALID, "booked_at": "2026-01-01T00:00:00Z"},
         {**VALID, "unexpected": 1},
         {**VALID, "bus_id": "1"},
-        {**VALID, "user_id": 1.5},
         {**VALID, "bus_id": 0},
-        {**VALID, "user_id": -3},
         {**VALID, "bus_id": 99999999999999999999},
-        {**VALID, "user_id": 99999999999999999999},
-        {"user_id": 1, "seat_numbers": [3]},
-        {"bus_id": 1, "seat_numbers": [3]},
-        {"bus_id": 1, "user_id": 1},
+        {**VALID, "user_id": 1},
+        {**VALID, "user_id": 2},
+        {**VALID, "user_id": 999},
+        {**VALID, "user_id": None},
+        {"seat_numbers": [3]},
+        {"bus_id": 1},
     ],
 )
 def test_invalid_bodies_are_rejected_with_422_and_store_nothing(
@@ -120,11 +122,46 @@ def test_unknown_bus_is_rejected_with_404(
     assert stored_bookings(session_factory) == []
 
 
-def test_unknown_user_is_rejected_with_404(
-    client: TestClient, session_factory: sessionmaker[Session]
+def test_a_booking_by_ravi_stores_user_2_and_one_by_asha_stores_user_1(
+    client: TestClient,
+    session_factory: sessionmaker[Session],
+    auth_headers: Callable[[str], dict[str, str]],
 ) -> None:
-    response = client.post(BOOKINGS, json={**VALID, "user_id": 99})
+    by_ravi = client.post(
+        BOOKINGS, json={"bus_id": 1, "seat_numbers": [3]}, headers=auth_headers("ravi")
+    )
+    by_asha = client.post(BOOKINGS, json={"bus_id": 1, "seat_numbers": [4]})
 
-    assert response.status_code == 404
-    assert_error(response.json(), "user_not_found")
+    assert by_ravi.status_code == 201
+    assert by_asha.status_code == 201
+    assert [b["user_id"] for b in by_ravi.json()["bookings"]] == [2]
+    assert [b["user_id"] for b in by_asha.json()["bookings"]] == [1]
+    assert [row[:3] for row in stored_bookings(session_factory)] == [(1, 2, 3), (1, 1, 4)]
+
+
+@pytest.mark.parametrize("claimed", [1, 2, 999])
+def test_a_body_naming_a_user_is_rejected_with_422_and_stores_nothing(
+    client: TestClient,
+    session_factory: sessionmaker[Session],
+    auth_headers: Callable[[str], dict[str, str]],
+    claimed: int,
+) -> None:
+    response = client.post(
+        BOOKINGS, json={**VALID, "user_id": claimed}, headers=auth_headers("ravi")
+    )
+
+    assert response.status_code == 422
+    assert_error(response.json(), "validation_error")
+    assert stored_bookings(session_factory) == []
+
+
+@pytest.mark.parametrize("claimed", [1, 2, 999])
+def test_without_a_session_a_body_naming_a_user_gets_401_first(
+    app: FastAPI, session_factory: sessionmaker[Session], claimed: int
+) -> None:
+    with TestClient(app, raise_server_exceptions=False) as anonymous:
+        response = anonymous.post(BOOKINGS, json={**VALID, "user_id": claimed})
+
+    assert response.status_code == 401
+    assert_error(response.json(), "unauthenticated")
     assert stored_bookings(session_factory) == []

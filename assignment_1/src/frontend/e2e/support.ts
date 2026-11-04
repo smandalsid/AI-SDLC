@@ -13,7 +13,7 @@ export function resetDatabase(): void {
 }
 
 /** The only reader of the git-ignored .env here; the password is never printed or stored. */
-function mockPassword(username: string): string {
+export function mockPassword(username: string): string {
   const line = readFileSync(ENV_FILE, "utf8")
     .split("\n")
     .find((candidate) => candidate.startsWith("MOCK_USER_PASSWORDS="));
