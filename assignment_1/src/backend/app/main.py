@@ -7,6 +7,7 @@ from starlette.concurrency import run_in_threadpool
 
 from app.api.error_handlers import register_error_handlers
 from app.api.middleware.auth_gate import AuthGateMiddleware, public_operations
+from app.api.middleware.no_store import NoStoreMiddleware
 from app.api.v1.router import api_router, public_router
 from app.core.config import get_settings
 from app.core.tokens import get_token_codec
@@ -24,6 +25,8 @@ def create_app(wait_for_db: Callable[[], None] = wait_for_database) -> FastAPI:
     app.add_middleware(
         AuthGateMiddleware, public_routes=public_operations(public_router), codec=get_token_codec()
     )
+    # Outside the gate, so its 401 is marked too; inside CORS.
+    app.add_middleware(NoStoreMiddleware)
     # Added last so CORS is outermost: preflight requests are answered before the gate sees them.
     app.add_middleware(
         CORSMiddleware,

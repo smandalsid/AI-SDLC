@@ -19,9 +19,7 @@ METHODS = {"get", "post", "put", "patch", "delete"}
 
 # Differences between the 002 contract and the app that a later story still delivers. Each story
 # checkpoint deletes its entries; test_no_pending_contract_items (T124) requires all to be empty.
-PENDING_OPERATIONS_NOT_IN_APP = {
-    ("POST", "/auth/logout"),
-}
+PENDING_OPERATIONS_NOT_IN_APP: set[tuple[str, str]] = set()
 PENDING_OPERATIONS_ONLY_IN_APP: set[tuple[str, str]] = set()
 PENDING_ERROR_CODES_ONLY_IN_APP: set[str] = set()
 PENDING_BODY_FIELDS_ONLY_IN_APP: set[str] = set()

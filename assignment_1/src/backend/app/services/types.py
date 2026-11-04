@@ -67,3 +67,4 @@ class Principal:
     user_id: int
     name: str
     session_id: str
+    username: str

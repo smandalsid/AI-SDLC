@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 from fastapi.responses import JSONResponse
 
 from app.api.deps import AuthServiceDep, CurrentUserDep
@@ -29,3 +29,11 @@ def login(payload: LoginRequest, service: AuthServiceDep) -> LoginResponse | JSO
 @router.get("/me", response_model=AuthUser, responses=error_responses(401, 503))
 def me(current_user: CurrentUserDep) -> AuthUser:
     return AuthUser(id=current_user.user_id, name=current_user.name)
+
+
+@router.post(
+    "/logout", status_code=204, response_class=Response, responses=error_responses(401, 503)
+)
+def logout(current_user: CurrentUserDep, service: AuthServiceDep) -> Response:
+    service.logout(current_user)
+    return Response(status_code=204)

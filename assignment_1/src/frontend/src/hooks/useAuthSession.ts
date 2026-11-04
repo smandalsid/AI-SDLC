@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { login, me } from "../api/auth";
+import { login, logout, me } from "../api/auth";
 import { ApiError } from "../api/errors";
 import { clearToken, getToken, setToken, subscribe } from "../api/session";
 import type { AuthUser } from "../api/types";
@@ -57,10 +57,16 @@ export function useAuthSession(): AuthSession {
     setState({ status: "signedIn", user: response.user });
   }, []);
 
-  const signOut = useCallback(() => {
-    clearToken();
-    setState(SIGNED_OUT);
-    return Promise.resolve();
+  const signOut = useCallback(async () => {
+    try {
+      // The server call needs the token, so it goes first.
+      await logout();
+    } catch {
+      // A failed call must never keep the user signed in on this screen.
+    } finally {
+      clearToken();
+      setState(SIGNED_OUT);
+    }
   }, []);
 
   return useMemo(() => ({ state, signIn, signOut }), [state, signIn, signOut]);
