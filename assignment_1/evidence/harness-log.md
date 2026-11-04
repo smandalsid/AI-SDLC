@@ -156,11 +156,20 @@ Run against the live stack started with `scripts/dev.sh` (API on 8000, UI on 517
 
 ### UI scenarios
 
-Recorded by the user (T131): see the table below.
+Run by the user in the browser (T131).
 
 | Scenario | Observed |
 |----------|----------|
-| UI 1 to 8 | Pending the user's confirmation; the same behaviours are covered by the passing Playwright tests (`auth.spec.ts`, `booking-persistence.spec.ts`, `responsive.spec.ts`, `usability.spec.ts`) in the recorded runs |
+| UI 1 Open `/buses/1` in a new tab | Sign-in screen only, no bus data flashed; PASS |
+| UI 2 Wrong password | Generic "Invalid username or password", password masked; PASS |
+| UI 3 Sign in as `asha` | Bus list, header with "Asha" and Sign out, no user selector on the seat page; PASS |
+| UI 4 Book seats 7 and 8, reload | Success message; still signed in after reload and the seats show booked; PASS |
+| UI 5 Sign out, then Back | Sign-in screen, no bus data after Back; PASS |
+| UI 6 Second tab | Sign-in screen (sign-in belongs to one tab); PASS |
+| UI 7 Made-up token in `sessionStorage`, reload | Returned to sign-in with the expiry message; PASS |
+| UI 8 Resize to 320 px | No horizontal scroll on the sign-in screen or the header; PASS |
+
+Reported by the user on 2026-11-04: all 8 UI scenarios pass; the same behaviours are also covered by the passing Playwright tests in the recorded runs.
 
 ## Convergence results
 
@@ -327,6 +336,15 @@ Every requirement, success criterion, acceptance scenario, and edge case of `spe
 Recorded by the human at T134. The agent MUST NOT write the decision.
 
 ### Draft for the human review (written by the agent at T133; not a decision)
+
+**Decision**: ACCEPT
+
+**Decided by**: Siddharth
+
+**Date**: 2026-11-04
+
+**Justification**: "All six gates pass. All 8 scenarios and furthur combinations tried on the app and they run as expected. Limitations are understood and accepted for now."
+
 
 **Known limitations**
 
