@@ -69,3 +69,13 @@ def _to_claims(raw: dict[str, object]) -> TokenClaims:
 @lru_cache
 def get_token_codec() -> JwtTokenCodec:
     return JwtTokenCodec(get_settings().jwt_secret)
+
+
+def bearer_token(authorization: str | None) -> str | None:
+    """The token of an `Authorization: Bearer <token>` header; None for anything else."""
+    if authorization is None:
+        return None
+    scheme, separator, token = authorization.partition(" ")
+    if scheme.lower() != "bearer" or separator == "" or token == "" or " " in token:
+        return None
+    return token

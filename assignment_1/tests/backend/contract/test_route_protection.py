@@ -2,7 +2,6 @@ import pytest
 from app.api.middleware.auth_gate import public_operations
 from app.api.v1.router import public_router
 from fastapi import FastAPI
-from fastapi.routing import APIRoute
 from fastapi.testclient import TestClient
 
 API = "/api/v1"
@@ -13,11 +12,12 @@ FORGED = "Bearer " + "x" * 40
 
 
 def api_operations(app: FastAPI) -> list[tuple[str, str]]:
+    paths = app.openapi()["paths"]
     return [
-        (method, route.path)
-        for route in app.routes
-        if isinstance(route, APIRoute) and route.path.startswith(API)
-        for method in sorted(route.methods)
+        (method.upper(), path)
+        for path, item in paths.items()
+        if path.startswith(API)
+        for method in item
     ]
 
 

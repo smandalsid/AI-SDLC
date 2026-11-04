@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Protocol
 
@@ -37,10 +38,22 @@ class CredentialReader(Protocol):
     def get_by_username(self, username: str) -> User | None: ...
 
 
+@dataclass(frozen=True)
+class SessionRecord:
+    session_id: str
+    user_id: int
+    user_name: str
+    started_at: datetime
+    expires_at: datetime
+    ended_at: datetime | None
+
+
 class SessionStore(Protocol):
     def add(
         self, session_id: str, user_id: int, started_at: datetime, expires_at: datetime
     ) -> None: ...
+
+    def get_with_user(self, session_id: str) -> SessionRecord | None: ...
 
 
 class AttemptLog(Protocol):

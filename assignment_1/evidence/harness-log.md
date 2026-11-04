@@ -52,6 +52,19 @@ Red-first failures (the sign-in tests before T040-T051) are not repair events; t
 
 Phase checkpoint T052: integrity, lint, security, test (432 backend, 113 frontend, coverage 98.5% line and 91.4% branch backend, 97.8% frontend), and build pass.
 
+### Phase 4 US2 access protection (T053-T072)
+
+Red-first failures (the access tests before T064-T071) are not repair events; their summary is in the commit message `test(us2): access protection tests (red)`. The entries below are unexpected failures seen while making them pass. Fix commit for all of them: `feat(us2): default-deny gate and session checks`.
+
+| # | Failing check and evidence | Expected vs observed | Change made | Re-run (unchanged checks) |
+|---|----------------------------|----------------------|-------------|---------------------------|
+| 1 | Full backend run after wiring T064-T069: 26 failures, among them `tests/backend/unit/test_auth_gate.py` (all refusals), `contract/test_auth_bypass.py` (wrong method, malformed JSON) | Expected 401 before any body is read; observed 200 or 422. The installed FastAPI (0.162) keeps routes added with `include_router` as nested `_IncludedRouter` objects, so a gate that walked `app.router.routes` for plain routes saw no match and let every request through. | `api/middleware/auth_gate.py` flattens nested routes (through their `effective_route_contexts()`) before matching; the same flattening builds `public_operations(router)`. File: `src/backend/app/api/middleware/auth_gate.py`. | 13 failures left, all of entries 2 and 3 |
+| 2 | `tests/backend/contract/test_route_protection.py::test_the_walk_covers_every_registered_api_route` and the two walk tests | Expected the walk to see every API operation; observed only the operations that are direct `APIRoute` objects (same cause as entry 1). | The walk lists operations from the generated OpenAPI document (public API) instead of `app.routes`; assertions unchanged. File: `tests/backend/contract/test_route_protection.py`. | passed |
+| 3 | `tests/backend/contract/test_openapi_contract.py::test_parameters_match_by_name_location_and_required[GET /buses]` (and two more) and `test_status_codes_match[GET /auth/me]` | Expected the app's operations to equal the contract; observed an extra documented `authorization` header parameter and an extra `422` from `require_session` reading the header with `Header()`. | `require_session` reads the credential through `HTTPBearer(auto_error=False)`, which documents a security scheme instead of a parameter and cannot fail validation. File: `src/backend/app/api/deps.py`. | 537 backend tests passed |
+| 4 | Lint gate (`.harness/lint.sh`): ruff `E501` (two docstrings in `auth_gate.py`) | Expected 0 violations; observed 2. | Docstrings shortened; no configuration changed. | lint exit 0 |
+
+Phase checkpoint T072: integrity, lint, security, test (537 backend, 134 frontend, coverage 98.6% line and 92.9% branch backend, 99.2% frontend), build, and e2e (18 Playwright tests) pass. The `PENDING` entries for `/auth/me` and the `401` responses are deleted from `tests/backend/contract/test_openapi_contract.py`.
+
 ## Quickstart validation
 
 Filled by T131.

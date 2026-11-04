@@ -64,3 +64,12 @@ class LoginRejected:
     """A refused sign-in is a value, not an exception, so the attempt row still commits."""
 
     error: AppError
+
+
+@dataclass(frozen=True)
+class Principal:
+    """The authenticated caller of a request."""
+
+    user_id: int
+    name: str
+    session_id: str
