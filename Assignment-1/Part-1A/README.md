@@ -1,6 +1,6 @@
 # Bus Seat Booking
 
-Web application for viewing buses and booking seats (feature `001-seat-booking`). FastAPI + SQLAlchemy + Azure SQL Edge on the backend, React + Vite on the frontend. The specification lives in [specs/001-seat-booking/](specs/001-seat-booking/); the governing rules are in `.specify/memory/constitution.md`.
+Web application for viewing buses and booking seats (feature `001-seat-booking`) behind a username and password sign-in (feature `002-user-authentication`). FastAPI + SQLAlchemy + Azure SQL Edge on the backend, React + Vite on the frontend. The specifications live in [specs/001-seat-booking/](specs/001-seat-booking/) and [specs/002-user-authentication/](specs/002-user-authentication/); the governing rules are in `.specify/memory/constitution.md`.
 
 ## Prerequisites
 
@@ -32,6 +32,16 @@ Copy `.env.example` to `.env` (never commit it) and fill in the values. Variable
 | `DB_HOST` | no | `localhost` |
 | `DB_PORT` | no | `1433` |
 | `CORS_ORIGINS` | no | `http://localhost:5173` |
+| `JWT_SECRET` | yes | |
+| `MOCK_USER_PASSWORDS` | yes for the seed | |
+
+`JWT_SECRET` signs the sign-in tokens; the application refuses to start without it. Create a value in your own terminal and paste it into `.env` (the value is never printed by the project or committed):
+
+```bash
+python3 -c "import secrets; print(secrets.token_urlsafe(48))"
+```
+
+`MOCK_USER_PASSWORDS` is one JSON object with a password you choose for each mock user, for example `{"asha":"...","ravi":"...","meera":"..."}` (see `.env.example` for the shape). Only the seed command reads it; the passwords are stored as Argon2id hashes and are never written to the source, the logs, or the database in plain text.
 
 Settings are read only through `src/backend/app/core/config.py`.
 
@@ -60,6 +70,18 @@ scripts/dev.sh
 This makes the database available, creates and migrates `DB_NAME`, loads the mock data (3 buses, 3 users, no bookings), then starts the API on http://127.0.0.1:8000 and the frontend on http://localhost:5173. Ctrl-C stops only the processes it started; the database container keeps running.
 
 `scripts/dev.sh --check` prints which database branch would be taken without acting; `scripts/dev.sh --db-only` makes the database available and exits. `scripts/db-init.sh` resets the development database to the mock data.
+
+## Signing in
+
+The mock users are `asha`, `ravi`, and `meera`; their passwords are the ones you put in `MOCK_USER_PASSWORDS`. Open http://localhost:5173, which shows the sign-in screen, and enter the username and password. Everything else (buses, seats, bookings) needs a signed-in session, and a booking is stored under the signed-in user.
+
+- **Sign out** with the button in the header. The session ends on the server at once and the old token stops working.
+- **Sessions last 30 minutes** from sign-in and are not extended by use. After that the app returns to the sign-in screen with a message.
+- **Throttling**: after 5 failed sign-ins for a username within 5 minutes, that username is refused for 60 seconds after its last failure, even with the right password (other usernames are unaffected).
+- **Per tab**: the token is kept in `sessionStorage`, so each browser tab signs in on its own and closing the tab signs out.
+- `scripts/db-init.sh` (also run by `scripts/dev.sh`) now applies the migrations and then hashes and loads the mock users from `MOCK_USER_PASSWORDS`; it resets the sessions and the sign-in history.
+
+Known limits (see `specs/002-user-authentication/research.md`, section 16): tokens travel over plain HTTP in local development (a real deployment must use TLS), there is no Content-Security-Policy header, and no job deletes old sessions or sign-in rows.
 
 ## Tests and the harness
 

@@ -27,6 +27,24 @@ for (const width of WIDTHS) {
     await expectNoHorizontalScroll(page);
   });
 
+  test(`the sign-in screen does not scroll horizontally at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: HEIGHT });
+
+    await page.goto("/login");
+
+    await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
+    await expectNoHorizontalScroll(page);
+  });
+
+  test(`the signed-in header with the name and Sign out fits at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: HEIGHT });
+    await signIn(page, "meera");
+
+    await expect(page.getByRole("banner")).toContainText("Meera");
+    await expect(page.getByRole("button", { name: "Sign out" })).toBeInViewport({ ratio: 1 });
+    await expectNoHorizontalScroll(page);
+  });
+
   test(`the seat page does not scroll horizontally at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: HEIGHT });
     await signIn(page, "asha");

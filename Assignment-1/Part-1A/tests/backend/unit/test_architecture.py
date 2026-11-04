@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from .layer_scan import find_mutable_state, find_violations
+from .layer_scan import find_auth_switches, find_mutable_state, find_violations
 
 APP_DIR = Path(__file__).resolve().parents[3] / "src" / "backend" / "app"
 
@@ -120,3 +120,48 @@ def test_credential_modules_exist_and_import_no_other_application_layer() -> Non
 def test_the_gate_middleware_exists_and_reaches_no_data_layer() -> None:
     assert (APP_DIR / "api" / "middleware" / "auth_gate.py").exists()
     assert find_violations(APP_DIR) == []
+
+
+def test_scanner_flags_switch_like_settings_environment_reads_and_attribute_reads(
+    tmp_path: Path,
+) -> None:
+    write(
+        tmp_path,
+        "core/config.py",
+        "class Settings:\n    auth_disabled: bool = False\n    debug: bool = False\n",
+    )
+    write(tmp_path, "api/a.py", 'import os\nvalue = os.getenv("BYPASS_AUTH")\n')
+    write(tmp_path, "api/b.py", 'import os\nvalue = os.environ["DISABLE_LOGIN"]\n')
+    write(tmp_path, "api/c.py", "mode = settings.debug_mode\nother = get_settings().skip_auth\n")
+
+    assert len(find_auth_switches(tmp_path)) == 6
+
+
+def test_scanner_allows_the_policy_property_and_ordinary_settings(tmp_path: Path) -> None:
+    write(tmp_path, "core/config.py", "class Settings:\n    jwt_secret: str\n    db_host: str\n")
+    write(tmp_path, "api/a.py", "policy = get_settings().auth_policy\n")
+
+    assert find_auth_switches(tmp_path) == []
+
+
+def test_scanner_flags_default_usernames_and_passwords(tmp_path: Path) -> None:
+    write(tmp_path, "services/a.py", 'default_username = "admin"\n')
+    write(tmp_path, "services/b.py", 'def f(password: str = "admin") -> None: ...\n')
+    write(
+        tmp_path,
+        "core/c.py",
+        "class Settings:\n    admin_password: str = Field(default='x')\n",
+    )
+
+    assert len(find_auth_switches(tmp_path)) == 3
+
+
+def test_scanner_allows_credentials_without_a_literal_default(tmp_path: Path) -> None:
+    write(tmp_path, "services/a.py", "def f(username: str, password: str = '') -> None: ...\n")
+    write(tmp_path, "core/b.py", "class Settings:\n    db_password: SecretStr\n")
+
+    assert find_auth_switches(tmp_path) == []
+
+
+def test_application_has_no_authentication_switch_and_no_default_credential() -> None:
+    assert find_auth_switches(APP_DIR) == []

@@ -104,3 +104,93 @@ def find_mutable_state(root: Path) -> list[str]:
                         f"{path.relative_to(root).as_posix()}: module-level mutable state '{name}'"
                     )
     return violations
+
+
+SWITCH_WORDS = ("auth", "debug", "bypass", "disable")
+# Derived from the session and throttle numbers; it switches nothing off.
+ALLOWED_SETTING_NAMES = {"auth_policy"}
+CREDENTIAL_WORDS = ("username", "password")
+
+
+def _is_switch_name(name: str) -> bool:
+    lowered = name.lower()
+    return lowered not in ALLOWED_SETTING_NAMES and any(word in lowered for word in SWITCH_WORDS)
+
+
+def _environment_key(node: ast.AST) -> str | None:
+    """The literal variable name of os.getenv("X"), os.environ.get("X") or os.environ["X"]."""
+    if isinstance(node, ast.Call) and node.args and isinstance(node.args[0], ast.Constant):
+        func = node.func
+        if isinstance(func, ast.Attribute) and func.attr in {"getenv", "get"}:
+            return str(node.args[0].value)
+    if isinstance(node, ast.Subscript) and isinstance(node.slice, ast.Constant):
+        value = node.value
+        if isinstance(value, ast.Attribute) and value.attr == "environ":
+            return str(node.slice.value)
+    return None
+
+
+def _setting_reads(tree: ast.AST) -> Iterator[str]:
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef) and node.name.endswith("Settings"):
+            for item in node.body:
+                if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
+                    yield item.target.id
+        elif isinstance(node, ast.Attribute):
+            owner = node.value
+            if isinstance(owner, ast.Name) and owner.id == "settings":
+                yield node.attr
+            elif isinstance(owner, ast.Call) and getattr(owner.func, "id", "") == "get_settings":
+                yield node.attr
+        else:
+            key = _environment_key(node)
+            if key is not None:
+                yield key
+
+
+def _string_default(value: ast.expr | None) -> bool:
+    if isinstance(value, ast.Constant) and isinstance(value.value, str):
+        return value.value != ""
+    if isinstance(value, ast.Call):
+        return any(
+            _string_default(keyword.value) for keyword in value.keywords if keyword.arg == "default"
+        )
+    return False
+
+
+def _default_credentials(tree: ast.AST) -> Iterator[str]:
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign | ast.AnnAssign):
+            if _string_default(node.value):
+                for name in _assigned_names(node):
+                    if any(word in name.lower() for word in CREDENTIAL_WORDS):
+                        yield name
+        elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+            positional = [*node.args.posonlyargs, *node.args.args]
+            defaults = [None] * (len(positional) - len(node.args.defaults)) + list(
+                node.args.defaults
+            )
+            pairs = list(zip(positional, defaults, strict=True))
+            pairs += list(zip(node.args.kwonlyargs, node.args.kw_defaults, strict=True))
+            for argument, default in pairs:
+                if _string_default(default) and any(
+                    word in argument.arg.lower() for word in CREDENTIAL_WORDS
+                ):
+                    yield argument.arg
+
+
+def find_auth_switches(root: Path) -> list[str]:
+    """Settings that could turn authentication off, and any built-in default credential (FR-016)."""
+    findings: list[str] = []
+    for path in sorted(root.rglob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        relative = path.relative_to(root).as_posix()
+        findings += [
+            f"{relative}: setting '{name}' reads like an authentication switch"
+            for name in _setting_reads(tree)
+            if _is_switch_name(name)
+        ]
+        findings += [
+            f"{relative}: default credential in '{name}'" for name in _default_credentials(tree)
+        ]
+    return findings

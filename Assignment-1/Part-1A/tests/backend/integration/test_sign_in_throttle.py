@@ -1,12 +1,7 @@
-from collections.abc import Iterator, Mapping
+from collections.abc import Callable, Mapping
 from datetime import UTC, datetime, timedelta
 
 import pytest
-from app.api.deps import get_clock, get_password_verifier
-from app.core.clock import Clock
-from app.core.passwords import Argon2Hasher, PasswordVerifier
-from app.db.session import get_session, unit_of_work
-from app.main import create_app
 from app.repositories.protocols import FailureWindow
 from app.repositories.sign_in_attempt_repository import (
     SignInAttemptRepository,
@@ -16,8 +11,6 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session, sessionmaker
-
-from ..conftest import FakeClock
 
 LOGIN = "/api/v1/auth/login"
 NOW = datetime(2026, 1, 15, 10, 30, tzinfo=UTC)
@@ -116,33 +109,11 @@ def test_variants_typed_by_a_guesser_block_the_real_username_but_never_sign_in(
     assert blocked.status_code == 429
 
 
-def build_app(factory: sessionmaker[Session], clock: FakeClock, hasher: Argon2Hasher) -> FastAPI:
-    application = create_app(wait_for_db=lambda: None)
-
-    def override_session() -> Iterator[Session]:
-        with unit_of_work(factory) as session:
-            yield session
-
-    def override_clock() -> Clock:
-        return clock
-
-    def override_verifier() -> PasswordVerifier:
-        return hasher
-
-    application.dependency_overrides[get_session] = override_session
-    application.dependency_overrides[get_clock] = override_clock
-    application.dependency_overrides[get_password_verifier] = override_verifier
-    return application
-
-
 def test_the_count_lives_in_the_database_so_two_app_instances_share_it(
-    session_factory: sessionmaker[Session],
-    fake_clock: FakeClock,
-    password_hasher: Argon2Hasher,
-    credentials: Mapping[str, str],
+    make_app: Callable[[], FastAPI], credentials: Mapping[str, str]
 ) -> None:
-    first = TestClient(build_app(session_factory, fake_clock, password_hasher))
-    second = TestClient(build_app(session_factory, fake_clock, password_hasher))
+    first = TestClient(make_app())
+    second = TestClient(make_app())
 
     for client, times in [(first, 3), (second, 2)]:
         for _ in range(times):
