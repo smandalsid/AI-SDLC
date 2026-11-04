@@ -50,9 +50,14 @@ class AuthService:
         except InvalidTokenError:
             raise UnauthenticatedError from None
         record = self.sessions.get_with_user(claims.session_id)
-        if record is None or record.user_id != claims.user_id:
+        if record is None or record.user_id != claims.user_id or record.ended_at is not None:
             raise UnauthenticatedError
-        return Principal(record.user_id, record.user_name, record.session_id)
+        return Principal(record.user_id, record.user_name, record.session_id, record.username)
+
+    def logout(self, principal: Principal) -> None:
+        now = self.clock.now()
+        self.sessions.end(principal.session_id, now)
+        self.attempts.record(principal.username, "signout", now)
 
     def _find_exact_user(self, username: str) -> User | None:
         user = self.users.get_by_username(username)

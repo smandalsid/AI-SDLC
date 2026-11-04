@@ -71,6 +71,18 @@ No repair needed. Red-first failures (44 backend, 12 frontend) are not repair ev
 
 Phase checkpoint T085: integrity, lint, security, test (538 backend, 128 frontend, coverage 98.4% line and 92.7% branch backend, 99.2% frontend), build, and e2e (19 Playwright tests) pass. The `PENDING` entries for `/users`, `user_id`, and `user_not_found` are deleted from `tests/backend/contract/test_openapi_contract.py`.
 
+### Phase 6 US4 sign out (T086-T098)
+
+Red-first failures (the sign-out tests before T093-T097) are not repair events; their summary is in the commit message `test(us4): sign-out tests (red)`. The entries below are unexpected failures seen while making them pass. Fix commit for all of them: `feat(us4): sign out ends the session`.
+
+| # | Failing check and evidence | Expected vs observed | Change made | Re-run (unchanged checks) |
+|---|----------------------------|----------------------|-------------|---------------------------|
+| 1 | Lint gate (`.harness/lint.sh`): ruff `E501` (class docstring in `api/middleware/no_store.py`, 111 characters) | Expected 0 violations; observed 1. | Docstring shortened; no configuration changed. | ruff exit 0 |
+| 2 | Lint gate: eslint `@typescript-eslint/no-invalid-void-type` (`request<void>` in `src/api/auth.ts`) | Expected 0 violations; observed 1. | `logout` is typed `Promise<undefined>` and `request<undefined>`, matching the empty `204` answer handled in `src/api/client.ts`; no rule change. | eslint exit 0 |
+| 3 | Lint gate: `tsc` TS2345 in `tests/hooks/useAuthSession.test.tsx` (mock returned `Promise<void>`, `logout` is `Promise<undefined>`) | Expected 0 type errors; observed 1. | The mock returns `Promise.resolve(undefined)`; assertions unchanged. | lint exit 0 |
+
+Phase checkpoint T098: integrity, lint, security, test (595 backend, 148 frontend, coverage 98.5% line and 93.0% branch backend, 99.6% frontend), build, and e2e (23 Playwright tests) pass. The last `PENDING` entry (`/auth/logout`) is deleted from `tests/backend/contract/test_openapi_contract.py`; the `PENDING_*` constants are now empty.
+
 ## Quickstart validation
 
 Filled by T131.

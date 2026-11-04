@@ -41,6 +41,7 @@ class SessionRecord:
     session_id: str
     user_id: int
     user_name: str
+    username: str
     started_at: datetime
     expires_at: datetime
     ended_at: datetime | None
@@ -52,6 +53,8 @@ class SessionStore(Protocol):
     ) -> None: ...
 
     def get_with_user(self, session_id: str) -> SessionRecord | None: ...
+
+    def end(self, session_id: str, ended_at: datetime) -> None: ...
 
 
 class AttemptLog(Protocol):

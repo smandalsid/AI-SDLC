@@ -59,5 +59,6 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     if (error.kind === "unauthenticated") expire();
     throw error;
   }
+  if (response.status === 204) return undefined as T;
   return (await response.json()) as T;
 }

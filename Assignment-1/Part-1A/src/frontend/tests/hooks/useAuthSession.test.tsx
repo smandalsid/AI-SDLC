@@ -89,7 +89,7 @@ describe("useAuthSession sign-out", () => {
     let tokenDuringCall: string | null = null;
     logoutMock.mockImplementation(() => {
       tokenDuringCall = getToken();
-      return Promise.resolve();
+      return Promise.resolve(undefined);
     });
     const { result } = await signedIn();
 

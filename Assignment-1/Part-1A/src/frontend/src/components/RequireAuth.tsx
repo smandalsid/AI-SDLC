@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { describeApiError } from "../api/errors";
+import { AppHeader } from "./AppHeader";
 import { useAuth } from "./AuthProvider";
 import { StatusMessage } from "./StatusMessage";
 
@@ -14,5 +15,10 @@ export function RequireAuth() {
     return <StatusMessage variant="error" message={describeApiError(null)} />;
   }
   if (state.status === "signedOut") return <Navigate to="/login" replace />;
-  return <Outlet />;
+  return (
+    <>
+      <AppHeader />
+      <Outlet />
+    </>
+  );
 }
