@@ -19,11 +19,6 @@ class BusNotFoundError(AppError):
     default_message = "Bus not found."
 
 
-class UserNotFoundError(AppError):
-    code = "user_not_found"
-    default_message = "User not found."
-
-
 class SeatAlreadyBookedError(AppError):
     code = "seat_unavailable"
     default_message = "One or more requested seats are no longer available."

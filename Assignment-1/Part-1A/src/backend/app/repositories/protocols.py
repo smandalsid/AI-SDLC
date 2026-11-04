@@ -27,11 +27,9 @@ class BookingWriter(Protocol):
 
 
 class UserReader(Protocol):
-    def list_page(self, page: int, page_size: int) -> Sequence[User]: ...
-
-    def count(self) -> int: ...
-
     def get(self, user_id: int) -> User | None: ...
+
+    def get_by_username(self, username: str) -> User | None: ...
 
 
 class CredentialReader(Protocol):

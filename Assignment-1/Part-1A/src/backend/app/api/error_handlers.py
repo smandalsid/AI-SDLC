@@ -19,7 +19,6 @@ STATUS_BY_CODE = {
     "unauthenticated": 401,
     "invalid_credentials": 401,
     "bus_not_found": 404,
-    "user_not_found": 404,
     "seat_unavailable": 409,
     "too_many_attempts": 429,
 }

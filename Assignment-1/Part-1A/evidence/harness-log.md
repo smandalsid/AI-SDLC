@@ -65,6 +65,12 @@ Red-first failures (the access tests before T064-T071) are not repair events; th
 
 Phase checkpoint T072: integrity, lint, security, test (537 backend, 134 frontend, coverage 98.6% line and 92.9% branch backend, 99.2% frontend), build, and e2e (18 Playwright tests) pass. The `PENDING` entries for `/auth/me` and the `401` responses are deleted from `tests/backend/contract/test_openapi_contract.py`.
 
+### Phase 5 US3 book as the signed-in user (T073-T085)
+
+No repair needed. Red-first failures (44 backend, 12 frontend) are not repair events; their summary is in the commit message `test(us3): booking as session user (red)`. After T080-T084 no unexpected failure occurred in any task run or gate run.
+
+Phase checkpoint T085: integrity, lint, security, test (538 backend, 128 frontend, coverage 98.4% line and 92.7% branch backend, 99.2% frontend), build, and e2e (19 Playwright tests) pass. The `PENDING` entries for `/users`, `user_id`, and `user_not_found` are deleted from `tests/backend/contract/test_openapi_contract.py`.
+
 ## Quickstart validation
 
 Filled by T131.
