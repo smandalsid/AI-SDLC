@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { request } from "../../src/api/client";
 import { ApiError, describeApiError } from "../../src/api/errors";
+import { clearToken, setToken } from "../../src/api/session";
 
 function respondWith(status: number, body: string): ReturnType<typeof vi.fn> {
   const fetchMock = vi.fn().mockResolvedValue(new Response(body, { status }));
@@ -24,6 +25,7 @@ async function failureOf(promise: Promise<unknown>): Promise<ApiError> {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  clearToken();
 });
 
 describe("request", () => {
@@ -88,6 +90,50 @@ describe("request", () => {
 
     expect(error.kind).toBe("unavailable");
   });
+
+  it("sends the bearer token when a session exists", async () => {
+    setToken("token-value");
+    const fetchMock = respondWith(200, "{}");
+
+    await request("/buses");
+
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(new Headers(init.headers).get("authorization")).toBe("Bearer token-value");
+  });
+
+  it("sends no authorization header without a session", async () => {
+    const fetchMock = respondWith(200, "{}");
+
+    await request("/auth/login", { method: "POST", body: {} });
+
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(new Headers(init.headers).has("authorization")).toBe(false);
+  });
+
+  it("maps 401 invalid_credentials to a credentials error", async () => {
+    respondWith(401, errorBody("invalid_credentials"));
+
+    const error = await failureOf(request("/auth/login", { method: "POST", body: {} }));
+
+    expect(error.kind).toBe("credentials");
+    expect(error.status).toBe(401);
+  });
+
+  it("maps 401 unauthenticated to its own kind", async () => {
+    respondWith(401, errorBody("unauthenticated"));
+
+    const error = await failureOf(request("/buses"));
+
+    expect(error.kind).toBe("unauthenticated");
+  });
+
+  it("maps 429 to a throttled error", async () => {
+    respondWith(429, errorBody("too_many_attempts"));
+
+    const error = await failureOf(request("/auth/login", { method: "POST", body: {} }));
+
+    expect(error.kind).toBe("throttled");
+  });
 });
 
 describe("describeApiError", () => {
@@ -97,6 +143,20 @@ describe("describeApiError", () => {
     ["unavailable", "Service unavailable"],
   ] as const)("describes a %s error", (kind, text) => {
     expect(describeApiError(new ApiError(kind, 0, "code", "message"))).toContain(text);
+  });
+
+  it("describes a credentials error without saying which part was wrong", () => {
+    const message = describeApiError(new ApiError("credentials", 401, "invalid_credentials", "x"));
+
+    expect(message).toBe("Invalid username or password");
+  });
+
+  it("shows the server message for a throttled error", () => {
+    const server = "Too many failed sign-in attempts. Try again in 7 seconds.";
+
+    expect(describeApiError(new ApiError("throttled", 429, "too_many_attempts", server))).toBe(
+      server,
+    );
   });
 
   it("describes an unknown error as service unavailable", () => {
