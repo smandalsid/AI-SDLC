@@ -1,7 +1,8 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { me } from "../../src/api/auth";
+import { logout, me } from "../../src/api/auth";
 import { ApiError } from "../../src/api/errors";
 import { clearToken, getToken, setToken } from "../../src/api/session";
 import { AuthProvider, useAuth } from "../../src/components/AuthProvider";
@@ -10,6 +11,7 @@ import { RequireAuth } from "../../src/components/RequireAuth";
 vi.mock("../../src/api/auth", () => ({ login: vi.fn(), logout: vi.fn(), me: vi.fn() }));
 
 const meMock = vi.mocked(me);
+const logoutMock = vi.mocked(logout);
 const mounted = vi.fn();
 
 function Protected() {
@@ -116,5 +118,34 @@ describe("RequireAuth", () => {
 
     await waitFor(() => expect(screen.getByText("Sign in screen")).toBeInTheDocument());
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("offers Sign out while the session is still being checked", async () => {
+    setToken("token-value");
+    meMock.mockReturnValue(new Promise(() => undefined));
+    logoutMock.mockResolvedValue(undefined);
+
+    renderGuarded();
+
+    await userEvent.click(await screen.findByRole("button", { name: "Sign out" }));
+    expect(await screen.findByText("Sign in screen")).toBeInTheDocument();
+    expect(getToken()).toBeNull();
+  });
+
+  it("offers Sign out and Retry when the check cannot be answered", async () => {
+    setToken("token-value");
+    meMock.mockRejectedValue(new ApiError("unavailable", 503, "service_unavailable", "x"));
+    logoutMock.mockResolvedValue(undefined);
+    const reload = vi.fn();
+    vi.stubGlobal("location", { ...window.location, reload });
+
+    renderGuarded();
+
+    await userEvent.click(await screen.findByRole("button", { name: "Retry" }));
+    expect(reload).toHaveBeenCalledOnce();
+    await userEvent.click(screen.getByRole("button", { name: "Sign out" }));
+    expect(await screen.findByText("Sign in screen")).toBeInTheDocument();
+    expect(getToken()).toBeNull();
+    vi.unstubAllGlobals();
   });
 });

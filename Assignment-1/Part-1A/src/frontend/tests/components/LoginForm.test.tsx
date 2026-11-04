@@ -37,6 +37,15 @@ describe("LoginForm", () => {
     expect(screen.getByLabelText("Username")).toHaveAttribute("aria-invalid", "true");
   });
 
+  it("announces each field error to assistive technology", async () => {
+    renderForm();
+
+    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
+
+    const alerts = screen.getAllByRole("alert").map((alert) => alert.textContent);
+    expect(alerts).toEqual(["Enter your username.", "Enter your password."]);
+  });
+
   it("blocks a submit that is missing only the password", async () => {
     const onSubmit = renderForm();
     await fill("asha", "");
