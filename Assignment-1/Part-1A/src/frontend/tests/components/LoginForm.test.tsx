@@ -96,6 +96,26 @@ describe("LoginForm", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: "Sign in" })).toBeEnabled());
   });
 
+  it("shows the server's throttle message with the seconds and lets the user try again", async () => {
+    const message = "Too many failed sign-in attempts. Try again in 42 seconds.";
+    const onSubmit = vi
+      .fn()
+      .mockRejectedValueOnce(new ApiError("throttled", 429, "too_many_attempts", message))
+      .mockResolvedValueOnce(undefined);
+    renderForm(onSubmit);
+    await fill("asha", "secret");
+
+    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(message);
+    const button = screen.getByRole("button", { name: "Sign in" });
+    await waitFor(() => expect(button).toBeEnabled());
+    expect(screen.getByLabelText("Username")).toHaveValue("asha");
+    await userEvent.click(button);
+    expect(onSubmit).toHaveBeenCalledTimes(2);
+    await waitFor(() => expect(screen.queryByRole("alert")).not.toBeInTheDocument());
+  });
+
   it("is operable with the keyboard alone", async () => {
     const onSubmit = renderForm();
 
