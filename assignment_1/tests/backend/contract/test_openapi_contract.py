@@ -20,7 +20,6 @@ METHODS = {"get", "post", "put", "patch", "delete"}
 # Differences between the 002 contract and the app that a later story still delivers. Each story
 # checkpoint deletes its entries; test_no_pending_contract_items (T124) requires all to be empty.
 PENDING_OPERATIONS_NOT_IN_APP = {
-    ("POST", "/auth/login"),
     ("GET", "/auth/me"),
     ("POST", "/auth/logout"),
 }
@@ -85,6 +84,11 @@ def without_fields(node: Document, names: set[str]) -> Document:
     return result
 
 
+def pending_statuses(contract_operation: Document) -> set[str]:
+    """Public operations (`security: []`) already deliver their 401; protected ones wait for US2."""
+    return set() if contract_operation.get("security") == [] else PENDING_STATUSES_NOT_IN_APP
+
+
 def operations(document: Document, prefix: str) -> dict[Operation, Document]:
     found: dict[Operation, Document] = {}
     for path, item in document["paths"].items():
@@ -137,7 +141,7 @@ def pair(request: pytest.FixtureRequest) -> tuple[Document, Document]:
 def test_status_codes_match(pair: tuple[Document, Document]) -> None:
     contract, app = pair
 
-    assert set(app["responses"]) == set(contract["responses"]) - PENDING_STATUSES_NOT_IN_APP
+    assert set(app["responses"]) == set(contract["responses"]) - pending_statuses(contract)
 
 
 def test_response_schemas_match_by_property_names_and_required_lists(
@@ -146,7 +150,7 @@ def test_response_schemas_match_by_property_names_and_required_lists(
     contract, app = pair
 
     expected = response_shapes(CONTRACT, contract)
-    for status in PENDING_STATUSES_NOT_IN_APP:
+    for status in pending_statuses(contract):
         expected.pop(status, None)
     assert response_shapes(APP, app) == expected
 
