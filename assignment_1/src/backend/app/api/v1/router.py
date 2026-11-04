@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from app.api.deps import require_session
 from app.api.schemas.common import error_responses
-from app.api.v1 import auth, bookings, buses, health, users
+from app.api.v1 import auth, bookings, buses, health
 
 # Everything here needs no credential; the gate middleware reads this router as its allow-list.
 public_router = APIRouter(prefix="/api/v1")
@@ -14,7 +14,6 @@ protected_router = APIRouter(
 )
 protected_router.include_router(auth.router)
 protected_router.include_router(buses.router)
-protected_router.include_router(users.router)
 protected_router.include_router(bookings.router)
 
 api_router = APIRouter()

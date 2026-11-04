@@ -22,9 +22,9 @@ METHODS = {"get", "post", "put", "patch", "delete"}
 PENDING_OPERATIONS_NOT_IN_APP = {
     ("POST", "/auth/logout"),
 }
-PENDING_OPERATIONS_ONLY_IN_APP = {("GET", "/users")}
-PENDING_ERROR_CODES_ONLY_IN_APP = {"user_not_found"}
-PENDING_BODY_FIELDS_ONLY_IN_APP = {"user_id"}
+PENDING_OPERATIONS_ONLY_IN_APP: set[tuple[str, str]] = set()
+PENDING_ERROR_CODES_ONLY_IN_APP: set[str] = set()
+PENDING_BODY_FIELDS_ONLY_IN_APP: set[str] = set()
 
 # Parsed JSON and YAML documents have no fixed shape.
 Document = dict[str, Any]

@@ -17,11 +17,6 @@ export interface BusDetail extends Bus {
   seats: Seat[];
 }
 
-export interface User {
-  id: number;
-  name: string;
-}
-
 export interface AuthUser {
   id: number;
   name: string;
@@ -48,7 +43,6 @@ export interface Page<T> {
 
 export interface BookingCreate {
   bus_id: number;
-  user_id: number;
   seat_numbers: number[];
 }
 
