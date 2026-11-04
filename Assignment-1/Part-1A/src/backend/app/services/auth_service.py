@@ -3,12 +3,12 @@ from uuid import uuid4
 
 from app.core.clock import Clock
 from app.core.config import AuthPolicy
-from app.core.errors import InvalidCredentialsError
+from app.core.errors import InvalidCredentialsError, UnauthenticatedError
 from app.core.passwords import PasswordVerifier
-from app.core.tokens import TokenClaims, TokenCodec
+from app.core.tokens import InvalidTokenError, TokenClaims, TokenCodec
 from app.models.user import User
 from app.repositories.protocols import AttemptLog, CredentialReader, SessionStore
-from app.services.types import LoginRejected, LoginSuccess
+from app.services.types import LoginRejected, LoginSuccess, Principal
 
 
 class AuthService:
@@ -42,6 +42,17 @@ class AuthService:
         return LoginSuccess(
             access_token=token, expires_at=expires_at, user_id=user.id, name=user.name
         )
+
+    def authenticate(self, token: str) -> Principal:
+        """Every refusal raises the same error, so a caller cannot tell why."""
+        try:
+            claims = self.codec.decode(token)
+        except InvalidTokenError:
+            raise UnauthenticatedError from None
+        record = self.sessions.get_with_user(claims.session_id)
+        if record is None or record.user_id != claims.user_id:
+            raise UnauthenticatedError
+        return Principal(record.user_id, record.user_name, record.session_id)
 
     def _find_exact_user(self, username: str) -> User | None:
         user = self.users.get_by_username(username)

@@ -2,10 +2,12 @@ from functools import lru_cache
 from typing import Annotated
 
 from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from app.core.clock import Clock, SystemClock
 from app.core.config import AuthPolicy, get_settings
+from app.core.errors import UnauthenticatedError
 from app.core.passwords import Argon2Hasher, PasswordVerifier
 from app.core.tokens import TokenCodec, get_token_codec
 from app.db.session import get_session
@@ -17,6 +19,7 @@ from app.repositories.user_repository import UserRepository
 from app.services.auth_service import AuthService
 from app.services.booking_service import BookingService
 from app.services.bus_service import BusService
+from app.services.types import Principal
 from app.services.user_service import UserService
 
 # scope="function" commits before the response is sent, so a 201 is never returned uncommitted.
@@ -81,3 +84,19 @@ def get_auth_service(
 
 
 AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
+
+
+# auto_error is off so a missing credential gets the shared 401 body instead of FastAPI's own.
+bearer_scheme = HTTPBearer(auto_error=False)
+
+
+def require_session(
+    service: AuthServiceDep,
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],
+) -> Principal:
+    if credentials is None:
+        raise UnauthenticatedError
+    return service.authenticate(credentials.credentials)
+
+
+CurrentUserDep = Annotated[Principal, Depends(require_session)]

@@ -1,5 +1,5 @@
 import { ApiError, kindForStatus } from "./errors";
-import { getToken } from "./session";
+import { expire, getToken } from "./session";
 import type { ErrorResponse } from "./types";
 
 const configuredBase: unknown = import.meta.env.VITE_API_BASE_URL;
@@ -53,6 +53,11 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   } catch {
     throw new ApiError("unavailable", 0, "network_error", "The service could not be reached");
   }
-  if (!response.ok) throw await toApiError(response);
+  if (!response.ok) {
+    const error = await toApiError(response);
+    // Only a 401 on a protected call ends the session; 5xx and network failures keep it.
+    if (error.kind === "unauthenticated") expire();
+    throw error;
+  }
   return (await response.json()) as T;
 }
