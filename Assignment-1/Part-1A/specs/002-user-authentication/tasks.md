@@ -238,9 +238,9 @@ description: "Task list for feature 002-user-authentication (User Authentication
 
 ### Implementation for User Story 5
 
-- [ ] T104 [US5] Update `src/backend/app/services/auth_service.py`: `authenticate` also requires `now < expires_at` using the injected `Clock` (no sliding extension, no write on read)
-- [ ] T105 [US5] Update `src/frontend/src/hooks/useAuthSession.ts`, `src/frontend/src/components/AuthProvider.tsx`, `src/frontend/src/components/LoginForm.tsx` or `src/frontend/src/pages/LoginPage.tsx`: `signedOut` carries a reason (`none`, `signedOut`, `expired`); a 401 `unauthenticated` for an existing session sets `expired`; the login page shows the expiry message
-- [ ] T106 [US5] Checkpoint: run every gate script including `e2e.sh`; all US5 tests pass; confirm the Failure and repair log covers every unexpected failure in this phase; commit `feat(us5): sessions expire after 30 minutes`; report to the user
+- [X] T104 [US5] Update `src/backend/app/services/auth_service.py`: `authenticate` also requires `now < expires_at` using the injected `Clock` (no sliding extension, no write on read)
+- [X] T105 [US5] Update `src/frontend/src/hooks/useAuthSession.ts`, `src/frontend/src/components/AuthProvider.tsx`, `src/frontend/src/components/LoginForm.tsx` or `src/frontend/src/pages/LoginPage.tsx`: `signedOut` carries a reason (`none`, `signedOut`, `expired`); a 401 `unauthenticated` for an existing session sets `expired`; the login page shows the expiry message
+- [X] T106 [US5] Checkpoint: run every gate script including `e2e.sh`; all US5 tests pass; confirm the Failure and repair log covers every unexpected failure in this phase; commit `feat(us5): sessions expire after 30 minutes`; report to the user
 
 **Checkpoint**: expiry works by API and UI (quickstart API scenario 6).
 

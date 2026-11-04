@@ -83,6 +83,16 @@ Red-first failures (the sign-out tests before T093-T097) are not repair events; 
 
 Phase checkpoint T098: integrity, lint, security, test (595 backend, 148 frontend, coverage 98.5% line and 93.0% branch backend, 99.6% frontend), build, and e2e (23 Playwright tests) pass. The last `PENDING` entry (`/auth/logout`) is deleted from `tests/backend/contract/test_openapi_contract.py`; the `PENDING_*` constants are now empty.
 
+### Phase 7 US5 sessions expire (T099-T106)
+
+Red-first failures (the expiry tests before T104-T105) are not repair events; their summary is in the commit message `test(us5): session expiry tests (red)`. The entry below is the only unexpected failure seen while making them pass. Fix commit: `feat(us5): sessions expire after 30 minutes`.
+
+| # | Failing check and evidence | Expected vs observed | Change made | Re-run (unchanged checks) |
+|---|----------------------------|----------------------|-------------|---------------------------|
+| 1 | Lint gate (`.harness/lint.sh`): eslint `max-lines-per-function` (`useAuthSession`, 41 lines, limit 40) after the sign-in and expiry reasons were added | Expected 0 violations; observed 1. | The session check effect moved into a small `useSessionCheck` helper in the same file; no configuration changed. | lint exit 0 |
+
+Phase checkpoint T106: integrity, lint, security, test (613 backend, 159 frontend, coverage 98.5% line and 93.2% branch backend, 99.6% frontend), build, and e2e (25 Playwright tests) pass.
+
 ## Quickstart validation
 
 Filled by T131.
