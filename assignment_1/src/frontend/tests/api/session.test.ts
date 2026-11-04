@@ -44,11 +44,22 @@ describe("session store", () => {
     expect(second).toHaveBeenCalledTimes(1);
   });
 
+  it("expire() says nothing when no token is stored, so a late 401 after sign-out is not an expiry", () => {
+    const listener = vi.fn();
+    const unsubscribe = subscribe(listener);
+
+    expire();
+
+    expect(listener).not.toHaveBeenCalled();
+    unsubscribe();
+  });
+
   it("stops notifying a subscriber that unsubscribed", () => {
     const listener = vi.fn();
     const unsubscribe = subscribe(listener);
 
     unsubscribe();
+    setToken("token-value");
     expire();
 
     expect(listener).not.toHaveBeenCalled();

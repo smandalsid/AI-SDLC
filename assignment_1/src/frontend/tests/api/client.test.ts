@@ -148,6 +148,24 @@ describe("request", () => {
     unsubscribe();
   });
 
+  it("reports no expiry for a 401 when the token was already cleared by a sign-out", async () => {
+    setToken("token-value");
+    const listener = vi.fn();
+    const unsubscribe = subscribe(listener);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation(() => {
+        clearToken();
+        return Promise.resolve(new Response(errorBody("unauthenticated"), { status: 401 }));
+      }),
+    );
+
+    await failureOf(request("/buses"));
+
+    expect(listener).not.toHaveBeenCalled();
+    unsubscribe();
+  });
+
   it("does not end the session for a refused sign-in", async () => {
     setToken("token-value");
     const listener = vi.fn();

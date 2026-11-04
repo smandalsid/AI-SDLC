@@ -43,7 +43,7 @@ describe("AppHeader", () => {
     expect(signOut).toHaveBeenCalledOnce();
   });
 
-  it.each([[{ status: "signedOut" }], [{ status: "checking" }]] as [AuthState][])(
+  it.each([[{ status: "signedOut", reason: "none" }], [{ status: "checking" }]] as [AuthState][])(
     "renders nothing unless the user is signed in (%j)",
     (state) => {
       renderHeader(state);

@@ -1,10 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { logout, me } from "../src/api/auth";
 import { getBus, listBuses } from "../src/api/buses";
-import { clearToken, getToken, setToken } from "../src/api/session";
+import { clearToken, expire, getToken, setToken } from "../src/api/session";
 import { App } from "../src/App";
 import { AuthContext, AuthProvider } from "../src/components/AuthProvider";
 import { makeBuses, makeBusDetail, page } from "./helpers";
@@ -20,7 +20,7 @@ const meMock = vi.mocked(me);
 function renderApp(route: string, signedIn: boolean): void {
   const state = signedIn
     ? { status: "signedIn" as const, user: { id: 1, name: "Asha" } }
-    : { status: "signedOut" as const };
+    : { status: "signedOut" as const, reason: "none" as const };
   const value = { state, signIn: vi.fn(), signOut: vi.fn() };
   render(
     <AuthContext.Provider value={value}>
@@ -129,5 +129,33 @@ describe("App sign-out", () => {
 
     expect(await screen.findByRole("heading", { name: "Sign in" })).toBeInTheDocument();
     expect(getToken()).toBeNull();
+  });
+
+  it.each(["/", "/buses/1"])(
+    "returns to /login with the expiry message when a call at %s finds the session expired",
+    async (route) => {
+      renderWithRealSession(route);
+      await screen.findByRole("button", { name: "Sign out" });
+
+      act(() => expire());
+
+      expect(await screen.findByRole("heading", { name: "Sign in" })).toBeInTheDocument();
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Your session has expired. Please sign in again.",
+      );
+      expect(getToken()).toBeNull();
+      expect(screen.queryByRole("link", { name: /Bus A/ })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /Seat \d+/ })).not.toBeInTheDocument();
+    },
+  );
+
+  it("shows no expiry message after a deliberate sign-out", async () => {
+    logoutMock.mockResolvedValue(undefined);
+    renderWithRealSession("/");
+
+    await userEvent.click(await screen.findByRole("button", { name: "Sign out" }));
+
+    expect(await screen.findByRole("heading", { name: "Sign in" })).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });

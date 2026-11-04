@@ -25,8 +25,11 @@ CODEC = JwtTokenCodec(SecretStr("unit-test-signing-" + "k" * 24))
 
 
 class FixedClock:
+    def __init__(self, now: datetime = NOW) -> None:
+        self.current = now
+
     def now(self) -> datetime:
-        return NOW
+        return self.current
 
 
 class NoUsers:
@@ -55,14 +58,14 @@ class StoredSessions:
         raise AssertionError("authenticate never writes")
 
 
-def service_with(*records: SessionRecord) -> AuthService:
+def service_with(*records: SessionRecord, clock: FixedClock | None = None) -> AuthService:
     return AuthService(
         users=NoUsers(),
         sessions=StoredSessions({record.session_id: record for record in records}),
         attempts=NoAttempts(),
         verifier=Argon2Hasher(time_cost=1, memory_cost=8, parallelism=1),
         codec=CODEC,
-        clock=FixedClock(),
+        clock=clock or FixedClock(),
         policy=POLICY,
     )
 
@@ -112,3 +115,37 @@ def test_a_session_with_an_end_time_is_refused_whatever_the_time(ended_at: datet
     assert (
         refused(service_with(record(ended_at=ended_at)), token_for()) == "Authentication required."
     )
+
+
+def test_a_session_is_accepted_29_minutes_59_seconds_after_sign_in() -> None:
+    clock = FixedClock(NOW + timedelta(minutes=29, seconds=59))
+
+    principal = service_with(record(), clock=clock).authenticate(token_for())
+
+    assert principal.user_id == 1
+
+
+@pytest.mark.parametrize("age", [timedelta(minutes=30), timedelta(minutes=30, seconds=1)])
+def test_a_session_is_refused_from_exactly_30_minutes_on(age: timedelta) -> None:
+    clock = FixedClock(NOW + age)
+
+    assert refused(service_with(record(), clock=clock), token_for()) == "Authentication required."
+
+
+def test_use_does_not_extend_the_expiry() -> None:
+    clock = FixedClock(NOW + timedelta(minutes=20))
+    service = service_with(record(), clock=clock)
+
+    service.authenticate(token_for())
+    clock.current = NOW + timedelta(minutes=30)
+
+    assert refused(service, token_for()) == "Authentication required."
+
+
+def test_the_tokens_own_expiry_claim_does_not_decide() -> None:
+    far_future = CODEC.encode(TokenClaims(SESSION_ID, 1, NOW + timedelta(days=365)), NOW)
+    long_past = CODEC.encode(TokenClaims(SESSION_ID, 1, NOW - timedelta(days=1)), NOW)
+    expired = FixedClock(NOW + timedelta(minutes=45))
+
+    assert refused(service_with(record(), clock=expired), far_future) == "Authentication required."
+    assert service_with(record()).authenticate(long_past).user_id == 1
