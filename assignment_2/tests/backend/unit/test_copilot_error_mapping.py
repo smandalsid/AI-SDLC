@@ -81,9 +81,9 @@ class _Session:
 
 class _Client:
     raises: BaseException | None = None
-    model = "mai-code-1.1-flash"
+    model = "gpt-6-luna"
     start_raises: BaseException | None = None
-    catalog = ("mai-code-1.1-flash", "other")
+    catalog = ("gpt-6-luna", "other")
     authenticated = True
     sessions_created = 0
 
@@ -117,8 +117,8 @@ class _Client:
 def adapter(monkeypatch: pytest.MonkeyPatch) -> CopilotLLMClient:
     for name in ("raises", "start_raises"):
         monkeypatch.setattr(_Client, name, None)
-    monkeypatch.setattr(_Client, "model", "mai-code-1.1-flash")
-    monkeypatch.setattr(_Client, "catalog", ("mai-code-1.1-flash",))
+    monkeypatch.setattr(_Client, "model", "gpt-6-luna")
+    monkeypatch.setattr(_Client, "catalog", ("gpt-6-luna",))
     monkeypatch.setattr(_Client, "authenticated", True)
     monkeypatch.setattr(_Client, "sessions_created", 0)
     monkeypatch.setattr(copilot_client, "CopilotClient", _Client)

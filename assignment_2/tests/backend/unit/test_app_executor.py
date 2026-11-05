@@ -41,7 +41,7 @@ class LiveLikeClient:
     async def parse(self, request: LLMRequest) -> LLMResult:
         self.requests.append(request)
         wire = ProposedActionWire.model_validate(create_dict())
-        return LLMResult(wire, CallRecord("mai-code-1.1-flash", self.served, "low", 10, 5, 7, 1))
+        return LLMResult(wire, CallRecord("gpt-6-luna", self.served, "low", 10, 5, 7, 1))
 
     async def preflight(self) -> PreflightResult:
         if isinstance(self.outcome, BaseException):

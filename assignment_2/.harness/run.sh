@@ -9,6 +9,9 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 export PATH="$PWD/.venv/bin:$PATH"
+set -a
+source .harness/config/thresholds.env
+set +a
 
 MODE=replay
 DRY=0

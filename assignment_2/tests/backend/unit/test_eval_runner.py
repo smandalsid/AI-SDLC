@@ -26,7 +26,7 @@ pytestmark = pytest.mark.covers(
 
 T = Thresholds.from_env(thresholds_env())
 CALL = {
-    "model_served": "mai-code-1.1-flash",
+    "model_served": "gpt-6-luna",
     "input_tokens": 10,
     "output_tokens": 5,
     "duration_ms": 100,
@@ -94,7 +94,7 @@ class FakeExecutor:
 
     def metadata(self) -> dict[str, str]:
         return {
-            "model_requested": "mai-code-1.1-flash",
+            "model_requested": "gpt-6-luna",
             "reasoning_effort": "low",
             "sdk_version": "1.0.28",
             "runtime_version": "1.0.105",
