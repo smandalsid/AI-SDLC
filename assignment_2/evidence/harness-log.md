@@ -87,6 +87,15 @@ _Entries are added when a genuine, unexpected failure occurs. A phase with no fa
 
 - Phase 11, convergence (T160-T166), gate `.harness/lint.sh` at the checkpoint (MEC-9): `create_app` grew to 43 lines (limit 40) after the store factory and logging were wired. Change: the interpreter wiring moved to `_build_interpreter` in `api/main.py`; no rule or limit changed. Rerun of the unchanged gate: exit 0, with 646 passed. Not repair events: the intended red run of T160, T162 and T164 (8 failed, 10 passed on arrival).
 
+- Phase 11, live run `20261105T182821Z` (T152), eval gate, verdict FAIL (repair attempt 1 of 5 for each case):
+  - N05 (FR-9, FR-3, AC-37, "remind me to send the report by end of day today" at 10:00): expected the same `intent`, `datetime_iso` and target in all 3 runs (`create`, `2026-11-05T17:00:00+00:00`); observed runs 1 and 2 `create` and run 3 `clarify` ("End of day today has already passed"), so `fr9.identical` failed (2 distinct).
+  - B05 (FR-8, AC-16, a valid request of exactly 1000 characters made of one repeated sentence): expected `create` "water the plants" at `2026-11-06T09:00:00+00:00`; observed `refuse` / `bulk_action`, so the intent, title overlap and datetime checks failed. The same refusal appeared in the reproducibility run of section 4.
+  - M04 (FR-4, AC-7, "remind me to call mom yesterday at 3pm"): expected a clarification naming the field (a rubric keyword `time`, `date`, `when` or `past`); observed "Which future day should I remind you to call mom at 3pm?", so `semantic.rubric.keyword` failed.
+  - Evidence fed back to the coding agent: `evidence/harness-results/20261105T182821Z/` (`summary.json`, `eval-results.json`, the redacted recordings `N05.1` to `N05.3`, `B05.1`, `M04.1`).
+  - Regression tests first: `tests/backend/unit/test_prompt_rules_regressions.py` (5 tests, failed on arrival), commit `test: regression for N05, B05, M04 (T152)`.
+  - Change: `prompts/system.md` only (a time still ahead today is valid and end of day today is 17:00; a repeated request is one reminder and `bulk_action` means many existing reminders; a past-time question says it is in the past and asks for a new date and time), commit `fix: prompt rules from the live run (T152)`. No spec, existing test, dataset, threshold or harness script was touched.
+  - Rerun outcome: see the next entry.
+
 ## 4. Quickstart validation
 
 Run on 2026-11-05 against the code at commit `6660133` with the live model (`gpt-6-luna`). The API was started with the documented `uvicorn` command and each section 3 scenario was sent with `curl`:
