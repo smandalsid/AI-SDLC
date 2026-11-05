@@ -33,3 +33,18 @@ class InterpretResponse(BaseModel):
 
     action: ProposedAction
     applied: AppliedResult
+
+
+class ErrorDetail(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    code: str
+    message: str
+
+
+class ErrorBody(BaseModel):
+    """The uniform error body (documented in the OpenAPI contract)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    error: ErrorDetail

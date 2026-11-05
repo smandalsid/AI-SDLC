@@ -8,13 +8,18 @@ from fastapi import APIRouter, Depends
 
 from app.api.deps import get_interpreter
 from app.models.requests import InterpretRequest
-from app.models.responses import InterpretResponse
+from app.models.responses import ErrorBody, InterpretResponse
 from app.services.interpreter import Interpreter
 
 router = APIRouter(prefix="/api/v1")
+ERROR_STATUSES = (413, 422, 500, 502, 503, 504)
 
 
-@router.post("/actions", response_model=InterpretResponse)
+@router.post(
+    "/actions",
+    response_model=InterpretResponse,
+    responses={status: {"model": ErrorBody} for status in ERROR_STATUSES},
+)
 async def interpret(
     request: InterpretRequest, interpreter: Annotated[Interpreter, Depends(get_interpreter)]
 ) -> InterpretResponse:
