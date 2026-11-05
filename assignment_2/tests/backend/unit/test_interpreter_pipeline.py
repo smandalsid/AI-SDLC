@@ -87,7 +87,7 @@ async def test_model_output_error_and_infrastructure_error_propagate() -> None:
 async def test_an_intent_without_a_registered_handler_is_a_programming_error() -> None:
     stub = StubLLMClient(create_dict())
     with pytest.raises(UnregisteredIntentError):
-        await _interpreter(stub).interpret(request())
+        await _interpreter(stub, Applier({})).interpret(request())
 
 
 async def test_the_default_now_comes_from_the_injected_clock() -> None:
