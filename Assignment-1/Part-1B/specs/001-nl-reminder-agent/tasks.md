@@ -260,18 +260,18 @@ Acceptance scenarios: AC-17, AC-18, AC-19.
 
 ### Tests for User Story 4 (write first)
 
-- [ ] T116 [P] [US4] Write `tests/backend/unit/test_validator_targets.py` (INV-5, FR-5): `reschedule`, `snooze`, and `cancel` require a `target_reminder_id` that exactly matches a supplied id; a missing, unknown, or case-changed id is rejected with `LLMOutputError(unknown_target)`; the model can never create a new id
-- [ ] T117 [P] [US4] Write `tests/backend/unit/test_applier_reschedule.py` (FR-5): `RescheduleHandler` changes only the target's time to `datetime_iso`, keeps its id and title, leaves other reminders unchanged, operation `rescheduled`
-- [ ] T118 [P] [US4] Write `tests/backend/unit/test_prompt_rules_targets.py` (FR-5): `prompts/system.md` states that a description is resolvable only when exactly one supplied reminder matches, zero or multiple matches give `clarify`, a pronoun ("that", "it") resolves only when exactly one reminder is supplied, an empty list gives `clarify`, and ids come only from the supplied list
-- [ ] T119 [P] [US4] Write `tests/backend/contract/test_actions_reschedule.py`: `endpoint` success marker: AC-17 supplied reminders and a scripted `reschedule` of `r1` to `2026-11-06T16:00:00+00:00` return 200 with `r1` moved and `r2` untouched; `endpoint` failure marker: a scripted unknown target returns 502 `model_output_invalid` and applies nothing; scripted AC-18 and AC-19 `clarify` outputs return 200 with a null target and unchanged reminders
-- [ ] T120 [US4] Confirm the new tests fail (T116-T119); keep the failure summary for the commit message (T124)
+- [X] T116 [P] [US4] Write `tests/backend/unit/test_validator_targets.py` (INV-5, FR-5): `reschedule`, `snooze`, and `cancel` require a `target_reminder_id` that exactly matches a supplied id; a missing, unknown, or case-changed id is rejected with `LLMOutputError(unknown_target)`; the model can never create a new id
+- [X] T117 [P] [US4] Write `tests/backend/unit/test_applier_reschedule.py` (FR-5): `RescheduleHandler` changes only the target's time to `datetime_iso`, keeps its id and title, leaves other reminders unchanged, operation `rescheduled`
+- [X] T118 [P] [US4] Write `tests/backend/unit/test_prompt_rules_targets.py` (FR-5): `prompts/system.md` states that a description is resolvable only when exactly one supplied reminder matches, zero or multiple matches give `clarify`, a pronoun ("that", "it") resolves only when exactly one reminder is supplied, an empty list gives `clarify`, and ids come only from the supplied list
+- [X] T119 [P] [US4] Write `tests/backend/contract/test_actions_reschedule.py`: `endpoint` success marker: AC-17 supplied reminders and a scripted `reschedule` of `r1` to `2026-11-06T16:00:00+00:00` return 200 with `r1` moved and `r2` untouched; `endpoint` failure marker: a scripted unknown target returns 502 `model_output_invalid` and applies nothing; scripted AC-18 and AC-19 `clarify` outputs return 200 with a null target and unchanged reminders
+- [X] T120 [US4] Confirm the new tests fail (T116-T119); keep the failure summary for the commit message (T124)
 
 ### Implementation for User Story 4
 
-- [ ] T121 [US4] Add a target-required rule (per intent) to `src/backend/app/services/validator.py` so T116 passes (depends on T116, T112)
-- [ ] T122 [P] [US4] Add `RescheduleHandler` to `src/backend/app/services/applier.py` and register it for `Intent.reschedule` so T117 and T119 pass (depends on T117, T119, T094)
-- [ ] T123 [P] [US4] Add the target-resolution rules to `prompts/system.md` so T118 passes (depends on T118, T114)
-- [ ] T124 [US4] Checkpoint: run `integrity.sh`, `lint.sh`, `security.sh`, `test.sh` (development runs); all US1-US4 tests pass; log failures or "no repair needed"; commit `feat(us4): reschedule reminder (T116-T123)`; report to the user and wait for approval
+- [X] T121 [US4] Add a target-required rule (per intent) to `src/backend/app/services/validator.py` so T116 passes (depends on T116, T112)
+- [X] T122 [P] [US4] Add `RescheduleHandler` to `src/backend/app/services/applier.py` and register it for `Intent.reschedule` so T117 and T119 pass (depends on T117, T119, T094)
+- [X] T123 [P] [US4] Add the target-resolution rules to `prompts/system.md` so T118 passes (depends on T118, T114)
+- [X] T124 [US4] Checkpoint: run `integrity.sh`, `lint.sh`, `security.sh`, `test.sh` (development runs); all US1-US4 tests pass; log failures or "no repair needed"; commit `feat(us4): reschedule reminder (T116-T123)`; report to the user and wait for approval
 
 **Checkpoint**: reschedule works; target resolution rules are in place for US5 and US6.
 

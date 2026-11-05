@@ -56,9 +56,23 @@ class CreateHandler:
         return Change("created", store.add(cast("str", action.title), when), when)
 
 
+class RescheduleHandler:
+    """FR-5: moves the target to the new time; its id and title stay."""
+
+    def handle(
+        self, action: ProposedAction, store: ReminderStore, context: CallerContext
+    ) -> Change:
+        # ProposedAction guarantees target and time here; the validator checked the id.
+        target = cast("str", action.target_reminder_id)
+        when = datetime.fromisoformat(cast("str", action.datetime_iso))
+        store.set_time(target, when)
+        return Change("rescheduled", target, when)
+
+
 def default_handlers() -> dict[Intent, ActionHandler]:
     return {
         Intent.create: CreateHandler(),
+        Intent.reschedule: RescheduleHandler(),
         Intent.clarify: NoopHandler(),
         Intent.refuse: NoopHandler(),
     }
