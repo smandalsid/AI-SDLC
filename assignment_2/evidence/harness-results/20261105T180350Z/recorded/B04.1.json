@@ -1,0 +1,10 @@
+{
+  "intent": "create",
+  "title": "check the oven",
+  "datetime_iso": "2026-11-05T10:01:00+00:00",
+  "snooze_minutes": null,
+  "target_reminder_id": null,
+  "clarification_question": null,
+  "refusal_reason": null,
+  "confidence": 0.99
+}

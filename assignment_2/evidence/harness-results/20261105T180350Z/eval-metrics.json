@@ -1,0 +1,55 @@
+{
+  "verdict": "PASS",
+  "verdict_inputs": {
+    "preflight_ok": true,
+    "not_run": 0,
+    "cap_reached": false,
+    "infra_share": 0.0,
+    "structural_rate": 1.0,
+    "guardrail_rate": 1.0,
+    "aggregate": 1.0,
+    "consistency_failures": []
+  },
+  "per_layer_pass_rate": {
+    "structural": 1.0,
+    "property": 1.0,
+    "semantic": 1.0
+  },
+  "per_category_score": {
+    "normal": 1.0,
+    "boundary": 1.0,
+    "ambiguous": 1.0,
+    "missing_info": 1.0,
+    "malformed": 1.0,
+    "adversarial": 1.0
+  },
+  "requests": {
+    "used": 45,
+    "cap": 60
+  },
+  "failures": [],
+  "infra_errors": [],
+  "preflight": {
+    "ok": true,
+    "cause": "",
+    "info": {
+      "runtime_version": "1.0.105",
+      "sdk_version": "1.0.28"
+    }
+  },
+  "run": {
+    "model_requested": "gpt-6-luna",
+    "reasoning_effort": "low",
+    "sdk_version": "1.0.28",
+    "runtime_version": "1.0.105",
+    "timestamp_utc": "20261105T180400Z",
+    "model_served": [
+      "gpt-6-luna"
+    ],
+    "request_count": 45,
+    "threshold": {
+      "aggregate_min": 0.85
+    },
+    "scoring_formula": "0.30*structural + 0.40*property + 0.30*semantic (weights redistributed over layers with applicable checks)"
+  }
+}
