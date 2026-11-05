@@ -19,7 +19,7 @@ Foundational checkpoint (task T057, before any application code):
 
 | Checkpoint | Decision | Name | Date |
 |------------|----------|------|------|
-| Foundational A (harness) | | | |
+| Foundational A (harness) | APPROVED | Siddharth | 2026-11-05 |
 
 Other human-recorded approvals (for example a regenerated `.harness/config/checksums.sha256`) are added below as one line each.
 
