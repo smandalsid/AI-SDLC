@@ -11,6 +11,7 @@ from app.models.requests import CallerContext
 from app.services.calendar_context import local_time_status
 from app.services.leak_guard import leaked_field
 
+TARGET_INTENTS = (Intent.reschedule, Intent.snooze, Intent.cancel)
 Rule = Callable[[ProposedAction, CallerContext], None]
 
 
@@ -61,9 +62,16 @@ def leak_rule(sentinels: Sequence[str]) -> Rule:
     return rule
 
 
+def target_required(action: ProposedAction, context: CallerContext) -> None:
+    """INV-5, FR-5: reschedule, snooze and cancel must name a target."""
+    if action.intent in TARGET_INTENTS and action.target_reminder_id is None:
+        raise LLMOutputError("unknown_target", f"{action.intent.value} has no target")
+
+
 def default_rules(sentinels: Sequence[str] = ()) -> list[Rule]:
     return [
         leak_rule(sentinels),
+        target_required,
         target_in_supplied_list,
         time_is_future,
         wall_time_is_unambiguous,

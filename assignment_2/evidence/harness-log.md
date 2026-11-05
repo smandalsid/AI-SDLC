@@ -64,6 +64,8 @@ _Entries are added when a genuine, unexpected failure occurs. A phase with no fa
   - Rerun result: `.harness/test.sh` exit 0 with 500 passed; integrity, lint and security exit 0.
   - Not repair events: the intended red run of T102-T108 (31 failed, 35 passed on arrival, 2 modules failed at collection before T110-T114).
 
+- Phase 7 (US4, reschedule, T116-T124), gate `.harness/lint.sh`, development run at the checkpoint (MEC-11, MEC-12): 3 ruff findings (E501 in `applier.py` and two phrase lines in `test_prompt_rules_targets.py`) and 1 mypy error (`**` of an untyped dict in `test_validator_targets.py`). Change: shortened the lines (the asserted phrases still appear in the prompt) and typed the `TARGETED` table. No rule or configuration changed. Rerun of the unchanged gate: exit 0; `.harness/test.sh` exit 0 with 551 passed. Not repair events: the intended red run of T116-T119 (10 failed, 38 passed on arrival, 1 collection error before T121-T123).
+
 ## 4. Quickstart validation
 
 _To be completed in task T154._
