@@ -4,7 +4,7 @@
     "reasoning_effort": "low",
     "sdk_version": "1.0.28",
     "runtime_version": "1.0.105",
-    "timestamp_utc": "20261105T180400Z",
+    "timestamp_utc": "20261105T182831Z",
     "model_served": [
       "gpt-6-luna"
     ],
@@ -169,8 +169,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2048,
-        "output_tokens": 149,
-        "duration_ms": 10032,
+        "output_tokens": 130,
+        "duration_ms": 10881,
         "attempt": 1
       }
     },
@@ -337,8 +337,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2043,
-        "output_tokens": 154,
-        "duration_ms": 10011,
+        "output_tokens": 151,
+        "duration_ms": 10982,
         "attempt": 1
       }
     },
@@ -471,8 +471,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2040,
-        "output_tokens": 193,
-        "duration_ms": 8669,
+        "output_tokens": 140,
+        "duration_ms": 7911,
         "attempt": 1
       }
     },
@@ -622,22 +622,22 @@
         "target_reminder_id": null,
         "clarification_question": null,
         "refusal_reason": null,
-        "confidence": 0.97
+        "confidence": 0.99
       },
       "call": {
         "model_requested": "gpt-6-luna",
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2046,
-        "output_tokens": 211,
-        "duration_ms": 8433,
+        "output_tokens": 153,
+        "duration_ms": 8989,
         "attempt": 1
       }
     },
     {
       "case_id": "N05",
       "category": "normal",
-      "status": "PASS",
+      "status": "FAIL",
       "runs": 3,
       "traces": [
         "AC-37",
@@ -645,9 +645,9 @@
       ],
       "scores": {
         "structural": 1.0,
-        "property": 1.0,
+        "property": 0.75,
         "semantic": 1.0,
-        "case": 1.0
+        "case": 0.9
       },
       "checks": [
         {
@@ -745,7 +745,7 @@
           "requirement_ids": [
             "FR-9"
           ],
-          "passed": true
+          "passed": false
         },
         {
           "layer": "semantic",
@@ -772,15 +772,15 @@
         "target_reminder_id": null,
         "clarification_question": null,
         "refusal_reason": null,
-        "confidence": 0.99
+        "confidence": 0.96
       },
       "call": {
         "model_requested": "gpt-6-luna",
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2045,
-        "output_tokens": 180,
-        "duration_ms": 9332,
+        "output_tokens": 211,
+        "duration_ms": 8265,
         "attempt": 1
       }
     },
@@ -921,8 +921,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2047,
-        "output_tokens": 172,
-        "duration_ms": 6649,
+        "output_tokens": 155,
+        "duration_ms": 7238,
         "attempt": 1
       }
     },
@@ -1065,15 +1065,15 @@
         "target_reminder_id": "r1",
         "clarification_question": null,
         "refusal_reason": null,
-        "confidence": 0.97
+        "confidence": 0.99
       },
       "call": {
         "model_requested": "gpt-6-luna",
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2112,
-        "output_tokens": 226,
-        "duration_ms": 8428,
+        "output_tokens": 156,
+        "duration_ms": 7438,
         "attempt": 1
       }
     },
@@ -1233,8 +1233,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2077,
-        "output_tokens": 120,
-        "duration_ms": 9009,
+        "output_tokens": 90,
+        "duration_ms": 6636,
         "attempt": 1
       }
     },
@@ -1377,8 +1377,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2077,
-        "output_tokens": 152,
-        "duration_ms": 6344,
+        "output_tokens": 93,
+        "duration_ms": 6540,
         "attempt": 1
       }
     },
@@ -1547,8 +1547,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2107,
-        "output_tokens": 145,
-        "duration_ms": 9249,
+        "output_tokens": 109,
+        "duration_ms": 9146,
         "attempt": 1
       }
     },
@@ -1689,8 +1689,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2044,
-        "output_tokens": 121,
-        "duration_ms": 8162,
+        "output_tokens": 151,
+        "duration_ms": 9447,
         "attempt": 1
       }
     },
@@ -1831,8 +1831,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2048,
-        "output_tokens": 154,
-        "duration_ms": 9784,
+        "output_tokens": 202,
+        "duration_ms": 7430,
         "attempt": 1
       }
     },
@@ -1989,8 +1989,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2080,
-        "output_tokens": 116,
-        "duration_ms": 6433,
+        "output_tokens": 174,
+        "duration_ms": 10116,
         "attempt": 1
       }
     },
@@ -2131,15 +2131,15 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2044,
-        "output_tokens": 180,
-        "duration_ms": 9205,
+        "output_tokens": 128,
+        "duration_ms": 11012,
         "attempt": 1
       }
     },
     {
       "case_id": "B05",
       "category": "boundary",
-      "status": "PASS",
+      "status": "FAIL",
       "runs": 1,
       "traces": [
         "AC-16",
@@ -2147,9 +2147,9 @@
       ],
       "scores": {
         "structural": 1.0,
-        "property": 1.0,
-        "semantic": 1.0,
-        "case": 1.0
+        "property": 0.5,
+        "semantic": 0.0,
+        "case": 0.5
       },
       "checks": [
         {
@@ -2223,7 +2223,7 @@
             "AC-16",
             "FR-8"
           ],
-          "passed": true
+          "passed": false
         },
         {
           "layer": "property",
@@ -2239,7 +2239,7 @@
           "requirement_ids": [
             "FR-11"
           ],
-          "passed": true
+          "passed": false
         },
         {
           "layer": "semantic",
@@ -2247,26 +2247,26 @@
           "requirement_ids": [
             "FR-11"
           ],
-          "passed": true
+          "passed": false
         }
       ],
       "observed_action": {
-        "intent": "create",
-        "title": "water the plants",
-        "datetime_iso": "2026-11-06T09:00:00+00:00",
+        "intent": "refuse",
+        "title": null,
+        "datetime_iso": null,
         "snooze_minutes": null,
         "target_reminder_id": null,
         "clarification_question": null,
-        "refusal_reason": null,
-        "confidence": 0.99
+        "refusal_reason": "bulk_action",
+        "confidence": 0.97
       },
       "call": {
         "model_requested": "gpt-6-luna",
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2289,
-        "output_tokens": 361,
-        "duration_ms": 9357,
+        "output_tokens": 411,
+        "duration_ms": 11699,
         "attempt": 1
       }
     },
@@ -2396,10 +2396,10 @@
       "observed_action": {
         "intent": "clarify",
         "title": null,
-        "datetime_iso": "2026-11-06T16:00:00+00:00",
+        "datetime_iso": null,
         "snooze_minutes": null,
         "target_reminder_id": null,
-        "clarification_question": "Which existing reminder do you mean?",
+        "clarification_question": "Which reminder should I move? I don't see a yoga reminder in the supplied list.",
         "refusal_reason": null,
         "confidence": 0.95
       },
@@ -2408,8 +2408,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2112,
-        "output_tokens": 521,
-        "duration_ms": 11220,
+        "output_tokens": 141,
+        "duration_ms": 8949,
         "attempt": 1
       }
     },
@@ -2538,20 +2538,20 @@
       "observed_action": {
         "intent": "clarify",
         "title": null,
-        "datetime_iso": "2026-11-06T16:00:00+00:00",
+        "datetime_iso": null,
         "snooze_minutes": null,
         "target_reminder_id": null,
-        "clarification_question": "Which call reminder should I move: Call vendor or Call dentist?",
+        "clarification_question": "Which call reminder do you mean: Call vendor or Call dentist?",
         "refusal_reason": null,
-        "confidence": 0.95
+        "confidence": 0.99
       },
       "call": {
         "model_requested": "gpt-6-luna",
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2111,
-        "output_tokens": 380,
-        "duration_ms": 9387,
+        "output_tokens": 141,
+        "duration_ms": 8395,
         "attempt": 1
       }
     },
@@ -2679,21 +2679,21 @@
       ],
       "observed_action": {
         "intent": "clarify",
-        "title": "stretch",
+        "title": null,
         "datetime_iso": null,
         "snooze_minutes": null,
         "target_reminder_id": null,
-        "clarification_question": "Which day should I set the reminder for?",
+        "clarification_question": "Which day should I set the reminder to stretch for?",
         "refusal_reason": null,
-        "confidence": 0.95
+        "confidence": 0.93
       },
       "call": {
         "model_requested": "gpt-6-luna",
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2042,
-        "output_tokens": 203,
-        "duration_ms": 6692,
+        "output_tokens": 156,
+        "duration_ms": 9389,
         "attempt": 1
       }
     },
@@ -2825,7 +2825,7 @@
         "datetime_iso": null,
         "snooze_minutes": null,
         "target_reminder_id": null,
-        "clarification_question": "2:30 AM on March 14 falls in a daylight-saving time gap. What valid time should I use?",
+        "clarification_question": "2:30am tomorrow falls in a daylight-saving time gap and is not a valid local time. What valid time should I use?",
         "refusal_reason": null,
         "confidence": 1.0
       },
@@ -2834,8 +2834,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2082,
-        "output_tokens": 180,
-        "duration_ms": 8401,
+        "output_tokens": 238,
+        "duration_ms": 9315,
         "attempt": 1
       }
     },
@@ -2969,15 +2969,15 @@
         "target_reminder_id": null,
         "clarification_question": "What time should I remind you to call the vendor?",
         "refusal_reason": null,
-        "confidence": 0.98
+        "confidence": 0.99
       },
       "call": {
         "model_requested": "gpt-6-luna",
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2040,
-        "output_tokens": 238,
-        "duration_ms": 8077,
+        "output_tokens": 273,
+        "duration_ms": 10801,
         "attempt": 1
       }
     },
@@ -3106,20 +3106,20 @@
       "observed_action": {
         "intent": "clarify",
         "title": null,
-        "datetime_iso": null,
+        "datetime_iso": "2026-11-06T17:00:00+00:00",
         "snooze_minutes": null,
         "target_reminder_id": null,
         "clarification_question": "What would you like to be reminded about?",
         "refusal_reason": null,
-        "confidence": 1.0
+        "confidence": 0.99
       },
       "call": {
         "model_requested": "gpt-6-luna",
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2041,
-        "output_tokens": 115,
-        "duration_ms": 7642,
+        "output_tokens": 328,
+        "duration_ms": 9474,
         "attempt": 1
       }
     },
@@ -3253,22 +3253,22 @@
         "target_reminder_id": null,
         "clarification_question": "What time of day should I remind you to submit the report tomorrow?",
         "refusal_reason": null,
-        "confidence": 0.99
+        "confidence": 0.98
       },
       "call": {
         "model_requested": "gpt-6-luna",
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2041,
-        "output_tokens": 119,
-        "duration_ms": 6699,
+        "output_tokens": 99,
+        "duration_ms": 7279,
         "attempt": 1
       }
     },
     {
       "case_id": "M04",
       "category": "missing_info",
-      "status": "PASS",
+      "status": "FAIL",
       "runs": 1,
       "traces": [
         "AC-7",
@@ -3277,8 +3277,8 @@
       "scores": {
         "structural": 1.0,
         "property": 1.0,
-        "semantic": 1.0,
-        "case": 1.0
+        "semantic": 0.6666666666666666,
+        "case": 0.9
       },
       "checks": [
         {
@@ -3368,7 +3368,7 @@
           "requirement_ids": [
             "FR-11"
           ],
-          "passed": true
+          "passed": false
         },
         {
           "layer": "semantic",
@@ -3393,7 +3393,7 @@
         "datetime_iso": null,
         "snooze_minutes": null,
         "target_reminder_id": null,
-        "clarification_question": "What future date and time should I remind you to call mom?",
+        "clarification_question": "Which future day should I remind you to call mom at 3pm?",
         "refusal_reason": null,
         "confidence": 0.99
       },
@@ -3402,8 +3402,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2044,
-        "output_tokens": 228,
-        "duration_ms": 8941,
+        "output_tokens": 229,
+        "duration_ms": 9850,
         "attempt": 1
       }
     },
@@ -3754,8 +3754,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2043,
-        "output_tokens": 89,
-        "duration_ms": 5451,
+        "output_tokens": 128,
+        "duration_ms": 7230,
         "attempt": 1
       }
     },
@@ -3880,8 +3880,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2107,
-        "output_tokens": 70,
-        "duration_ms": 5352,
+        "output_tokens": 100,
+        "duration_ms": 6732,
         "attempt": 1
       }
     },
@@ -4006,8 +4006,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2038,
-        "output_tokens": 99,
-        "duration_ms": 7574,
+        "output_tokens": 71,
+        "duration_ms": 5262,
         "attempt": 1
       }
     },
@@ -4142,8 +4142,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2042,
-        "output_tokens": 78,
-        "duration_ms": 6805,
+        "output_tokens": 69,
+        "duration_ms": 6282,
         "attempt": 1
       }
     },
@@ -4268,8 +4268,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2045,
-        "output_tokens": 96,
-        "duration_ms": 6476,
+        "output_tokens": 87,
+        "duration_ms": 6404,
         "attempt": 1
       }
     },
@@ -4403,8 +4403,8 @@
         "model_served": "gpt-6-luna",
         "reasoning_effort": "low",
         "input_tokens": 2088,
-        "output_tokens": 125,
-        "duration_ms": 8082,
+        "output_tokens": 124,
+        "duration_ms": 9446,
         "attempt": 1
       }
     }

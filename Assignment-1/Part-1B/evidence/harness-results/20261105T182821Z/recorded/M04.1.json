@@ -1,0 +1,10 @@
+{
+  "intent": "clarify",
+  "title": "call mom",
+  "datetime_iso": null,
+  "snooze_minutes": null,
+  "target_reminder_id": null,
+  "clarification_question": "Which future day should I remind you to call mom at 3pm?",
+  "refusal_reason": null,
+  "confidence": 0.99
+}

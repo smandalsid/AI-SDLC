@@ -1,0 +1,38 @@
+JsonRpcClient.request JSON-RPC request finished
+Traceback (most recent call last):
+  File "/Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_2/.venv/lib/python3.12/site-packages/copilot/_jsonrpc.py", line 253, in request
+    await self._send_message(message)
+  File "/Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_2/.venv/lib/python3.12/site-packages/copilot/_jsonrpc.py", line 426, in _send_message
+    await loop.run_in_executor(None, write)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/Siddharth.Mandal/.pyenv/versions/3.12.14/lib/python3.12/asyncio/base_events.py", line 867, in run_in_executor
+    executor.submit(func, *args), loop=self)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/Siddharth.Mandal/.pyenv/versions/3.12.14/lib/python3.12/concurrent/futures/thread.py", line 171, in submit
+    raise RuntimeError('cannot schedule new futures after shutdown')
+RuntimeError: cannot schedule new futures after shutdown
+Exception ignored in atexit callback: <bound method AppExecutor.close of <app.eval_adapter.AppExecutor object at 0x10b9df3e0>>
+Traceback (most recent call last):
+  File "/Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_2/src/backend/app/eval_adapter.py", line 181, in close
+    self._loop.run(self.llm.stop())
+  File "/Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_2/src/backend/app/eval_adapter.py", line 47, in run
+    return asyncio.run_coroutine_threadsafe(coroutine, self._loop).result()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/Siddharth.Mandal/.pyenv/versions/3.12.14/lib/python3.12/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/Siddharth.Mandal/.pyenv/versions/3.12.14/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_2/src/backend/app/llm/copilot_client.py", line 104, in stop
+    await self._client.stop()
+  File "/Users/Siddharth.Mandal/Documents/playground/bits/aisdlc_ass1/assignment_2/.venv/lib/python3.12/site-packages/copilot/client.py", line 2267, in stop
+    await asyncio.to_thread(
+  File "/Users/Siddharth.Mandal/.pyenv/versions/3.12.14/lib/python3.12/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/Siddharth.Mandal/.pyenv/versions/3.12.14/lib/python3.12/asyncio/base_events.py", line 867, in run_in_executor
+    executor.submit(func, *args), loop=self)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/Siddharth.Mandal/.pyenv/versions/3.12.14/lib/python3.12/concurrent/futures/thread.py", line 171, in submit
+    raise RuntimeError('cannot schedule new futures after shutdown')
+RuntimeError: cannot schedule new futures after shutdown
