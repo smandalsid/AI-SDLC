@@ -27,6 +27,13 @@ class InterpretRequest(BaseModel):
     now: AwareDatetime | None = None
     reminders: list[ReminderIn] = Field(default_factory=list, max_length=MAX_REMINDERS)
 
+    @field_validator("text")
+    @classmethod
+    def _not_blank(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("text must not be empty or whitespace-only")
+        return value
+
     @field_validator("timezone")
     @classmethod
     def _known_zone(cls, value: str) -> str:

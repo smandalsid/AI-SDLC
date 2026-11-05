@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+from pydantic import ValidationError
+
 from app.llm.protocol import CallRecord, LLMRequest, LLMResult
 from app.models.action import ProposedActionWire
+from app.models.errors import LLMOutputError
 
 Scripted = dict[str, object] | ProposedActionWire | BaseException
 
@@ -22,9 +25,12 @@ class StubLLMClient:
         item = self._responses[min(self.calls, len(self._responses)) - 1]
         if isinstance(item, BaseException):
             raise item
-        wire = (
-            item
-            if isinstance(item, ProposedActionWire)
-            else ProposedActionWire.model_validate(item)
-        )
+        try:
+            wire = (
+                item
+                if isinstance(item, ProposedActionWire)
+                else ProposedActionWire.model_validate(item)
+            )
+        except ValidationError as error:
+            raise LLMOutputError("schema", str(error)) from error
         return LLMResult(wire, CallRecord("stub", "stub", "low", 0, 0, 0, 1))
