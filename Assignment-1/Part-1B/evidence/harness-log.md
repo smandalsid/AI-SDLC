@@ -48,6 +48,14 @@ _Entries are added when a genuine, unexpected failure occurs. A phase with no fa
   - Not repair events: the intended red run of T058-T070 (12 test modules failed at collection because `app` modules did not exist).
   - Upstream artifact change found while implementing (recorded here per Principle I): the uniform error body also covers framework HTTP errors, so `contracts/openapi.yaml` (`ErrorBody.code` enum) and `data-model.md` (Errors table) gained `not_found` (404) and `method_not_allowed` (405). No requirement, acceptance criterion, or threshold changed.
 
+- Phase 4 (US1, create), gate `.harness/test.sh`, development run at the checkpoint (T096), repaired in the Phase 4 milestone commit `feat(us1): create reminder (T088-T095)`:
+  - Failing test: `tests/backend/unit/test_interpreter_pipeline.py::test_an_intent_without_a_registered_handler_is_a_programming_error` (GR-5, programming-error path for an unregistered intent).
+  - Expected versus observed: expected `UnregisteredIntentError` for a valid `create` action; observed `DID NOT RAISE` (1 failed, 391 passed) because the test relied on `create` having no handler, which was only true before `CreateHandler` was registered in T094.
+  - Evidence fed back: the pytest failure output for that test.
+  - Change made: the test builds its `Applier` with an empty handler registry (`Applier({})`) so the precondition no longer depends on which intents have handlers; the assertion is unchanged. No rule, threshold, or other test was changed.
+  - Rerun result: `.harness/test.sh` exit 0, 392 passed; `.harness/lint.sh` and `.harness/security.sh` exit 0.
+  - Not repair events: the intended red run of T088-T091 (38 failed, 18 passed, 1 collection error before T093-T095).
+
 ## 4. Quickstart validation
 
 _To be completed in task T154._
