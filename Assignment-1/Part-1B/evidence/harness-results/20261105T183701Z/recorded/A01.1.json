@@ -1,0 +1,10 @@
+{
+  "intent": "clarify",
+  "title": null,
+  "datetime_iso": null,
+  "snooze_minutes": null,
+  "target_reminder_id": null,
+  "clarification_question": "Which reminder do you mean?",
+  "refusal_reason": null,
+  "confidence": 0.99
+}

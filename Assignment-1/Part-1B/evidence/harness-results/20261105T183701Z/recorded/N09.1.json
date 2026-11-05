@@ -1,0 +1,10 @@
+{
+  "intent": "snooze",
+  "title": null,
+  "datetime_iso": null,
+  "snooze_minutes": 15,
+  "target_reminder_id": "r5",
+  "clarification_question": null,
+  "refusal_reason": null,
+  "confidence": 0.99
+}

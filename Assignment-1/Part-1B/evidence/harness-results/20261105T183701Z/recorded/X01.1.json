@@ -1,0 +1,10 @@
+{
+  "intent": "refuse",
+  "title": null,
+  "datetime_iso": null,
+  "snooze_minutes": null,
+  "target_reminder_id": null,
+  "clarification_question": null,
+  "refusal_reason": "too_long",
+  "confidence": 1.0
+}
