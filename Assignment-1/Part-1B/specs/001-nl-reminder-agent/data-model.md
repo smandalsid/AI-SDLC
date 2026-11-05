@@ -23,7 +23,7 @@ Derived from [spec.md](spec.md). Field names match the spec's output contract ex
 | `time` | ISO-8601 datetime with UTC offset | required |
 
 Instructions that appear inside `title` are data. The title is JSON-encoded into a delimited data block and the
-system prompt says so (spec edge case; EV-G06).
+system prompt says so (spec edge case; G06).
 
 ### CallerContext (internal, built per call)
 
@@ -37,8 +37,9 @@ Nothing is read from the process clock inside the service.
 The eight spec fields with plain types and no constraints, all required, `extra="forbid"`:
 `intent` (enum of 6), `title` (string or null), `datetime_iso` (string or null), `snooze_minutes` (integer or
 null), `target_reminder_id` (string or null), `clarification_question` (string or null), `refusal_reason`
-(enum of 5 or null), `confidence` (number). The JSON Schema generated from this model is committed as
-`evals/output-schema.json` and checksummed.
+(enum of 5 or null), `confidence` (number). `evals/output-schema.json` is authored by hand from the spec's Output
+Contract (it is a spec artifact, checksummed from the start, not generated from code); the Layer 1 evaluator
+validates against it, and a unit test checks that this model and `ProposedAction` agree with it.
 
 ### ProposedAction (validated domain model; the contract returned to callers)
 
@@ -114,6 +115,9 @@ index in the harness; a random id in the API). `CallRecord` (passed to an option
 for FR-15): `model_requested`, `model_served`, `reasoning_effort`, `input_tokens`, `output_tokens`, `duration_ms`,
 `attempt`. It never contains the prompt text, tokens, or secrets.
 
+`PreflightResult` (returned by `Preflight.preflight()`, a separate small Protocol implemented by the SDK adapter,
+zero model requests): `runtime_ok`, `authenticated`, `model_in_catalog`, `runtime_version`, `sdk_version`.
+
 ## Errors (models/errors.py)
 
 Every error becomes `{"error": {"code": str, "message": str}}` through the single handler in `api/errors.py`.
@@ -121,7 +125,6 @@ Every error becomes `{"error": {"code": str, "message": str}}` through the singl
 | Exception | HTTP | `code` | Spec |
 |-----------|------|--------|------|
 | `RequestValidationFailed` (schema, empty or whitespace text, non-text, unknown timezone, naive `now`, duplicate ids) | 422 | `invalid_request` | FR-8 |
-| `BusinessRuleViolation` (reserved for rules that pass the schema but are refused before the model) | 400 | `business_rule` | spec Edge Cases |
 | `PayloadTooLarge` (transport body limit, 1 MiB) | 413 | `payload_too_large` | plan decision |
 | `LLMOutputError` (schema or validator failure) | 502 | `model_output_invalid` | GR-5 |
 | `LLMInfrastructureError` kind `timeout` | 504 | `llm_timeout` | FR-14 |

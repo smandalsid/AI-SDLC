@@ -63,7 +63,7 @@ id is in the catalog.
 | Drill | How | Expected |
 |-------|-----|----------|
 | Integrity | change one byte in `.harness/config/thresholds.env` | gate 0 fails first and the run stops before any other check executes |
-| Scope | run the scope check against a scratch clone in which a file under `assignment_1/` was changed (never in this working tree) | the scope check fails the run |
+| Scope | run the scope check against a scratch clone in which a file outside `assignment_2/` was changed (never in this working tree) | the scope check fails the run |
 | INFRA | run live with an invalid token in a scratch shell | cases become `INFRA_ERROR`, share above 10%, verdict `INVALID` (never `FAIL`) |
 | Request cap | set `LIVE_REQUEST_MAX=5` on a scratch copy (checksum change is expected) | the run stops, remaining cases `NOT_RUN`, verdict `INVALID` |
 | Secret | add a fake token string to a scratch file | gitleaks fails the security gate |

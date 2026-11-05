@@ -40,11 +40,13 @@ FR-9 strategy, and the deterministic clock/timezone/DST handling.
 
 **Scale/Scope**: one request per call; about 33 eval cases; 6 intents; 1 endpoint plus a health check
 
+**Semantic scoring**: title fidelity tokenisation is fixed here before the first evaluation: lowercase, tokens `[a-z0-9]+`, no stop-word removal; overlap = `|observed tokens & ground-truth tokens| / |ground-truth tokens|` over token sets, compared with `TITLE_OVERLAP_MIN`
+
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Constitution v1.0.0 at `.specify/memory/constitution.md`. **Pre-research result: PASS. Post-design result: PASS with 5 justified items (see Complexity Tracking).**
+Constitution v1.0.0 at `.specify/memory/constitution.md`. **Pre-research result: PASS. Post-design result: PASS with 7 justified items (see Complexity Tracking).**
 
 | Principle / section | How the plan satisfies it | Result |
 |---------------------|---------------------------|--------|
@@ -62,7 +64,7 @@ Constitution v1.0.0 at `.specify/memory/constitution.md`. **Pre-research result:
 | XII. Agent guardrails | One phase at a time with checkpoints; `initial-generation` tag before the first `run.sh` | Pass |
 | Technology and environment | Stack as constitution; SDK pinned; one SDK module; least-privilege keywords verified against the installed package | Pass, layout adapted (Complexity row 1) |
 | Repository and workflow | Branch `assignment-2-reminder-agent` (created); all paths inside `assignment_2/`; scope gate `git diff --name-only main...HEAD` | Pass |
-| MEC table | Each of MEC-1 to MEC-27 has an enforcing script in the harness (see "Harness design") | Pass |
+| MEC table | Each of MEC-1 to MEC-27 has an enforcing script in the harness (see "Harness design"); MEC-22 (pagination) is not applicable because the API has no list endpoint | Pass |
 
 ## Project Structure
 
@@ -98,8 +100,8 @@ src/backend/
     │   ├── responses.py            # InterpretResponse, AppliedResult
     │   └── errors.py               # DomainError hierarchy (code, http_status)
     ├── llm/                        # adapter layer
-    │   ├── protocol.py             # LLMClient Protocol, LLMRequest
-    │   ├── copilot_client.py       # the ONLY module that imports `copilot`
+    │   ├── protocol.py             # LLMClient Protocol, Preflight Protocol, LLMRequest
+    │   ├── copilot_client.py       # the ONLY module that imports `copilot` (also implements preflight)
     │   ├── replay_client.py        # ReplayLLMClient (redacted recorded fixtures)
     │   └── stub_client.py          # StubLLMClient (scripted outputs and faults, for tests)
     ├── services/
@@ -117,18 +119,22 @@ src/backend/
         ├── routes.py               # POST /api/v1/actions, GET /api/v1/health
         ├── deps.py                 # FastAPI Depends wiring
         └── errors.py               # the one central exception handler
+    (top layer) eval_adapter.py     # harness bridge: runs a case through create_app over ASGI, preflight, outcome mapping
 tests/backend/
 ├── unit/                           # models, validator, applier, calendar, guards, evaluators, scoring, infra mapping, architecture, SDK-config
 └── contract/                       # every endpoint, success and failure, via ASGI client with StubLLMClient
 evals/
 ├── dataset.json                    # protected
-├── output-schema.json              # protected, generated from ProposedActionWire
+├── output-schema.json              # protected, authored by hand from the spec Output Contract (not generated)
 └── recorded/                       # redacted replay fixtures: <case_id>.<run>.json
 .harness/
-├── run.sh, integrity.sh, lint.sh, security.sh, test.sh, eval.sh
+├── run.sh, integrity.sh, lint.sh, security.sh, test.sh, eval.sh, regen_checksums.sh
 ├── check_function_length.py        # AST check for FUNC_LEN_MAX
+├── check_dataset.py                # dataset gate (MEC-1..3)
+├── check_endpoint_tests.py         # every endpoint has a success and a failure contract test (MEC-20)
+├── trace_report.py                 # requirement-to-test/case table and check (MEC-24)
 ├── eval_runner.py                  # --mode live|replay, preflight, request counter, INFRA handling
-├── evaluators/                     # schema.py (L1), properties.py (L2), semantic.py (L3)
+├── evaluators/                     # schema.py (L1), properties_{time,other,guardrails}.py + properties.py (L2), semantic.py (L3)
 ├── scoring.py, infra.py, redact.py, summarize.py
 └── config/                         # thresholds.env, checksums.sha256, ruff.toml, mypy.ini, gitleaks.toml, bandit.yaml
 evidence/                           # initial-generation/, final-generation/, harness-results/<UTC>/, eval-results.json, harness-log.md
@@ -168,7 +174,7 @@ delimited data blocks, and the system prompt states they are data, never instruc
 | 1 Lint and types | `lint.sh` | `ruff check`, `ruff format --check` (`C901` limit injected), `mypy --strict`, `check_function_length.py` | 9, 10, 11, 12 |
 | 2 Security | `security.sh` | `bandit -ll`, `pip-audit`, `gitleaks` on tree, staged diff and evidence, redaction pass | 13, 14, 15 |
 | 3 Tests | `test.sh` | pytest with coverage (line >= 85, branch >= 80), no skips without reason, every endpoint has a success and a failure test | 7, 8, 20, 21, 22 |
-| 4 Evaluation | `eval.sh` / `eval_runner.py` | preflight (runtime, auth, catalog), layers 1 to 3, FR-9 consistency, request cap, INFRA handling, verdict | 4, 5, 6, 16, 17, 18, 19 |
+| 4 Evaluation | `eval.sh` / `eval_runner.py` | preflight (runtime, auth, catalog; `CopilotLLMClient.preflight()`), layers 1 to 3, FR-9 consistency (a differing consistency case fails the run), request cap, INFRA handling, verdict | 4, 5, 6, 16, 17, 18, 19 |
 | Feedback | `summarize.py` | `summary.json` (failed rule or test with expected and observed), appends one row to `harness-log.md` | 24, 25 |
 
 `.harness/run.sh` continues after a failing gate to collect evidence and exits non-zero if any gate failed. MEC-26
@@ -178,7 +184,7 @@ delimited data blocks, and the system prompt states they are data, never instruc
 
 Legend: **R** = enforced at runtime by the listed module; **M** = model behaviour, enforced by the prompt and
 checked only by the evaluation (not by runtime code); "UT" = unit or contract test in `tests/backend`;
-`EV` = eval case. Planned eval case ids are listed after the table.
+`EV` = eval case (`EV-N01` is dataset case `N01`). Planned eval case ids are listed after the table.
 
 | Req | Enforced by | Checked by |
 |-----|-------------|------------|
@@ -232,6 +238,11 @@ harness unit tests above. The final per-AC table lives in `evidence/harness-log.
 
 Request budget: 29 + 8 x 2 = 45 planned, 15 reserved for retries, cap 60.
 
+Edge cases without an acceptance criterion (pronoun reference, empty reminder list for reschedule, snooze or cancel,
+a valid request mixed with an injection attempt, task text over 120 characters, a duration outside 1 to 1440 minutes)
+are verified by the prompt-rule tests and the runtime validators, not by live eval cases. This is recorded as a
+known limitation for the final decision.
+
 ## Complexity Tracking
 
 > Constitution Check passed; these rows record deliberate deviations and additions that need a reason.
@@ -243,6 +254,8 @@ Request budget: 29 + 8 x 2 = 45 planned, 15 reserved for retries, cap 60.
 | 3. SDK `system_message` mode `replace` | Cuts input from 1577 to 110 tokens and gives exact prompt control (measured) | `append` or default modes keep a 1.5k-token runtime prompt that we cannot inspect or test; safe here because tools are off and permissions are denied |
 | 4. Two action models (`ProposedActionWire` and `ProposedAction`) | The provider needs plain types for structured output; INV range and cross-field rules must be ours so Layer 1 can measure them | One constrained model risks provider schema rejection and moves INV checks out of our control |
 | 5. `StubLLMClient` and `ReplayLLMClient` live in `src/`, not `tests/` | The harness (replay mode) and the tests both need them | Test-only copies would duplicate behaviour and could drift from the Protocol |
+| 6. `app/eval_adapter.py` in `src/` (top layer) | The harness is frozen after the Foundational approval, and the adapter needs the app, the SDK adapter, and `preflight()`; the single SDK module rule forbids the harness from importing `copilot` | A script inside `.harness/` would change protected files after approval and break the one-SDK-module rule |
+| 7. Extra small harness scripts (`check_dataset.py`, `check_endpoint_tests.py`, `trace_report.py`, `regen_checksums.sh`) | Each enforces one constitution MEC row (1 to 3, 20, 24, 23) with a testable exit code | Checking these by review only would leave the rows unverified by the harness |
 
 ## Post-design Constitution Re-check
 

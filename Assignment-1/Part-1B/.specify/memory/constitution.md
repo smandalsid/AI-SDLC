@@ -1,21 +1,3 @@
-<!--
-SYNC IMPACT REPORT (temporary scratch; remove before committing)
-Version change: template (unversioned) -> 1.0.0 (initial ratification; still uncommitted, so the
-  assignment_1 workflow rules were folded into 1.0.0 with no version bump)
-Modified principles: none (all new; template placeholders replaced)
-Added sections: Core Principles I-XII; Technology & Environment; Repository & Workflow
-  Constraints; Measurable Engineering Constraints; Deterministic Harness & Evidence;
-  Development Workflow & Quality Gates; Governance
-Removed sections: template SECTION_2/SECTION_3 placeholders (replaced by the sections above)
-Decisions recorded: harness-log.md puts the human decision BEFORE the run table (run table last);
-  .venv, pyproject.toml and uv.lock live inside assignment_2/; branch coverage >= 80%;
-  repair bound (5) is counted per failure.
-Deliberately not carried over from assignment_1: Docker/Azure SQL, React/Vite/frontend,
-  authentication, database migrations, stateless/concurrency/latency rules (in-memory repo, API only).
-Follow-up TODOs: none. Deferred to /speckit-specify: the aggregate score threshold value and
-  scoring formula (Principle II) and requirement IDs (FR-/INV-/GR-/AC-).
-  Current branch at amendment time was `main`; see Repository & Workflow Constraints.
--->
 # Natural-Language Reminder Agent Constitution
 
 The Natural-Language Reminder Agent is a small AI application. Its LLM behaviour is
@@ -304,8 +286,8 @@ Log rules:
   never on `main`.
 - Before any work, and before every commit, the agent MUST verify that the current branch
   is not `main`. If it is `main`, the agent MUST stop and ask.
-- Part 1B MUST live entirely inside `assignment_2/`. The agent MUST NOT create, modify, or
-  delete anything outside `assignment_2/`. `assignment_1/` and `knowledge/` are read-only.
+- All work MUST live entirely inside `assignment_2/`. The agent MUST NOT create, modify, or
+  delete anything outside `assignment_2/`; everything outside it is read-only.
 - Every path in the spec, plan, tasks, harness, and evidence MUST be relative to
   `assignment_2/`. Spec Kit artifacts MUST live in `assignment_2/.specify/` and
   `assignment_2/specs/`.
