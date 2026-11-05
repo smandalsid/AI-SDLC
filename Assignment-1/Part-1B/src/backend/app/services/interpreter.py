@@ -16,6 +16,7 @@ from app.services.applier import ActionApplier
 from app.services.clock import Clock
 from app.services.prompt_builder import build_prompt
 from app.services.store import InMemoryReminderStore, Reminder
+from app.services.text_guard import refusal_for
 from app.services.validator import Rule, run_rules
 
 
@@ -42,9 +43,12 @@ class Interpreter:
         self, request: InterpretRequest, correlation_id: str | None = None
     ) -> InterpretResponse:
         context = CallerContext.build(request, self._clock.now())
-        prompt = build_prompt(context, request.text, correlation_id or uuid4().hex, self._template)
-        result = await self._llm.parse(prompt)
-        action = _to_domain(result.wire)
-        run_rules(action, context, self._rules)
         store = InMemoryReminderStore(Reminder(r.id, r.title, r.time) for r in context.reminders)
+        action = refusal_for(request.text)
+        if action is None:
+            prompt = build_prompt(
+                context, request.text, correlation_id or uuid4().hex, self._template
+            )
+            action = _to_domain((await self._llm.parse(prompt)).wire)
+            run_rules(action, context, self._rules)
         return InterpretResponse(action=action, applied=self._applier.apply(action, store, context))

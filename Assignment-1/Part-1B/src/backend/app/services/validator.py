@@ -9,6 +9,7 @@ from app.models.action import Intent, ProposedAction
 from app.models.errors import LLMOutputError
 from app.models.requests import CallerContext
 from app.services.calendar_context import local_time_status
+from app.services.leak_guard import leaked_field
 
 Rule = Callable[[ProposedAction, CallerContext], None]
 
@@ -49,8 +50,20 @@ def offset_matches_zone(action: ProposedAction, context: CallerContext) -> None:
         raise LLMOutputError("offset_mismatch", f"{action.datetime_iso} has the wrong offset")
 
 
-def default_rules() -> list[Rule]:
+def leak_rule(sentinels: Sequence[str]) -> Rule:
+    """GR-4: no output field may contain a sentinel; the error names the field, never the value."""
+
+    def rule(action: ProposedAction, context: CallerContext) -> None:
+        field = leaked_field(action, sentinels)
+        if field is not None:
+            raise LLMOutputError("leak", f"a sentinel appeared in {field}")
+
+    return rule
+
+
+def default_rules(sentinels: Sequence[str] = ()) -> list[Rule]:
     return [
+        leak_rule(sentinels),
         target_in_supplied_list,
         time_is_future,
         wall_time_is_unambiguous,

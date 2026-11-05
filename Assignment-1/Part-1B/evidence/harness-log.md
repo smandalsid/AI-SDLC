@@ -58,6 +58,12 @@ _Entries are added when a genuine, unexpected failure occurs. A phase with no fa
 
 - Phase 5 (US2, clarify, T097-T101): no repair needed. Not repair events: the intended red run of T097 (12 prompt-rule tests failed before T100; the 6 contract tests in `test_actions_clarify.py` and the "one question" phrase passed on arrival because Phase 3 already enforces INV-6 and the output contract section already states the 200-character limit).
 
+- Phase 6 (US3, refuse and untrusted output, T102-T115), unexpected failures repaired in the Phase 6 milestone commit `feat(us3): refusal, guardrails and untrusted-output handling (T102-T114)`:
+  - `tests/backend/unit/test_untrusted_output.py` (GR-5, AC-12), cases `extra-field`, `intent-not-allowed`, `missing-required-field`, and the contract test `test_a_schema_invalid_output_is_502_and_never_a_partial_action`: expected `LLMOutputError` (502 `model_output_invalid`); observed the raw pydantic `ValidationError` (a 500 `internal_error` through the API), because `StubLLMClient` validated the scripted dict itself without mapping the error, unlike `CopilotLLMClient` and `ReplayLLMClient`. Evidence fed back: the pytest failure output. Change: the stub maps `ValidationError` to `LLMOutputError("schema")`, so every client reports a bad wire shape the same way. No assertion was changed. Rerun: the cases pass.
+  - `.harness/lint.sh` (MEC-11, MEC-12), development run at the checkpoint: 7 ruff findings (E501 in three test docstrings, S105 on a test constant named `SECRET`, ANN401 on two `Any` parameters or returns in `test_actions_refuse.py`) and 1 mypy error (`no-any-return` in the same file). Change: shortened the docstrings, renamed the constant, typed the helper with named parameters and `httpx.Response`. No rule or configuration changed. Rerun of the unchanged gate: exit 0.
+  - Rerun result: `.harness/test.sh` exit 0 with 500 passed; integrity, lint and security exit 0.
+  - Not repair events: the intended red run of T102-T108 (31 failed, 35 passed on arrival, 2 modules failed at collection before T110-T114).
+
 ## 4. Quickstart validation
 
 _To be completed in task T154._
