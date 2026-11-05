@@ -56,6 +56,8 @@ _Entries are added when a genuine, unexpected failure occurs. A phase with no fa
   - Rerun result: `.harness/test.sh` exit 0, 392 passed; `.harness/lint.sh` and `.harness/security.sh` exit 0.
   - Not repair events: the intended red run of T088-T091 (38 failed, 18 passed, 1 collection error before T093-T095).
 
+- Phase 5 (US2, clarify, T097-T101): no repair needed. Not repair events: the intended red run of T097 (12 prompt-rule tests failed before T100; the 6 contract tests in `test_actions_clarify.py` and the "one question" phrase passed on arrival because Phase 3 already enforces INV-6 and the output contract section already states the 200-character limit).
+
 ## 4. Quickstart validation
 
 _To be completed in task T154._
