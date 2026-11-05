@@ -94,7 +94,7 @@ _Entries are added when a genuine, unexpected failure occurs. A phase with no fa
   - Evidence fed back to the coding agent: `evidence/harness-results/20261105T182821Z/` (`summary.json`, `eval-results.json`, the redacted recordings `N05.1` to `N05.3`, `B05.1`, `M04.1`).
   - Regression tests first: `tests/backend/unit/test_prompt_rules_regressions.py` (5 tests, failed on arrival), commit `test: regression for N05, B05, M04 (T152)`.
   - Change: `prompts/system.md` only (a time still ahead today is valid and end of day today is 17:00; a repeated request is one reminder and `bulk_action` means many existing reminders; a past-time question says it is in the past and asks for a new date and time), commit `fix: prompt rules from the live run (T152)`. No spec, existing test, dataset, threshold or harness script was touched.
-  - Rerun outcome: see the next entry.
+  - Rerun outcome: `.harness/run.sh --mode live` unchanged, run `20261105T183701Z`: all five gates PASS, aggregate 1.0, structural, property, semantic and guardrail 100 percent, INFRA 0 percent, 45 of 60 requests, all 33 cases passed.
 
 ## 4. Quickstart validation
 
@@ -217,9 +217,23 @@ MEC-22 pagination: not applicable, the API has no list endpoint.
 
 _Recorded by a human only (task T158), with known limitations and residual risks._
 
+### Draft limitations (not a decision)
+
+For the human to confirm or edit; the agent records no ACCEPT or REJECT.
+
+- Model routing is unstable: on 2026-11-05 the service stopped serving the planned `mai-code-1.1-flash` and served `gpt-6-luna` for every request, so the expected model, the `Settings` default and `.env.example` were changed to `gpt-6-luna` by a human-approved change to protected files (`.harness/run.sh` now also exports the thresholds; `.harness/config/thresholds.env` and `checksums.sha256` changed). The specification, plan and research still name the old model.
+- Model output varies between runs: the first live run scored 1.0, a reproducibility run in a fresh clone scored 0.9818 (B05 and M04 failed within the threshold), and the next live run on the converged code was a FAIL (N05 differed across its 3 runs, with B05 and M04 again). After one prompt repair the rerun passed with 1.0. A PASS is one sample of a non-deterministic system, not a guarantee, and the repair was tuned on three observed cases.
+- The dataset has 33 cases (8 consistency cases run 3 times); the semantic layer is a deterministic keyword and token-overlap rubric, not an LLM judge, so it can reject a valid clarification question (M04) and cannot judge wording quality.
+- Rate-limit and process-exit error patterns of the SDK are unverified: they are covered by fake-exception tests and were never observed live.
+- State is in memory only: each request starts from the reminders supplied in the request and nothing is persisted.
+- The application depends on the Copilot SDK runtime (pinned SDK 1.0.28, runtime 1.0.105), its authentication (logged-in user or token) and, on a corporate network, a working runtime download.
+- The edge cases listed in `plan.md` (pronoun reference, empty reminder list, a request mixed with an injection attempt, task text over 120 characters, a duration outside 1 to 1440 minutes) are covered by prompt-rule tests and validators, not by live eval cases.
+- Evidence conventions differ from the constitution's wording (see Convergence F1 and task T159): the first generation tag is `assignment-2-initial-generation`, and the snapshots are archives.
+
 ## 8. Run table
 
 | run | timestamp_utc | mode | model / effort / sdk | requests | threshold / formula | gates | eval | verdict | results_dir |
 |-----|---------------|------|----------------------|----------|---------------------|-------|------|---------|-------------|
 | 1 | 20261105T180350Z | live | gpt-6-luna (gpt-6-luna) / low / sdk 1.0.28 | 45/60 | aggregate >= 0.85; weighted structural/property/semantic | integrity:PASS lint:PASS security:PASS test:PASS eval:PASS | aggregate 1.0, guardrail 1.0, infra 0.0 | PASS | evidence/harness-results/20261105T180350Z |
 | 2 | 20261105T182821Z | live | gpt-6-luna (gpt-6-luna) / low / sdk 1.0.28 | 45/60 | aggregate >= 0.85; weighted structural/property/semantic | integrity:PASS lint:PASS security:PASS test:PASS eval:FAIL | aggregate 0.9788, guardrail 1.0, infra 0.0 | FAIL | evidence/harness-results/20261105T182821Z |
+| 3 | 20261105T183701Z | live | gpt-6-luna (gpt-6-luna) / low / sdk 1.0.28 | 45/60 | aggregate >= 0.85; weighted structural/property/semantic | integrity:PASS lint:PASS security:PASS test:PASS eval:PASS | aggregate 1.0, guardrail 1.0, infra 0.0 | PASS | evidence/harness-results/20261105T183701Z |

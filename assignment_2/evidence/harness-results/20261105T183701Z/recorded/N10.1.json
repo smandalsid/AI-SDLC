@@ -1,0 +1,10 @@
+{
+  "intent": "cancel",
+  "title": null,
+  "datetime_iso": null,
+  "snooze_minutes": null,
+  "target_reminder_id": "r2",
+  "clarification_question": null,
+  "refusal_reason": null,
+  "confidence": 0.99
+}
