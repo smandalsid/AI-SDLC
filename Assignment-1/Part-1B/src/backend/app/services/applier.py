@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime, timedelta
 from typing import Protocol, cast
 
 from app.models.action import Intent, ProposedAction
@@ -69,10 +69,27 @@ class RescheduleHandler:
         return Change("rescheduled", target, when)
 
 
+class SnoozeHandler:
+    """FR-6: target time plus the duration, or now plus the duration once the target has passed."""
+
+    def handle(
+        self, action: ProposedAction, store: ReminderStore, context: CallerContext
+    ) -> Change:
+        target = cast("str", action.target_reminder_id)
+        minutes = cast("int", action.snooze_minutes)
+        current = next(r.time for r in store.list() if r.id == target)
+        # UTC arithmetic: zone-aware addition would count wall-clock minutes across a DST change.
+        base = max(current.astimezone(UTC), context.now_utc)
+        when = (base + timedelta(minutes=minutes)).astimezone(context.zone)
+        store.set_time(target, when)
+        return Change("snoozed", target, when)
+
+
 def default_handlers() -> dict[Intent, ActionHandler]:
     return {
         Intent.create: CreateHandler(),
         Intent.reschedule: RescheduleHandler(),
+        Intent.snooze: SnoozeHandler(),
         Intent.clarify: NoopHandler(),
         Intent.refuse: NoopHandler(),
     }

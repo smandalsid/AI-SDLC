@@ -287,16 +287,16 @@ Acceptance scenarios: AC-20, AC-21.
 
 ### Tests for User Story 5 (write first)
 
-- [ ] T125 [P] [US5] Write `tests/backend/unit/test_applier_snooze.py` (FR-6, AC-20, AC-21, INV-4): future target `2026-11-05T11:00:00+00:00` plus 120 minutes gives `2026-11-05T13:00:00+00:00`; passed target `2026-11-05T09:00:00+00:00` with now `10:00` plus 15 gives `2026-11-05T10:15:00+00:00`; target time exactly equal to `now` takes the "not passed" branch; durations 1 and 1440 are accepted; arithmetic is done on UTC instants and the result is converted to the caller's zone (a snooze across the 2027-03-14 New York change keeps elapsed minutes exact); only the target changes; operation `snoozed`
-- [ ] T126 [P] [US5] Write `tests/backend/unit/test_prompt_rules_snooze.py` (FR-6): `prompts/system.md` states how to read durations in minutes and hours ("2 hours" is 120), that durations outside 1 to 1440 minutes give `clarify` and are never clamped, and that snooze returns the target and minutes, not a new time
-- [ ] T127 [P] [US5] Write `tests/backend/contract/test_actions_snooze.py`: `endpoint` success marker: AC-20 scripted `snooze` of `r3` for 120 returns 200 with `applied.new_time=2026-11-05T13:00:00+00:00` and operation `snoozed`; AC-21 returns `2026-11-05T10:15:00+00:00`; `endpoint` failure marker: a scripted `snooze_minutes` of 0 or 1441 returns 502 `model_output_invalid` and applies nothing
-- [ ] T128 [US5] Confirm the new tests fail (T125-T127); keep the failure summary for the commit message (T131)
+- [X] T125 [P] [US5] Write `tests/backend/unit/test_applier_snooze.py` (FR-6, AC-20, AC-21, INV-4): future target `2026-11-05T11:00:00+00:00` plus 120 minutes gives `2026-11-05T13:00:00+00:00`; passed target `2026-11-05T09:00:00+00:00` with now `10:00` plus 15 gives `2026-11-05T10:15:00+00:00`; target time exactly equal to `now` takes the "not passed" branch; durations 1 and 1440 are accepted; arithmetic is done on UTC instants and the result is converted to the caller's zone (a snooze across the 2027-03-14 New York change keeps elapsed minutes exact); only the target changes; operation `snoozed`
+- [X] T126 [P] [US5] Write `tests/backend/unit/test_prompt_rules_snooze.py` (FR-6): `prompts/system.md` states how to read durations in minutes and hours ("2 hours" is 120), that durations outside 1 to 1440 minutes give `clarify` and are never clamped, and that snooze returns the target and minutes, not a new time
+- [X] T127 [P] [US5] Write `tests/backend/contract/test_actions_snooze.py`: `endpoint` success marker: AC-20 scripted `snooze` of `r3` for 120 returns 200 with `applied.new_time=2026-11-05T13:00:00+00:00` and operation `snoozed`; AC-21 returns `2026-11-05T10:15:00+00:00`; `endpoint` failure marker: a scripted `snooze_minutes` of 0 or 1441 returns 502 `model_output_invalid` and applies nothing
+- [X] T128 [US5] Confirm the new tests fail (T125-T127); keep the failure summary for the commit message (T131)
 
 ### Implementation for User Story 5
 
-- [ ] T129 [P] [US5] Add `SnoozeHandler` to `src/backend/app/services/applier.py` and register it for `Intent.snooze` so T125 and T127 pass (depends on T125, T127, T122)
-- [ ] T130 [P] [US5] Add the snooze rules to `prompts/system.md` so T126 passes (depends on T126, T123)
-- [ ] T131 [US5] Checkpoint: run `integrity.sh`, `lint.sh`, `security.sh`, `test.sh` (development runs); all US1-US5 tests pass; log failures or "no repair needed"; commit `feat(us5): snooze reminder (T125-T130)`; report to the user and wait for approval
+- [X] T129 [P] [US5] Add `SnoozeHandler` to `src/backend/app/services/applier.py` and register it for `Intent.snooze` so T125 and T127 pass (depends on T125, T127, T122)
+- [X] T130 [P] [US5] Add the snooze rules to `prompts/system.md` so T126 passes (depends on T126, T123)
+- [X] T131 [US5] Checkpoint: run `integrity.sh`, `lint.sh`, `security.sh`, `test.sh` (development runs); all US1-US5 tests pass; log failures or "no repair needed"; commit `feat(us5): snooze reminder (T125-T130)`; report to the user and wait for approval
 
 **Checkpoint**: snooze works with both FR-6 branches.
 

@@ -77,3 +77,11 @@ Use `refuse` when the request must not be carried out. A refusal sets `refusal_r
 - An empty reminder list gives `clarify`: there is nothing to change.
 - Ids come only from the supplied reminders; copy the id exactly as given and never invent one.
 - For `reschedule`, `datetime_iso` follows the same rules as a new reminder (windows, weekdays, local offset, strictly in the future).
+
+## Snooze rules
+
+A snooze delays one existing reminder by a duration; the application computes the new time.
+
+- Convert the duration to whole minutes: "2 hours" is 120 minutes, "half an hour" is 30 minutes, "1 day" is 1440 minutes.
+- A duration outside 1 to 1440 minutes gives `clarify` and is never clamped; ask for a duration within that range.
+- Return the target and `snooze_minutes`, never a new time: leave `datetime_iso` null.
