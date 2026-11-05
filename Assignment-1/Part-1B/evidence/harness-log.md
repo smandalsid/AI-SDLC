@@ -25,7 +25,11 @@ Other human-recorded approvals (for example a regenerated `.harness/config/check
 
 ## 2. Initial generation and context
 
-_To be completed in task T150._
+- Commit: `a3287ed0a8afcd906a70f702e168c4e3a9607645` on branch `assignment-2-reminder-agent`, tagged `assignment-2-initial-generation` before any recorded harness run (UTC date 2026-11-05).
+- State at the tag: all tasks through T149 done; development gate runs: integrity, lint, security and test pass (636 tests, line coverage 98 percent); `.harness/run.sh --dry-run --mode replay` gives `INVALID` only because no recordings exist (a dry run is not a run).
+- Snapshot: `evidence/initial-generation/initial-generation.tar.gz` (a `git archive` of the tag: `src/`, `tests/`, `prompts/`, `evals/`, `.harness/` and the approved `specs/001-nl-reminder-agent/{spec,plan,tasks}.md`; 130 files, no caches), with `MANIFEST.txt` (file list) and `initial-generation.tar.gz.sha256`. It is an archive because the harness redaction scan of `evidence/` flags the secret-pattern definitions and test inputs inside `redact.py`, `test_redact.py` and `tasks.md` when they sit there as plain text.
+- Coding agent: GitHub Copilot in VS Code agent mode (Claude Sonnet 5.5), working one phase at a time, tests first, with human approval at each phase checkpoint.
+- Context given to the agent: `.specify/memory/constitution.md` (v1.0.0), `spec.md`, `plan.md`, `tasks.md`, plus `research.md`, `data-model.md`, `quickstart.md` and `contracts/` (`openapi.yaml`, `eval-dataset.schema.json`, `harness-outputs.md`), all under `specs/001-nl-reminder-agent/`.
 
 ## 3. Failure-and-repair log
 
