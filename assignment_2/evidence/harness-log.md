@@ -213,3 +213,4 @@ _Recorded by a human only (task T158), with known limitations and residual risks
 | run | timestamp_utc | mode | model / effort / sdk | requests | threshold / formula | gates | eval | verdict | results_dir |
 |-----|---------------|------|----------------------|----------|---------------------|-------|------|---------|-------------|
 | 1 | 20261105T180350Z | live | gpt-6-luna (gpt-6-luna) / low / sdk 1.0.28 | 45/60 | aggregate >= 0.85; weighted structural/property/semantic | integrity:PASS lint:PASS security:PASS test:PASS eval:PASS | aggregate 1.0, guardrail 1.0, infra 0.0 | PASS | evidence/harness-results/20261105T180350Z |
+| 2 | 20261105T182821Z | live | gpt-6-luna (gpt-6-luna) / low / sdk 1.0.28 | 45/60 | aggregate >= 0.85; weighted structural/property/semantic | integrity:PASS lint:PASS security:PASS test:PASS eval:FAIL | aggregate 0.9788, guardrail 1.0, infra 0.0 | FAIL | evidence/harness-results/20261105T182821Z |

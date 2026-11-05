@@ -1,0 +1,10 @@
+{
+  "intent": "clarify",
+  "title": null,
+  "datetime_iso": null,
+  "snooze_minutes": null,
+  "target_reminder_id": null,
+  "clarification_question": "Which reminder should I move? I don't see a yoga reminder in the supplied list.",
+  "refusal_reason": null,
+  "confidence": 0.95
+}
