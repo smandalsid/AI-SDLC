@@ -31,6 +31,8 @@ _To be completed in task T150._
 
 _Entries are added when a genuine, unexpected failure occurs. A phase with no failure is logged as "no repair needed"._
 
+- Phase 1 (Setup, T003-T011): no repair needed.
+
 ## 4. Quickstart validation
 
 _To be completed in task T154._
