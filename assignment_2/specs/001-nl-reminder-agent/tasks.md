@@ -205,14 +205,14 @@ Acceptance scenarios: AC-4, AC-5, AC-6, AC-7, AC-34, AC-36.
 
 ### Tests for User Story 2 (write first)
 
-- [ ] T097 [P] [US2] Write `tests/backend/unit/test_prompt_rules_clarify.py` (FR-2, FR-3, FR-4): `prompts/system.md` instructs `clarify` for a missing task, a missing time, a bare "tomorrow" with no time, an explicit past time ("yesterday at 3pm"), a clock time with no date that already passed today (never the next occurrence), a local time in a daylight-saving gap or repeat (ask the user to pick a valid time), a snooze duration outside 1 to 1440 minutes (never clamped), one question of at most 200 characters, naming the specific missing field, never inventing a value; required key phrases are defined in the test
-- [ ] T098 [P] [US2] Write `tests/backend/contract/test_actions_clarify.py`: `endpoint` success marker: scripted AC-4, AC-5, and AC-6 outputs return 200 `intent=clarify`, the null fields stay null, `applied.operation=none`, and `applied.reminders` equals the supplied list; `endpoint` failure marker: `clarify` without a question, with an empty question, or with 201 characters returns 502 `model_output_invalid`; if these pass on arrival because Phase 3 already enforces INV-6, state that in the commit message
-- [ ] T099 [US2] Confirm which new tests fail (T097 must; T098 may pass on arrival); keep the summary for the commit message (T101)
+- [X] T097 [P] [US2] Write `tests/backend/unit/test_prompt_rules_clarify.py` (FR-2, FR-3, FR-4): `prompts/system.md` instructs `clarify` for a missing task, a missing time, a bare "tomorrow" with no time, an explicit past time ("yesterday at 3pm"), a clock time with no date that already passed today (never the next occurrence), a local time in a daylight-saving gap or repeat (ask the user to pick a valid time), a snooze duration outside 1 to 1440 minutes (never clamped), one question of at most 200 characters, naming the specific missing field, never inventing a value; required key phrases are defined in the test
+- [X] T098 [P] [US2] Write `tests/backend/contract/test_actions_clarify.py`: `endpoint` success marker: scripted AC-4, AC-5, and AC-6 outputs return 200 `intent=clarify`, the null fields stay null, `applied.operation=none`, and `applied.reminders` equals the supplied list; `endpoint` failure marker: `clarify` without a question, with an empty question, or with 201 characters returns 502 `model_output_invalid`; if these pass on arrival because Phase 3 already enforces INV-6, state that in the commit message
+- [X] T099 [US2] Confirm which new tests fail (T097 must; T098 may pass on arrival); keep the summary for the commit message (T101)
 
 ### Implementation for User Story 2
 
-- [ ] T100 [US2] Add the clarification rules to `prompts/system.md` so T097 passes (depends on T097, T095)
-- [ ] T101 [US2] Checkpoint: run `integrity.sh`, `lint.sh`, `security.sh`, `test.sh` (development runs); all US1 and US2 tests pass; log failures or "no repair needed"; commit `feat(us2): clarify missing or ambiguous information (T097-T100)`; report to the user and wait for approval
+- [X] T100 [US2] Add the clarification rules to `prompts/system.md` so T097 passes (depends on T097, T095)
+- [X] T101 [US2] Checkpoint: run `integrity.sh`, `lint.sh`, `security.sh`, `test.sh` (development runs); all US1 and US2 tests pass; log failures or "no repair needed"; commit `feat(us2): clarify missing or ambiguous information (T097-T100)`; report to the user and wait for approval
 
 **Checkpoint**: US1 and US2 both work independently.
 

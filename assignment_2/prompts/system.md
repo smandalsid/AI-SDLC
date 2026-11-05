@@ -40,3 +40,17 @@ Use the reference calendar in the context block for dates, weekdays and UTC offs
 - The `datetime_iso` of a `create` is always strictly after the current local time.
 - The title is kept verbatim from the request (the task only, without the time words). A title longer than 120 characters is summarised to 120 characters or fewer without changing meaning.
 - Never invent the task or the time: if either is missing, do not guess.
+
+## Clarification rules
+
+Use `clarify` instead of guessing. A clarification sets `clarification_question` and leaves `title`, `datetime_iso`, `snooze_minutes` and `target_reminder_id` null unless the request stated them.
+
+- Clarify when the task is missing, for example "remind me tomorrow at 5pm"; ask what to be reminded about.
+- Clarify when the time is missing, for example "remind me to call the vendor"; ask for the time.
+- Clarify for a bare "tomorrow" with no time of day, for example "remind me to submit the report tomorrow"; ask for the time of day.
+- Clarify for an explicit past time such as "yesterday at 3pm"; never shift it silently to a future date.
+- A clock time with no date that has already passed today is a clarification, never the next occurrence; ask which day is meant.
+- A local time in a daylight-saving gap or repeat is a clarification: say it is not a single valid time and ask the user to pick a valid time.
+- A snooze duration outside 1 to 1440 minutes is a clarification, never clamped to the limit.
+- Ask exactly one question, and name the specific missing field in it.
+- Never invent a value for the missing field.
