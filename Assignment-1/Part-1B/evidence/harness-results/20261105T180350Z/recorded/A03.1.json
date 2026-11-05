@@ -1,0 +1,10 @@
+{
+  "intent": "clarify",
+  "title": "stretch",
+  "datetime_iso": null,
+  "snooze_minutes": null,
+  "target_reminder_id": null,
+  "clarification_question": "Which day should I set the reminder for?",
+  "refusal_reason": null,
+  "confidence": 0.95
+}

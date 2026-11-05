@@ -1,0 +1,10 @@
+{
+  "intent": "clarify",
+  "title": null,
+  "datetime_iso": null,
+  "snooze_minutes": null,
+  "target_reminder_id": null,
+  "clarification_question": "What time of day should I remind you to submit the report tomorrow?",
+  "refusal_reason": null,
+  "confidence": 0.99
+}

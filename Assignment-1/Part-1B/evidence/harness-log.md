@@ -81,6 +81,8 @@ _Entries are added when a genuine, unexpected failure occurs. A phase with no fa
   - Resolution (human-approved, same commit as the Phase 10 follow-up): `run.sh` now sources `thresholds.env`; the expected and requested model became `gpt-6-luna` (the model the service serves; the smoke then passed: served `gpt-6-luna`, AC-2 answer correct); checksums regenerated.
   - Not repair events: the intended red run of T139-T141 (2 failed, 17 passed on arrival, 1 collection error before T143-T144: the contract lacked the 413, 500, 502, 503, 504 and 422 error responses, and `app.eval_adapter` did not exist).
 
+- Phase 11, first live run `20261105T180350Z` (T151): verdict PASS on every gate, aggregate 1.0, structural, property, semantic and guardrail 100 percent, INFRA 0 percent, 45 of 60 requests, 33 of 33 cases passed, all 8 consistency cases identical across 3 runs. No repair needed.
+
 ## 4. Quickstart validation
 
 _To be completed in task T154._
@@ -91,7 +93,80 @@ _To be completed in task T155._
 
 ## 6. Acceptance traceability table
 
-_To be generated in task T153 with `python .harness/trace_report.py`._
+Generated with `python .harness/trace_report.py` (every FR, INV, GR and AC maps to at least one test or eval case).
+
+| Requirement | Tests | Eval cases |
+|-------------|-------|------------|
+| INV-1 | test_action_model.py, test_evaluators_schema.py, test_interpreter_pipeline.py, test_openapi_contract.py, test_output_schema.py |  |
+| INV-2 | test_action_model.py, test_evaluators_schema.py, test_output_schema.py |  |
+| INV-3 | test_action_model.py, test_evaluators_schema.py, test_output_schema.py | N01 |
+| INV-4 | test_action_model.py, test_actions_snooze.py, test_applier_snooze.py, test_evaluators_schema.py, test_output_schema.py, test_prompt_rules_snooze.py | N08 |
+| INV-5 | test_actions_cancel.py, test_actions_create.py, test_actions_reschedule.py, test_evaluators_schema.py, test_interpreter_pipeline.py, test_prompt_rules_targets.py, test_untrusted_output.py, test_validator_targets.py | A01, G06, N07 |
+| INV-6 | test_action_model.py, test_actions_clarify.py, test_evaluators_schema.py, test_output_schema.py |  |
+| INV-7 | test_action_model.py, test_evaluators_schema.py, test_output_schema.py |  |
+| INV-8 | test_action_model.py, test_evaluators_schema.py, test_openapi_contract.py, test_output_schema.py, test_untrusted_output.py |  |
+| FR-1 | test_actions_create.py, test_applier_create.py, test_calendar_context.py, test_evaluators_properties_time.py, test_prompt_rules_create.py, test_request_models.py, test_validator_time.py | A04, B01, B02, B03, B04, N01, N02, N04, N06 |
+| FR-2 | test_action_model.py, test_actions_clarify.py, test_evaluators_properties_time.py, test_prompt_rules_clarify.py | M01, M02 |
+| FR-3 | test_actions_clarify.py, test_evaluators_properties_time.py, test_prompt_rules_clarify.py, test_prompt_rules_create.py | M03, N02, N03, N05 |
+| FR-4 | test_evaluators_properties_time.py, test_prompt_rules_clarify.py, test_validator_time.py | A03, M04 |
+| FR-5 | test_actions_reschedule.py, test_applier_reschedule.py, test_evaluators_properties_other.py, test_prompt_rules_targets.py, test_validator_targets.py | A01, A02, G06, N07, N08, N09, N10 |
+| FR-6 | test_actions_snooze.py, test_applier_snooze.py, test_clock_store.py, test_evaluators_properties_other.py, test_prompt_rules_snooze.py | N08, N09 |
+| FR-7 | test_actions_cancel.py, test_applier_cancel.py, test_clock_store.py, test_evaluators_properties_other.py, test_prompt_rules_cancel.py, test_validator_targets.py | N10 |
+| FR-8 | test_actions_refuse.py, test_evaluators_properties_other.py, test_health_and_errors.py, test_openapi_contract.py, test_request_models.py, test_request_text.py, test_text_guard.py | B05, X01, X02, X03, X04 |
+| FR-9 | test_dataset_contract.py, test_eval_runner.py, test_evaluators_properties_other.py |  |
+| GR-1 | test_actions_refuse.py, test_applier_refuse_noop.py, test_evaluators_guardrails.py, test_prompt_builder.py, test_prompt_rules_refuse.py | G01, G04, G06 |
+| GR-2 | test_actions_refuse.py, test_applier_refuse_noop.py, test_evaluators_guardrails.py, test_prompt_rules_cancel.py, test_prompt_rules_refuse.py | G02 |
+| GR-3 | test_actions_refuse.py, test_applier_refuse_noop.py, test_evaluators_guardrails.py, test_prompt_rules_refuse.py | G03 |
+| GR-4 | test_actions_refuse.py, test_app_executor.py, test_architecture.py, test_env_example.py, test_evaluators_guardrails.py, test_leak_guard.py, test_llm_clients.py, test_prompt_builder.py, test_prompt_rules_refuse.py, test_settings.py | G04 |
+| GR-5 | test_actions_cancel.py, test_actions_create.py, test_actions_refuse.py, test_actions_reschedule.py, test_actions_snooze.py, test_app_executor.py, test_architecture.py, test_copilot_error_mapping.py, test_evaluators_guardrails.py, test_health_and_errors.py, test_interpreter_pipeline.py, test_openapi_contract.py, test_sdk_config.py, test_untrusted_output.py, test_validator_targets.py, test_validator_time.py |  |
+| GR-6 | test_actions_refuse.py, test_applier_refuse_noop.py, test_evaluators_guardrails.py, test_prompt_rules_refuse.py | G05 |
+| FR-10 | test_check_dataset.py, test_dataset_contract.py |  |
+| FR-11 | test_evaluators_guardrails.py, test_evaluators_properties_other.py, test_evaluators_properties_time.py, test_evaluators_schema.py, test_evaluators_semantic.py |  |
+| FR-12 | test_scoring.py |  |
+| FR-13 | test_verdict.py |  |
+| FR-14 | test_app_executor.py, test_copilot_error_mapping.py, test_eval_runner.py, test_health_and_errors.py, test_infra.py, test_llm_clients.py, test_openapi_contract.py, test_sdk_config.py, test_verdict.py |  |
+| FR-15 | test_app_executor.py, test_eval_results.py, test_eval_runner.py |  |
+| FR-16 | test_summarize.py |  |
+| AC-1 | test_actions_create.py, test_applier_create.py, test_validator_time.py | N01 |
+| AC-2 | test_evaluators_semantic.py, test_validator_time.py | N02 |
+| AC-3 |  | N03 |
+| AC-35 |  | N04 |
+| AC-37 |  | N05 |
+| AC-38 | test_applier_create.py, test_evaluators_semantic.py | N06 |
+| AC-4 | test_actions_clarify.py, test_prompt_rules_clarify.py | M01 |
+| AC-5 | test_actions_clarify.py, test_prompt_rules_clarify.py | M02 |
+| AC-6 | test_actions_clarify.py, test_prompt_rules_clarify.py | M03 |
+| AC-7 | test_prompt_rules_clarify.py | M04 |
+| AC-34 | test_prompt_rules_clarify.py | A03 |
+| AC-36 | test_calendar_context.py | A04 |
+| AC-8 | test_actions_refuse.py, test_prompt_rules_refuse.py | G01 |
+| AC-9 | test_actions_refuse.py, test_prompt_rules_cancel.py, test_prompt_rules_refuse.py | G02 |
+| AC-10 | test_actions_refuse.py, test_prompt_rules_refuse.py | G03 |
+| AC-11 | test_actions_refuse.py, test_leak_guard.py | G04 |
+| AC-12 | test_action_model.py, test_interpreter_pipeline.py, test_untrusted_output.py, test_validator_targets.py |  |
+| AC-13 |  | G05 |
+| AC-14 | test_request_text.py, test_text_guard.py | X01 |
+| AC-15 | test_app_executor.py, test_request_text.py | X02, X03, X04 |
+| AC-16 | test_text_guard.py | B05 |
+| AC-17 | test_actions_reschedule.py, test_applier_reschedule.py, test_prompt_rules_targets.py | N07 |
+| AC-18 | test_actions_reschedule.py, test_prompt_rules_targets.py, test_validator_targets.py | A01 |
+| AC-19 | test_actions_reschedule.py, test_prompt_rules_targets.py | A02 |
+| AC-20 | test_actions_snooze.py, test_applier_snooze.py, test_prompt_rules_snooze.py | N08 |
+| AC-21 | test_actions_snooze.py, test_applier_snooze.py, test_prompt_rules_snooze.py | N09 |
+| AC-22 | test_actions_cancel.py, test_applier_cancel.py, test_prompt_rules_cancel.py | N10 |
+| AC-23 | test_actions_cancel.py, test_applier_cancel.py | N10 |
+| AC-24 | test_validator_time.py | B01 |
+| AC-25 | test_validator_time.py | B02 |
+| AC-26 | test_calendar_context.py, test_validator_time.py | B03 |
+| AC-27 |  | B04 |
+| AC-28 | test_eval_runner.py |  |
+| AC-29 | test_app_executor.py, test_copilot_error_mapping.py, test_eval_runner.py, test_infra.py, test_llm_clients.py, test_verdict.py |  |
+| AC-30 | test_eval_runner.py, test_verdict.py |  |
+| AC-31 | test_scoring.py |  |
+| AC-32 | test_summarize.py, test_verdict.py |  |
+| AC-33 | test_check_dataset.py, test_dataset_contract.py, test_eval_results.py |  |
+
+MEC-22 pagination: not applicable, the API has no list endpoint.
 
 ## 7. Final human decision (ACCEPT or REJECT)
 
@@ -101,3 +176,4 @@ _Recorded by a human only (task T158), with known limitations and residual risks
 
 | run | timestamp_utc | mode | model / effort / sdk | requests | threshold / formula | gates | eval | verdict | results_dir |
 |-----|---------------|------|----------------------|----------|---------------------|-------|------|---------|-------------|
+| 1 | 20261105T180350Z | live | gpt-6-luna (gpt-6-luna) / low / sdk 1.0.28 | 45/60 | aggregate >= 0.85; weighted structural/property/semantic | integrity:PASS lint:PASS security:PASS test:PASS eval:PASS | aggregate 1.0, guardrail 1.0, infra 0.0 | PASS | evidence/harness-results/20261105T180350Z |
