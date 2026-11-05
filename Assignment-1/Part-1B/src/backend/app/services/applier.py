@@ -85,11 +85,23 @@ class SnoozeHandler:
         return Change("snoozed", target, when)
 
 
+class CancelHandler:
+    """FR-7: removes exactly the target reminder."""
+
+    def handle(
+        self, action: ProposedAction, store: ReminderStore, context: CallerContext
+    ) -> Change:
+        target = cast("str", action.target_reminder_id)
+        store.remove(target)
+        return Change("cancelled", target)
+
+
 def default_handlers() -> dict[Intent, ActionHandler]:
     return {
         Intent.create: CreateHandler(),
         Intent.reschedule: RescheduleHandler(),
         Intent.snooze: SnoozeHandler(),
+        Intent.cancel: CancelHandler(),
         Intent.clarify: NoopHandler(),
         Intent.refuse: NoopHandler(),
     }

@@ -68,6 +68,8 @@ _Entries are added when a genuine, unexpected failure occurs. A phase with no fa
 
 - Phase 8 (US5, snooze, T125-T131), gate `.harness/lint.sh`, development run at the checkpoint (MEC-12): 1 mypy error in `test_applier_snooze.py` (`**dict[str, object]` passed to the typed `request` helper). Change: the helper call uses explicit keyword arguments. No rule or configuration changed. Rerun of the unchanged gate: exit 0; `.harness/test.sh` exit 0 with 574 passed. Not repair events: the intended red run of T125-T127 (6 failed, 4 passed on arrival, 1 collection error before T129-T130).
 
+- Phase 9 (US6, cancel, T132-T138), gate `.harness/lint.sh`, development run at the checkpoint (MEC-11): 1 ruff finding (E501, one asserted phrase line in `test_prompt_rules_cancel.py`). Change: the asserted phrase was shortened (it still appears in the prompt line). No rule or configuration changed. Rerun of the unchanged gate: exit 0; `.harness/test.sh` exit 0 with 586 passed. Not repair events: the intended red run of T132-T134 (4 failed, 2 passed on arrival, 1 collection error before T136-T137).
+
 ## 4. Quickstart validation
 
 _To be completed in task T154._

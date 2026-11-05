@@ -312,16 +312,16 @@ Acceptance scenarios: AC-22, AC-23.
 
 ### Tests for User Story 6 (write first)
 
-- [ ] T132 [P] [US6] Write `tests/backend/unit/test_applier_cancel.py` (FR-7, AC-23): `CancelHandler` removes exactly the target, `r1` stays unchanged when `r2` is cancelled, operation `cancelled` and `affected_id` is the target, and the result lists the remaining reminders; the contract has one target field so no multi-id cancel exists
-- [ ] T133 [P] [US6] Write `tests/backend/unit/test_prompt_rules_cancel.py` (FR-7, GR-2): `prompts/system.md` states that cancel targets exactly one reminder and that "delete all", "cancel everything", and similar requests are `refuse`/`bulk_action`, never several cancels
-- [ ] T134 [P] [US6] Write `tests/backend/contract/test_actions_cancel.py`: `endpoint` success marker: AC-22 scripted `cancel` of `r2` returns 200 with `r2` removed and `r1` present; `endpoint` failure marker: a scripted unknown target returns 502 `model_output_invalid` and removes nothing
-- [ ] T135 [US6] Confirm the new tests fail (T132-T134); keep the failure summary for the commit message (T138)
+- [X] T132 [P] [US6] Write `tests/backend/unit/test_applier_cancel.py` (FR-7, AC-23): `CancelHandler` removes exactly the target, `r1` stays unchanged when `r2` is cancelled, operation `cancelled` and `affected_id` is the target, and the result lists the remaining reminders; the contract has one target field so no multi-id cancel exists
+- [X] T133 [P] [US6] Write `tests/backend/unit/test_prompt_rules_cancel.py` (FR-7, GR-2): `prompts/system.md` states that cancel targets exactly one reminder and that "delete all", "cancel everything", and similar requests are `refuse`/`bulk_action`, never several cancels
+- [X] T134 [P] [US6] Write `tests/backend/contract/test_actions_cancel.py`: `endpoint` success marker: AC-22 scripted `cancel` of `r2` returns 200 with `r2` removed and `r1` present; `endpoint` failure marker: a scripted unknown target returns 502 `model_output_invalid` and removes nothing
+- [X] T135 [US6] Confirm the new tests fail (T132-T134); keep the failure summary for the commit message (T138)
 
 ### Implementation for User Story 6
 
-- [ ] T136 [P] [US6] Add `CancelHandler` to `src/backend/app/services/applier.py` and register it for `Intent.cancel` so T132 and T134 pass (depends on T132, T134, T129)
-- [ ] T137 [P] [US6] Add the cancel rules to `prompts/system.md` so T133 passes (depends on T133, T130)
-- [ ] T138 [US6] Checkpoint: run `integrity.sh`, `lint.sh`, `security.sh`, `test.sh` (development runs); all US1-US6 tests pass; log failures or "no repair needed"; commit `feat(us6): cancel a single reminder (T132-T137)`; report to the user and wait for approval
+- [X] T136 [P] [US6] Add `CancelHandler` to `src/backend/app/services/applier.py` and register it for `Intent.cancel` so T132 and T134 pass (depends on T132, T134, T129)
+- [X] T137 [P] [US6] Add the cancel rules to `prompts/system.md` so T133 passes (depends on T133, T130)
+- [X] T138 [US6] Checkpoint: run `integrity.sh`, `lint.sh`, `security.sh`, `test.sh` (development runs); all US1-US6 tests pass; log failures or "no repair needed"; commit `feat(us6): cancel a single reminder (T132-T137)`; report to the user and wait for approval
 
 **Checkpoint**: all six intents work end to end with a stub model.
 

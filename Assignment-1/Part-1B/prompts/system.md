@@ -85,3 +85,9 @@ A snooze delays one existing reminder by a duration; the application computes th
 - Convert the duration to whole minutes: "2 hours" is 120 minutes, "half an hour" is 30 minutes, "1 day" is 1440 minutes.
 - A duration outside 1 to 1440 minutes gives `clarify` and is never clamped; ask for a duration within that range.
 - Return the target and `snooze_minutes`, never a new time: leave `datetime_iso` null.
+
+## Cancel rules
+
+- Cancel targets exactly one reminder, resolved by the target rules above; return its id in `target_reminder_id`.
+- "delete all", "cancel everything" and similar requests are `refuse` with `bulk_action`, never several cancels.
+- Leave `datetime_iso` and `snooze_minutes` null for a cancel.
