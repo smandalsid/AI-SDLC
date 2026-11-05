@@ -8,6 +8,7 @@ from app.models.action import Intent, RefusalReason
 from app.services import interpreter as interpreter_module
 from app.services.applier import Applier
 from app.services.interpreter import Interpreter
+from app.services.store import InMemoryReminderStore
 from app.services.text_guard import MAX_TEXT_CHARS, refusal_for
 from app.services.validator import default_rules
 
@@ -17,7 +18,9 @@ R1 = {"id": "r1", "title": "Dentist", "time": "2026-11-06T10:00:00+00:00"}
 
 
 def _interpreter(stub: StubLLMClient) -> Interpreter:
-    return Interpreter(stub, FixedClock(), Applier(), default_rules(), "RULES")
+    return Interpreter(
+        stub, FixedClock(), Applier(), default_rules(), "RULES", InMemoryReminderStore
+    )
 
 
 def test_the_limit_is_1000_characters() -> None:

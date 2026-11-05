@@ -39,7 +39,7 @@ def test_secret_values_in_the_example_are_empty_or_a_bracketed_placeholder(field
 
 def test_the_example_loads_into_valid_settings() -> None:
     values = {name.lower(): value for name, value in _example().items() if value}
-    settings = Settings(_env_file=None, **values)  # type: ignore[arg-type]
+    settings = Settings(_env_file=None, **values)  # type: ignore[arg-type]  # the values are strings that pydantic-settings parses
     assert settings.model_id and settings.secret_values() == []
 
 

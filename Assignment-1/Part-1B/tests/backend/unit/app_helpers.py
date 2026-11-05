@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import Any
 
 from app.models.requests import InterpretRequest, ReminderIn
 
+JsonObject = dict[str, Any]  # parsed JSON has no static type
 NOW = datetime(2026, 11, 5, 10, 0, tzinfo=UTC)
 NOW_ISO = "2026-11-05T10:00:00+00:00"
 

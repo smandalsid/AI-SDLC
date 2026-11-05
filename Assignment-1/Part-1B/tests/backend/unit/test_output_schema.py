@@ -1,10 +1,9 @@
 """The wire model and domain model agree with the committed output schema (INV-1 to INV-8)."""
 
 import json
-from typing import Any
 
 import pytest
-from app_helpers import action_dict, create_dict
+from app_helpers import JsonObject, action_dict, create_dict
 from jsonschema import Draft202012Validator
 from pydantic import ValidationError
 
@@ -16,10 +15,10 @@ pytestmark = pytest.mark.covers("INV-1", "INV-2", "INV-3", "INV-4", "INV-6", "IN
 SCHEMA = json.loads((ROOT / "evals" / "output-schema.json").read_text())
 
 
-def _enum_values(prop: dict[str, Any]) -> set[Any]:
+def _enum_values(prop: JsonObject) -> set[object]:
     if "enum" in prop:
         return set(prop["enum"])
-    values: set[Any] = set()
+    values: set[object] = set()
     for branch in prop.get("anyOf", []):
         values |= {None} if branch.get("type") == "null" else _enum_values(branch)
     return values
@@ -63,7 +62,7 @@ CASES = [
 
 
 @pytest.mark.parametrize("data", CASES)
-def test_schema_and_domain_model_accept_and_reject_the_same_actions(data: dict[str, Any]) -> None:
+def test_schema_and_domain_model_accept_and_reject_the_same_actions(data: JsonObject) -> None:
     by_schema = Draft202012Validator(SCHEMA).is_valid(data)
     try:
         ProposedAction.model_validate(data)

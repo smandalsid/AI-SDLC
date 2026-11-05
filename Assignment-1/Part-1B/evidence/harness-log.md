@@ -83,13 +83,49 @@ _Entries are added when a genuine, unexpected failure occurs. A phase with no fa
 
 - Phase 11, first live run `20261105T180350Z` (T151): verdict PASS on every gate, aggregate 1.0, structural, property, semantic and guardrail 100 percent, INFRA 0 percent, 45 of 60 requests, 33 of 33 cases passed, all 8 consistency cases identical across 3 runs. No repair needed.
 
+- Phase 11, drill 3 (invalid token in the scratch clone), gate `.harness/test.sh`: `test_env_example.py::test_the_example_loads_into_valid_settings` failed (expected `secret_values() == []`, observed the ambient `GH_TOKEN`), because tests read the caller's environment. Evidence fed back: the test gate output of that run. Change: `tests/backend/conftest.py` unsets every setting variable for every test; no assertion was changed. Rerun: 636 passed with `GH_TOKEN` and `MODEL_ID` set in the environment, and all four development gates pass.
+
+- Phase 11, convergence (T160-T166), gate `.harness/lint.sh` at the checkpoint (MEC-9): `create_app` grew to 43 lines (limit 40) after the store factory and logging were wired. Change: the interpreter wiring moved to `_build_interpreter` in `api/main.py`; no rule or limit changed. Rerun of the unchanged gate: exit 0, with 646 passed. Not repair events: the intended red run of T160, T162 and T164 (8 failed, 10 passed on arrival).
+
 ## 4. Quickstart validation
 
-_To be completed in task T154._
+Run on 2026-11-05 against the code at commit `67c6df7` with the live model (`gpt-6-luna`). The API was started with the documented `uvicorn` command and each section 3 scenario was sent with `curl`:
+
+| Scenario | Observed |
+|----------|----------|
+| AC-1 create | 200, `intent=create`, `datetime_iso=2026-11-09T09:00:00+05:30`, `applied.operation=created` |
+| AC-4 clarify | 200, `intent=clarify`, `datetime_iso=null`, one question ("What time should I remind you to call the vendor?") |
+| AC-8 injection | 200, `intent=refuse`, `refusal_reason=injection`, `applied.operation=none` |
+| AC-14 too long | 200, `refuse` / `too_long`, no model call |
+| AC-15 empty | 422, `{"error":{"code":"invalid_request",...}}` |
+| Health | 200, `{"status":"ok"}` |
+
+Reproducibility check (MEC-26): a fresh clone of the branch in a scratch directory under `$TMPDIR`, then the documented commands (`pyenv local 3.12`, `python3.12 -m venv .venv`, `uv sync --active`, `python -m copilot download-runtime`, `cp .env.example .env`) and `.harness/run.sh --mode live`: all five gates PASS, verdict PASS, aggregate 0.9818, 45 of 60 requests. Two model-dependent differences from the first run, recorded as evidence and not patched: B05 (the repeated 1000-character request) was refused as `bulk_action` instead of being created, and M04 asked "Which day should I remind you to call mom?", which has none of the rubric keywords `time`, `date`, `when`, `past`. Both are within the 0.85 threshold and no guardrail or structural check failed.
+
+Failure drills (all in the scratch clone, never in this working tree):
+
+| Drill | Observed |
+|-------|----------|
+| Integrity: one byte appended to `thresholds.env` | integrity gate exit 2, "remaining gates not run", verdict FAIL, other gates NOT_RUN |
+| Scope: a committed change outside `assignment_2/` | integrity gate exit 1, "paths changed outside assignment_2/: outside_scope.txt" |
+| INFRA: live run with an invalid `GH_TOKEN` | preflight failed ("the SDK is not authenticated"), 0 requests, verdict INVALID, never FAIL |
+| Request cap: `LIVE_REQUEST_MAX=5` with regenerated checksums | requests 5 of 5, verdict INVALID; the test gate also failed because `test_scoring.py` pins the declared threshold, as expected for a changed threshold |
+| Secret: a fake GitHub-style token in a scratch file | security gate exit 1, gitleaks "leaks found: 1" |
+
+The scratch directory was deleted afterwards.
 
 ## 5. Convergence results
 
-_To be completed in task T155._
+`/speckit-converge` was run after the first live run (spec 38 acceptance criteria, 16 functional requirements, 8 invariants, 6 guardrails, 6 success criteria, the plan structure, and constitution principles I to XII with the MEC table). Findings and outcome:
+
+| ID | Gap | Severity | Source | Evidence | Outcome |
+|----|-----|----------|--------|----------|---------|
+| F1 | contradicts | CRITICAL | Constitution XI, XII | the first generation is tagged `assignment-2-initial-generation` (the name `initial-generation` already exists in the shared repository) and the snapshots are archives, not directories (the redaction scan flags the secret-pattern definitions held in three files) | T159: human ruling needed; the agent does not amend the constitution |
+| F2 | contradicts | CRITICAL | Constitution IX | `Any` and one `# type: ignore` without a same-line justification in `eval_adapter.py` and 10 test modules | T160 test (red), T161 fixed with justified aliases |
+| F3 | contradicts | HIGH | Constitution IX | `Interpreter` instantiated `InMemoryReminderStore` inline | T162 test (red), T163 the store factory is injected and wired in `create_app` |
+| F4 | partial | LOW | plan: `LOG_LEVEL` in `.env.example` | `Settings.log_level` was read nowhere | T164 tests (red), T165 `create_app` applies it and the interpreter logs one line per request (intent and operation only) |
+
+Everything else checked was satisfied: every FR, INV, GR and AC maps to a test or eval case (section 6), all 27 measurable constraints hold, the plan's file structure exists (plus `api/body_limit.py`, the body limit of T113), no list endpoint exists so pagination does not apply, and the edge cases of the plan are covered by prompt-rule tests and validators. Outcome: tasks appended (T159 to T167, Phase 12), T160 to T165 implemented tests first; T159 and T167 wait for the human ruling.
 
 ## 6. Acceptance traceability table
 

@@ -1,10 +1,8 @@
 """POST /api/v1/actions for snooze: the applied time follows FR-6; bad durations apply nothing."""
 
-from typing import Any
-
 import httpx
 import pytest
-from app_helpers import FixedClock, action_dict
+from app_helpers import FixedClock, JsonObject, action_dict
 from fastapi.testclient import TestClient
 
 from app.api.main import create_app
@@ -66,7 +64,7 @@ def test_snooze_applies_the_fr_6_time_to_one_reminder(
 @pytest.mark.parametrize("minutes", [0, 1441, -5], ids=["zero", "1441", "negative"])
 def test_a_duration_outside_1_to_1440_is_502_and_nothing_is_applied(minutes: int) -> None:
     response = _post(_snooze("r3", minutes), "snooze the vendor call", [R3])
-    body: dict[str, Any] = response.json()
+    body: JsonObject = response.json()
     assert response.status_code == 502 and body["error"]["code"] == "model_output_invalid"
     assert "applied" not in body and "action" not in body
 
