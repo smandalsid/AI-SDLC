@@ -47,8 +47,8 @@ METRICS = {
         }
     ],
     "run": {
-        "model_requested": "mai-code-1.1-flash",
-        "model_served": ["mai-code-1.1-flash"],
+        "model_requested": "gpt-6-luna",
+        "model_served": ["gpt-6-luna"],
         "reasoning_effort": "low",
         "sdk_version": "1.0.28",
     },

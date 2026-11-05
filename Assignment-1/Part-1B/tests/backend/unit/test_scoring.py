@@ -53,7 +53,7 @@ def test_thresholds_load_from_the_environment() -> None:
     assert t.consistency_k == 3
     assert t.live_request_max == 60
     assert t.infra_max_retries == 2
-    assert t.expected_model_id == "mai-code-1.1-flash"
+    assert t.expected_model_id == "gpt-6-luna"
 
 
 def test_missing_threshold_key_fails_fast() -> None:

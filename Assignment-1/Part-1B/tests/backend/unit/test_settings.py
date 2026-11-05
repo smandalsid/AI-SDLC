@@ -28,7 +28,7 @@ def clean_env(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_defaults() -> None:
     settings = Settings(_env_file=None)
-    assert settings.model_id == "mai-code-1.1-flash"
+    assert settings.model_id == "gpt-6-luna"
     assert settings.reasoning_effort == "low"
     assert settings.sdk_timeout_seconds == 60
     assert settings.request_body_max_bytes == 1048576

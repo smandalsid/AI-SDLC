@@ -27,7 +27,7 @@ class _Executor:
             return make_obs(None, status=422, model_calls=0)
         action = make_action(title=f"pay rent {TOKEN}", datetime_iso=EXPECTED["datetime_iso"])
         call = {
-            "model_served": "mai-code-1.1-flash",
+            "model_served": "gpt-6-luna",
             "input_tokens": 1,
             "output_tokens": 2,
             "duration_ms": 3,
@@ -39,7 +39,7 @@ class _Executor:
 
     def metadata(self) -> dict[str, str]:
         return {
-            "model_requested": "mai-code-1.1-flash",
+            "model_requested": "gpt-6-luna",
             "reasoning_effort": "low",
             "sdk_version": "1.0.28",
             "runtime_version": "1.0.105",
@@ -71,8 +71,8 @@ def test_run_block_records_model_settings_threshold_and_formula(tmp_path: Path) 
     data, _ = _results(tmp_path)
     run = data["run"]
     assert run["timestamp_utc"] == "20261105T101500Z"  # type: ignore[index]  # JSON test
-    assert run["model_requested"] == "mai-code-1.1-flash"  # type: ignore[index]  # JSON test
-    assert run["model_served"] == ["mai-code-1.1-flash"]  # type: ignore[index]  # JSON test
+    assert run["model_requested"] == "gpt-6-luna"  # type: ignore[index]  # JSON test
+    assert run["model_served"] == ["gpt-6-luna"]  # type: ignore[index]  # JSON test
     assert run["reasoning_effort"] == "low" and run["sdk_version"] == "1.0.28"  # type: ignore[index]  # JSON test
     assert run["runtime_version"] == "1.0.105" and run["request_count"] == 3  # type: ignore[index]  # JSON test
     assert run["threshold"] == {"aggregate_min": 0.85}  # type: ignore[index]  # JSON test
@@ -87,7 +87,7 @@ def test_each_case_records_runs_traces_scores_and_checks(tmp_path: Path) -> None
     assert set(n01["scores"]) == {"structural", "property", "semantic", "case"}
     check = n01["checks"][0]
     assert {"layer", "id", "requirement_ids", "passed"} <= set(check)
-    assert n01["call"]["model_served"] == "mai-code-1.1-flash"
+    assert n01["call"]["model_served"] == "gpt-6-luna"
     assert by_id["X02"]["runs"] == 1 and by_id["X02"]["scores"]["structural"] is None
     assert data["infra_errors"] == []
 

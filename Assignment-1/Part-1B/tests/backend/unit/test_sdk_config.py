@@ -21,7 +21,7 @@ pytestmark = pytest.mark.covers("GR-5", "FR-14")
 
 USAGE = SimpleNamespace(
     type=SimpleNamespace(value="assistant.usage"),
-    data=SimpleNamespace(model="mai-code-1.1-flash", input_tokens=10, output_tokens=5),
+    data=SimpleNamespace(model="gpt-6-luna", input_tokens=10, output_tokens=5),
 )
 
 
@@ -89,10 +89,10 @@ async def test_client_and_session_are_created_least_privilege(adapter: CopilotLL
     assert kwargs["available_tools"] == []
     assert kwargs["infinite_sessions"] == {"enabled": False}
     assert kwargs["memory"] == {"enabled": False}
-    assert kwargs["model"] == "mai-code-1.1-flash" and kwargs["reasoning_effort"] == "low"
+    assert kwargs["model"] == "gpt-6-luna" and kwargs["reasoning_effort"] == "low"
     assert kwargs["system_message"] == {"mode": "replace", "content": "SYSTEM"}
     assert client.sessions[0].listing_at_start == []
-    assert result.record.model_served == "mai-code-1.1-flash"
+    assert result.record.model_served == "gpt-6-luna"
 
 
 async def test_every_permission_request_is_rejected(adapter: CopilotLLMClient) -> None:

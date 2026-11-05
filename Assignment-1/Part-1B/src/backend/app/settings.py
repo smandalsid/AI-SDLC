@@ -11,7 +11,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", protected_namespaces=())
 
-    model_id: str = "mai-code-1.1-flash"
+    model_id: str = "gpt-6-luna"
     reasoning_effort: Literal["low", "medium", "high"] = "low"
     sdk_timeout_seconds: int = Field(default=60, gt=0)
     request_body_max_bytes: int = Field(default=1_048_576, gt=0)
