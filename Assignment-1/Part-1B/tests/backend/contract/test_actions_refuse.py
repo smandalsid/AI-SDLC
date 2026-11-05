@@ -166,3 +166,13 @@ def test_a_body_within_the_limit_is_processed() -> None:
     client, stub = _client(action_dict(), request_body_max_bytes=400)
     response = client.post("/api/v1/actions", json={"text": "remind me", "now": NOW})
     assert response.status_code == 200 and stub.calls == 1
+
+
+def test_the_application_starts_and_stops_with_the_body_limit_in_place() -> None:
+    app = create_app(
+        settings=Settings(_env_file=None),
+        llm_client=StubLLMClient(action_dict()),
+        clock=FixedClock(),
+    )
+    with TestClient(app) as client:
+        assert client.get("/api/v1/health").json() == {"status": "ok"}
