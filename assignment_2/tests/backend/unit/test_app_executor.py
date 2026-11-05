@@ -4,10 +4,9 @@ import json
 from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import Any
 
 import pytest
-from app_helpers import action_dict, create_dict
+from app_helpers import JsonObject, action_dict, create_dict
 
 from app.eval_adapter import AppExecutor, build
 from app.llm.copilot_client import CopilotLLMClient
@@ -26,7 +25,7 @@ SENTINEL_VALUE = "not-a-real-token-for-tests"
 
 def _case(
     case_id: str = "N01", text: object = "remind me to pay rent", **inputs: object
-) -> dict[str, Any]:
+) -> JsonObject:
     body = {"text": text, "timezone": "UTC", "now": "2026-11-05T10:00:00+00:00", "reminders": []}
     return {"id": case_id, "category": "normal", "input": {**body, **inputs}}
 

@@ -1,9 +1,7 @@
 """POST /api/v1/actions for clarify: nothing applied; a bad question is a 502 (FR-2, INV-6)."""
 
-from typing import Any
-
 import pytest
-from app_helpers import FixedClock, action_dict
+from app_helpers import FixedClock, JsonObject, action_dict
 from fastapi.testclient import TestClient
 
 from app.api.main import create_app
@@ -19,7 +17,7 @@ EXISTING = [
 ]
 
 
-def _post(scripted: Scripted, text: str) -> tuple[int, dict[str, Any]]:
+def _post(scripted: Scripted, text: str) -> tuple[int, JsonObject]:
     app = create_app(
         settings=Settings(_env_file=None),
         llm_client=StubLLMClient(scripted),

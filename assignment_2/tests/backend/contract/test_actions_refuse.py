@@ -1,11 +1,10 @@
 """POST /api/v1/actions for refusals and rejected input (FR-8, GR-1 to GR-6, AC-8 to AC-16)."""
 
 from collections.abc import Iterator
-from typing import Any
 
 import httpx
 import pytest
-from app_helpers import FixedClock, action_dict
+from app_helpers import FixedClock, JsonObject, action_dict
 from fastapi.testclient import TestClient
 
 from app.api.main import create_app
@@ -48,7 +47,7 @@ def _post(client: TestClient, text: object) -> httpx.Response:
     return response
 
 
-def _is_uniform(body: dict[str, Any]) -> bool:
+def _is_uniform(body: JsonObject) -> bool:
     return set(body) == {"error"} and set(body["error"]) == {"code", "message"}
 
 

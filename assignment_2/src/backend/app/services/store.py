@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, replace
 from datetime import datetime
 from typing import Protocol
@@ -23,6 +23,9 @@ class ReminderStore(Protocol):
     def set_time(self, reminder_id: str, time: datetime) -> None: ...
 
     def remove(self, reminder_id: str) -> None: ...
+
+
+StoreFactory = Callable[[Iterable[Reminder]], ReminderStore]
 
 
 class InMemoryReminderStore:

@@ -32,6 +32,7 @@ from evaluators.common import JSON, Observation
 T = TypeVar("T")
 DEFAULT_RECORDINGS = Path("evals/recorded")
 INFRA_STATUSES = (503, 504)
+Payload = dict[str, Any]  # parsed JSON has no static type
 
 
 class _LoopThread:
@@ -42,7 +43,7 @@ class _LoopThread:
         self._thread = threading.Thread(target=self._loop.run_forever, daemon=True)
         self._thread.start()
 
-    def run(self, coroutine: Coroutine[Any, Any, T]) -> T:
+    def run(self, coroutine: Coroutine[object, object, T]) -> T:
         return asyncio.run_coroutine_threadsafe(coroutine, self._loop).result()
 
     def close(self) -> None:
@@ -73,18 +74,18 @@ class _Recorder:
         return result
 
 
-def _request_body(case: JSON) -> dict[str, Any]:
+def _request_body(case: JSON) -> Payload:
     keys = ("text", "timezone", "now", "reminders")
     return {key: case["input"][key] for key in keys if key in case["input"]}
 
 
-async def _post(app: FastAPI, body: dict[str, Any]) -> httpx.Response:
+async def _post(app: FastAPI, body: Payload) -> httpx.Response:
     transport = httpx.ASGITransport(app=app, raise_app_exceptions=False)
     async with httpx.AsyncClient(transport=transport, base_url="http://eval") as client:
         return await client.post("/api/v1/actions", json=body)
 
 
-def _payload(response: httpx.Response) -> dict[str, Any]:
+def _payload(response: httpx.Response) -> Payload:
     try:
         parsed = response.json()
     except ValueError:
@@ -120,7 +121,7 @@ class AppExecutor:
             call=self._call(recorder.record),
         )
 
-    def _infra_kind(self, status: int, payload: dict[str, Any], recorder: _Recorder) -> str | None:
+    def _infra_kind(self, status: int, payload: Payload, recorder: _Recorder) -> str | None:
         if status in INFRA_STATUSES:
             if recorder.fault is not None:
                 return recorder.fault.kind

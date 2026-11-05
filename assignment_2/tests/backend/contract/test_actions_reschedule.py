@@ -1,10 +1,8 @@
 """POST /api/v1/actions for reschedule: one reminder moves; bad or unresolved targets move none."""
 
-from typing import Any
-
 import httpx
 import pytest
-from app_helpers import FixedClock, action_dict
+from app_helpers import FixedClock, JsonObject, action_dict
 from fastapi.testclient import TestClient
 
 from app.api.main import create_app
@@ -69,7 +67,7 @@ def test_an_unknown_target_is_502_and_nothing_is_applied(target: str) -> None:
     response = _post(
         _reschedule(target, "2026-11-06T16:00:00+00:00"), "move the dentist one", AC_17_REMINDERS
     )
-    body: dict[str, Any] = response.json()
+    body: JsonObject = response.json()
     assert response.status_code == 502 and body["error"]["code"] == "model_output_invalid"
     assert "applied" not in body and "action" not in body
 

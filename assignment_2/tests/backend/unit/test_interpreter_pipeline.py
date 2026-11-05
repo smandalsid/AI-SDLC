@@ -1,5 +1,7 @@
 """One request through the pipeline: validate, never trust, apply nothing on failure."""
 
+from collections.abc import Iterable
+
 import pytest
 from app_helpers import FixedClock, action_dict, create_dict, request
 
@@ -11,7 +13,7 @@ from app.models.requests import CallerContext, InterpretRequest
 from app.models.responses import AppliedResult
 from app.services.applier import Applier, UnregisteredIntentError
 from app.services.interpreter import Interpreter
-from app.services.store import ReminderStore
+from app.services.store import InMemoryReminderStore, Reminder, ReminderStore
 from app.services.validator import default_rules
 
 pytestmark = pytest.mark.covers("GR-5", "INV-5", "INV-1", "AC-12")
@@ -31,7 +33,9 @@ class SpyApplier:
 
 
 def _interpreter(stub: StubLLMClient, applier: SpyApplier | Applier | None = None) -> Interpreter:
-    return Interpreter(stub, FixedClock(), applier or Applier(), default_rules(), "RULES")
+    return Interpreter(
+        stub, FixedClock(), applier or Applier(), default_rules(), "RULES", InMemoryReminderStore
+    )
 
 
 async def test_clarify_and_refuse_pass_through_without_changing_anything() -> None:
@@ -98,3 +102,29 @@ async def test_the_default_now_comes_from_the_injected_clock() -> None:
 
 def test_llm_result_pairs_the_wire_action_with_the_call_record() -> None:
     assert {"wire", "record"} <= set(LLMResult.__dataclass_fields__)
+
+
+async def test_the_reminder_store_comes_from_the_injected_factory() -> None:
+    seen: list[InMemoryReminderStore] = []
+    asked: list[list[str]] = []
+
+    def factory(initial: Iterable[Reminder]) -> ReminderStore:
+        reminders = list(initial)
+        asked.append([r.id for r in reminders])
+        store = InMemoryReminderStore(reminders)
+        seen.append(store)
+        return store
+
+    class StoreSpy(SpyApplier):
+        def apply(
+            self, action: ProposedAction, store: ReminderStore, context: CallerContext
+        ) -> AppliedResult:
+            assert store is seen[0]
+            return super().apply(action, store, context)
+
+    spy = StoreSpy()
+    interpreter = Interpreter(
+        StubLLMClient(action_dict()), FixedClock(), spy, default_rules(), "RULES", factory
+    )
+    await interpreter.interpret(request(reminders=[R1]))
+    assert asked == [["r1"]] and len(seen) == 1 and spy.calls == 1

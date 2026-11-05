@@ -1,10 +1,10 @@
 """The generated OpenAPI matches the committed contract (Principle IX)."""
 
 from pathlib import Path
-from typing import Any
 
 import pytest
 import yaml
+from app_helpers import JsonObject
 
 from app.api.main import create_app
 from app.llm.stub_client import StubLLMClient
@@ -18,20 +18,20 @@ CONTRACT = (
 METHODS = {"get", "post", "put", "patch", "delete"}
 
 
-def _contract() -> dict[str, Any]:
-    loaded: dict[str, Any] = yaml.safe_load(CONTRACT.read_text(encoding="utf-8"))
+def _contract() -> JsonObject:
+    loaded: JsonObject = yaml.safe_load(CONTRACT.read_text(encoding="utf-8"))
     return loaded
 
 
-def _generated() -> dict[str, Any]:
+def _generated() -> JsonObject:
     app = create_app(settings=Settings(_env_file=None), llm_client=StubLLMClient())
-    document: dict[str, Any] = app.openapi()
+    document: JsonObject = app.openapi()
     return document
 
 
-def _resolve(node: dict[str, Any], doc: dict[str, Any]) -> dict[str, Any]:
+def _resolve(node: JsonObject, doc: JsonObject) -> JsonObject:
     while "$ref" in node:
-        target: Any = doc
+        target: JsonObject = doc
         for part in node["$ref"].removeprefix("#/").split("/"):
             target = target[part]
         node = target
@@ -42,7 +42,7 @@ def _resolve(node: dict[str, Any], doc: dict[str, Any]) -> dict[str, Any]:
     return node
 
 
-def _shape(node: dict[str, Any], doc: dict[str, Any]) -> object:
+def _shape(node: JsonObject, doc: JsonObject) -> object:
     """Property names and required lists of an object schema, recursively."""
     node = _resolve(node, doc)
     if "properties" in node:
@@ -55,7 +55,7 @@ def _shape(node: dict[str, Any], doc: dict[str, Any]) -> object:
     return "leaf"
 
 
-def _operations(doc: dict[str, Any]) -> dict[tuple[str, str], set[str]]:
+def _operations(doc: JsonObject) -> dict[tuple[str, str], set[str]]:
     return {
         (path, method): set(operation["responses"])
         for path, item in doc["paths"].items()
@@ -64,12 +64,12 @@ def _operations(doc: dict[str, Any]) -> dict[tuple[str, str], set[str]]:
     }
 
 
-def _json_schema(response: dict[str, Any]) -> dict[str, Any]:
-    schema: dict[str, Any] = response["content"]["application/json"]["schema"]
+def _json_schema(response: JsonObject) -> JsonObject:
+    schema: JsonObject = response["content"]["application/json"]["schema"]
     return schema
 
 
-def _schema_named(doc: dict[str, Any], name: str) -> object:
+def _schema_named(doc: JsonObject, name: str) -> object:
     return _shape({"$ref": f"#/components/schemas/{name}"}, doc)
 
 

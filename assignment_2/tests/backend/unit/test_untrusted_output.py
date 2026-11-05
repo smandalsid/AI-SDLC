@@ -11,7 +11,7 @@ from app.models.requests import CallerContext
 from app.models.responses import AppliedResult
 from app.services.applier import Applier
 from app.services.interpreter import Interpreter
-from app.services.store import ReminderStore
+from app.services.store import InMemoryReminderStore, ReminderStore
 from app.services.validator import default_rules
 
 pytestmark = pytest.mark.covers("GR-5", "INV-5", "INV-8", "AC-12")
@@ -61,7 +61,9 @@ async def test_a_bad_output_is_a_controlled_error_and_nothing_is_applied(
     scripted: dict[str, object],
 ) -> None:
     spy = SpyApplier()
-    interpreter = Interpreter(StubLLMClient(scripted), FixedClock(), spy, default_rules(), "RULES")
+    interpreter = Interpreter(
+        StubLLMClient(scripted), FixedClock(), spy, default_rules(), "RULES", InMemoryReminderStore
+    )
     with pytest.raises(LLMOutputError):
         await interpreter.interpret(request(reminders=[R1]))
     assert spy.calls == 0

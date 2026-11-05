@@ -1,10 +1,8 @@
 """POST /api/v1/actions for cancel: exactly one reminder is removed (FR-7)."""
 
-from typing import Any
-
 import httpx
 import pytest
-from app_helpers import FixedClock, action_dict
+from app_helpers import FixedClock, JsonObject, action_dict
 from fastapi.testclient import TestClient
 
 from app.api.main import create_app
@@ -47,6 +45,6 @@ def test_ac_22_cancels_r2_and_keeps_r1() -> None:
 @pytest.mark.parametrize("target", ["r9", "R2"], ids=["unknown", "case-changed"])
 def test_an_unknown_target_is_502_and_nothing_is_removed(target: str) -> None:
     response = _post(_cancel(target), "cancel the gym reminder")
-    body: dict[str, Any] = response.json()
+    body: JsonObject = response.json()
     assert response.status_code == 502 and body["error"]["code"] == "model_output_invalid"
     assert "applied" not in body and "action" not in body

@@ -1,9 +1,7 @@
 """POST /api/v1/actions for create: applied on success, nothing applied on bad output (FR-1)."""
 
-from typing import Any
-
 import pytest
-from app_helpers import FixedClock, create_dict
+from app_helpers import FixedClock, JsonObject, create_dict
 from fastapi.testclient import TestClient
 
 from app.api.main import create_app
@@ -20,7 +18,7 @@ AC_1 = {
 EXISTING = {"id": "r1", "title": "Dentist", "time": "2026-11-06T10:00:00+05:30"}
 
 
-def _post(scripted: Scripted, **extra: object) -> tuple[int, dict[str, Any]]:
+def _post(scripted: Scripted, **extra: object) -> tuple[int, JsonObject]:
     app = create_app(
         settings=Settings(_env_file=None),
         llm_client=StubLLMClient(scripted),
