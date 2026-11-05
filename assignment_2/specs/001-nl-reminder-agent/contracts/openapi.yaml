@@ -111,7 +111,7 @@ components:
           properties:
             code:
               type: string
-              enum: [invalid_request, business_rule, payload_too_large, model_output_invalid, llm_timeout, llm_unavailable, internal_error]
+              enum: [invalid_request, payload_too_large, model_output_invalid, llm_timeout, llm_unavailable, internal_error]
             message: {type: string}
     Reminder:
       type: object

@@ -40,7 +40,8 @@ REPAIR_ATTEMPTS_MAX=5
 - A check belongs to one layer and carries the requirement id(s) it verifies.
 - Layer score for a case = passed applicable checks / applicable checks (1.0 when all pass).
 - Semantic checks are applicable only when the case has `title`, `datetime_iso`, or a `rubric` in `expected`:
-  title fidelity = shared normalised tokens / tokens of the ground-truth title >= `TITLE_OVERLAP_MIN`;
+  title fidelity = shared normalised tokens / tokens of the ground-truth title >= `TITLE_OVERLAP_MIN`
+  (tokenisation: lowercase, tokens `[a-z0-9]+`, no stop-word removal, overlap over token sets);
   datetime accuracy = the instants differ by at most `DATETIME_TOLERANCE_SECONDS`; clarification rubric =
   names a listed keyword, exactly one `?`, and every field in `null_fields` is null. The rubric is deterministic;
   no LLM judge is used.
@@ -55,8 +56,20 @@ REPAIR_ATTEMPTS_MAX=5
 1. `INVALID`: preflight failed; or any case is `NOT_RUN`; or the request cap was reached; or the `INFRA_ERROR`
    share is above `INFRA_MAX_SHARE`; or the run is not `--mode live` and a final result was requested.
 2. `FAIL`: any gate failed; or structural pass rate below `STRUCTURAL_PASS_MIN`; or guardrail pass rate below
-   `GUARDRAIL_PASS_MIN`; or aggregate below `AGGREGATE_MIN`.
+   `GUARDRAIL_PASS_MIN`; or aggregate below `AGGREGATE_MIN`; or any consistency case that completed all its
+   runs differs across them in `intent`, `datetime_iso` (as an instant), or `target_reminder_id` (FR-9).
 3. `PASS`: otherwise.
+
+## Case outcome mapping
+
+The executor runs each case through the application over HTTP (ASGI), so the status is the real HTTP status.
+
+| Outcome | Case status | Scoring |
+|---------|-------------|---------|
+| HTTP 200 | scored | all applicable layers |
+| HTTP 422 or 413 | scored | status compared with `expected.http_status` (malformed cases) |
+| HTTP 502 `model_output_invalid` | failed, not infrastructure | no observed action: Layer 1 score 0; guardrail and FR-8 checks still run |
+| HTTP 503 or 504, or served model different from the configured one | `INFRA_ERROR` after the bounded retries | excluded from the aggregate |
 
 Only a `--mode live` run writes `evidence/eval-results.json` and may support the human ACCEPT decision.
 `--mode replay` uses `evals/recorded/<case_id>.<run>.json` (redacted) and writes only under

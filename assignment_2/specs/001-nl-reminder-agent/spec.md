@@ -17,6 +17,7 @@
 - Q: What should the agent do when a requested local time falls in a daylight-saving gap or repeat? → A: `clarify` in both cases; the agent asks the user to pick a valid time.
 - Q: What should the agent do when a request says "end of day"? → A: Treat it as 17:00 local time (a fifth fixed window).
 - Q: What should the agent do with the title when the task text contains sensitive content? → A: Keep the title verbatim; no masking and no refusal for sensitive user content.
+- Q: Should a consistency case whose 3 runs differ fail the run? → A: Yes. A completed consistency case with differing `intent`, `datetime_iso`, or `target_reminder_id` makes the verdict FAIL; a consistency case lost to `INFRA_ERROR` is excluded.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -176,7 +177,7 @@ No other fields are allowed. Required fields per intent:
 - **FR-10**: The dataset contains at least 15 cases: normal (at least 4), boundary (at least 3, covering midnight rollover, month end, daylight-saving change, and "in 1 minute"), ambiguous (at least 2), missing mandatory information (at least 2), malformed/empty/oversized input (at least 2), and adversarial/guardrail (at least 3). Each case has an id, a category, an input (text, timezone, now, existing reminders), the requirement IDs it traces to, and one of: ground truth, deterministic expected properties, or a rubric.
 - **FR-11**: Evaluation has three layers. Layer 1 (structural) checks the schema and INV-1 to INV-8. Layer 2 (properties) checks FR-1 to FR-9 and GR-1 to GR-6 as deterministic checks. Layer 3 (semantic/quality) checks title fidelity (normalised token overlap with the ground-truth title of at least 0.6), datetime accuracy (match within 1 minute of ground truth), and clarification quality (rubric: names the specific missing field, asks one question, invents no values).
 - **FR-12**: The per-case score is `0.30 * structural + 0.40 * property + 0.30 * semantic`, where each layer score is the fraction of that layer's applicable checks that pass for the case. Semantic is scored only where ground truth or a rubric exists; otherwise its weight is redistributed proportionally to the other layers (structural 0.30/0.70, property 0.40/0.70). The aggregate is the mean of per-case scores. This formula and the threshold are declared now and are never lowered.
-- **FR-13**: A run is PASS only if ALL of the following hold: 100% of non-INFRA cases pass structural; 100% of guardrail cases pass (every structural and property check of every case in the adversarial/guardrail category, and every case tracing to a GR- requirement); and the aggregate is at least 0.85.
+- **FR-13**: A run is PASS only if ALL of the following hold: 100% of non-INFRA cases pass structural; 100% of guardrail cases pass (every structural and property check of every case in the adversarial/guardrail category, and every case tracing to a GR- requirement); and the aggregate is at least 0.85; and every designated consistency case that completed all its runs is identical across them (FR-9).
 - **FR-14**: A case lost to a service failure is `INFRA_ERROR`. It is reported separately and excluded from the aggregate. A run with more than 10% `INFRA_ERROR` cases is INVALID, never PASS or FAIL.
 - **FR-15**: Every case, check, and failure is traceable to an FR-, INV-, GR-, or AC- ID. Live runs record the model identifier and its settings. Evaluation results include a per-case run count.
 - **FR-16**: All layers run from a single command and produce an interpretable summary containing per-layer pass rate, per-category scores, the aggregate, and the verdict PASS, FAIL, or INVALID.
@@ -240,7 +241,7 @@ Unless stated, the reminder list is empty and the timezone is UTC. Dates below a
 
 **Consistency**
 
-- **AC-28** (FR-9): Given any case designated as a consistency case, when it is run 3 times, then `intent`, `datetime_iso`, and `target_reminder_id` are identical across the 3 runs.
+- **AC-28** (FR-9): Given any case designated as a consistency case, when it is run 3 times, then `intent`, `datetime_iso`, and `target_reminder_id` are identical across the 3 runs; if they differ, the run verdict is FAIL.
 
 **Evaluation**
 
