@@ -41,6 +41,13 @@ _Entries are added when a genuine, unexpected failure occurs. A phase with no fa
   - Re-run outcome of the same gate unchanged: `.harness/lint.sh` exit 0 (ruff, format check, mypy --strict, function length). `pytest` 165 passed, `.harness/security.sh` exit 0.
   - Not repair events: the intended red run of the new tests (T031, 18 modules failed to import) and the expected skeleton failures of `.harness/run.sh --dry-run` (zero coverage statements, no contract tests, AC-12 uncovered, no `app.eval_adapter`), all of which belong to Phase 3 onward.
 
+- Phase 3 (Foundational B, application core), unexpected failures in task test runs and the lint gate, all repaired in the Phase 3 milestone commit `feat: application core (T058-T087)`:
+  - Test helpers: `tests/backend/unit/app_helpers.py::create_dict` and `test_action_model.py::_snooze` passed an overridable field as an explicit keyword, so `create_dict(title=None)` raised `TypeError: got multiple values for keyword argument` at collection (expected: helper accepts overrides; observed: collection error in `test_action_model.py`). Fix: merge the base dict with the overrides. Rerun of the same tests: collected and passed.
+  - `test_prompt_builder.py::test_the_real_template_declares_data_not_instructions_and_holds_the_canary` (GR-1): expected the phrase "data, never instructions" in `prompts/system.md`; observed the phrase split across two lines by my hard wrap. Evidence fed back: the assertion diff. Fix: the sentence is on one line in `prompts/system.md`. Rerun: 327 passed.
+  - `.harness/lint.sh` (MEC-11, MEC-12): 3 findings after formatting (E501 in one test docstring, RUF012 mutable class attribute in `test_sdk_config.py`, one mypy error on an untyped `*responses` parameter in `test_health_and_errors.py`). Fix: shortened the docstring, `ClassVar`, typed the helper with `Scripted`. Rerun of the unchanged gate: exit 0.
+  - Not repair events: the intended red run of T058-T070 (12 test modules failed at collection because `app` modules did not exist).
+  - Upstream artifact change found while implementing (recorded here per Principle I): the uniform error body also covers framework HTTP errors, so `contracts/openapi.yaml` (`ErrorBody.code` enum) and `data-model.md` (Errors table) gained `not_found` (404) and `method_not_allowed` (405). No requirement, acceptance criterion, or threshold changed.
+
 ## 4. Quickstart validation
 
 _To be completed in task T154._

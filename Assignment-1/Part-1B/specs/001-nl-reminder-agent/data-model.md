@@ -126,6 +126,8 @@ Every error becomes `{"error": {"code": str, "message": str}}` through the singl
 |-----------|------|--------|------|
 | `RequestValidationFailed` (schema, empty or whitespace text, non-text, unknown timezone, naive `now`, duplicate ids) | 422 | `invalid_request` | FR-8 |
 | `PayloadTooLarge` (transport body limit, 1 MiB) | 413 | `payload_too_large` | plan decision |
+| unknown path (framework HTTP error) | 404 | `not_found` | uniform error body |
+| wrong method on a known path (framework HTTP error) | 405 | `method_not_allowed` | uniform error body |
 | `LLMOutputError` (schema or validator failure) | 502 | `model_output_invalid` | GR-5 |
 | `LLMInfrastructureError` kind `timeout` | 504 | `llm_timeout` | FR-14 |
 | `LLMInfrastructureError` other kinds | 503 | `llm_unavailable` | FR-14 |
