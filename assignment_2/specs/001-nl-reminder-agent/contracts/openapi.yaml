@@ -1,0 +1,185 @@
+openapi: 3.1.0
+info:
+  title: Natural-Language Reminder Agent
+  version: 1.0.0
+  description: >
+    Turns one free-form reminder request into exactly one validated action. The model output is untrusted:
+    it is validated before anything is applied. Clarify and refuse are successful responses.
+servers:
+  - url: http://127.0.0.1:8000
+paths:
+  /api/v1/actions:
+    post:
+      operationId: interpretRequest
+      summary: Interpret one request and apply the validated action to an in-memory copy of the supplied reminders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterpretRequest'
+            examples:
+              createRent:
+                summary: AC-1
+                value:
+                  text: remind me to pay rent next Monday at 9am
+                  timezone: Asia/Kolkata
+                  now: '2026-11-05T10:00:00+05:30'
+                  reminders: []
+      responses:
+        '200':
+          description: A validated action (including clarify and refuse) and its applied result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterpretResponse'
+              examples:
+                createRent:
+                  value:
+                    action:
+                      intent: create
+                      title: pay rent
+                      datetime_iso: '2026-11-09T09:00:00+05:30'
+                      snooze_minutes: null
+                      target_reminder_id: null
+                      clarification_question: null
+                      refusal_reason: null
+                      confidence: 0.98
+                    applied:
+                      operation: created
+                      affected_id: rem-1
+                      new_time: '2026-11-09T09:00:00+05:30'
+                      reminders:
+                        - id: rem-1
+                          title: pay rent
+                          time: '2026-11-09T09:00:00+05:30'
+                tooLong:
+                  summary: AC-14 (text of 1001 characters; the model is not called)
+                  value:
+                    action:
+                      intent: refuse
+                      title: null
+                      datetime_iso: null
+                      snooze_minutes: null
+                      target_reminder_id: null
+                      clarification_question: null
+                      refusal_reason: too_long
+                      confidence: 1.0
+                    applied: {operation: none, affected_id: null, new_time: null, reminders: []}
+        '413': {$ref: '#/components/responses/Error'}
+        '422': {$ref: '#/components/responses/Error'}
+        '502': {$ref: '#/components/responses/Error'}
+        '503': {$ref: '#/components/responses/Error'}
+        '504': {$ref: '#/components/responses/Error'}
+        '500': {$ref: '#/components/responses/Error'}
+  /api/v1/health:
+    get:
+      operationId: health
+      summary: Liveness check (does not call the model)
+      responses:
+        '200':
+          description: Service is up
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [status]
+                properties:
+                  status: {type: string, const: ok}
+components:
+  responses:
+    Error:
+      description: Uniform error body; no stack traces or internals
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorBody'
+          examples:
+            invalid:
+              value: {error: {code: invalid_request, message: text must not be empty}}
+  schemas:
+    ErrorBody:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum: [invalid_request, business_rule, payload_too_large, model_output_invalid, llm_timeout, llm_unavailable, internal_error]
+            message: {type: string}
+    Reminder:
+      type: object
+      additionalProperties: false
+      required: [id, title, time]
+      properties:
+        id: {type: string, minLength: 1, maxLength: 64, pattern: '^[A-Za-z0-9_-]+$'}
+        title: {type: string, minLength: 1, maxLength: 120}
+        time: {type: string, format: date-time, description: ISO-8601 with an explicit UTC offset}
+    InterpretRequest:
+      type: object
+      additionalProperties: false
+      required: [text]
+      properties:
+        text:
+          type: string
+          description: Must be a non-empty, non-whitespace string. Over 1000 characters is refused with too_long, not a 422.
+        timezone: {type: string, default: UTC, description: IANA timezone key}
+        now: {type: string, format: date-time, description: ISO-8601 with an explicit UTC offset; defaults to the server clock}
+        reminders:
+          type: array
+          maxItems: 200
+          default: []
+          items: {$ref: '#/components/schemas/Reminder'}
+    ProposedAction:
+      type: object
+      additionalProperties: false
+      required: [intent, title, datetime_iso, snooze_minutes, target_reminder_id, clarification_question, refusal_reason, confidence]
+      properties:
+        intent: {type: string, enum: [create, reschedule, snooze, cancel, clarify, refuse]}
+        title: {type: [string, 'null'], minLength: 1, maxLength: 120}
+        datetime_iso: {type: [string, 'null'], description: ISO-8601 date-time with an explicit UTC offset}
+        snooze_minutes: {type: [integer, 'null'], minimum: 1, maximum: 1440}
+        target_reminder_id: {type: [string, 'null'], description: Must be an id from the supplied reminders}
+        clarification_question: {type: [string, 'null'], minLength: 1, maxLength: 200, description: Present if and only if intent is clarify}
+        refusal_reason:
+          type: [string, 'null']
+          enum: [unsafe, injection, out_of_scope, bulk_action, too_long, null]
+          description: Present if and only if intent is refuse
+        confidence: {type: number, minimum: 0, maximum: 1}
+      allOf:
+        - if: {properties: {intent: {const: create}}}
+          then: {required: [title, datetime_iso], properties: {title: {type: string}, datetime_iso: {type: string}}}
+        - if: {properties: {intent: {const: reschedule}}}
+          then: {properties: {target_reminder_id: {type: string}, datetime_iso: {type: string}}}
+        - if: {properties: {intent: {const: snooze}}}
+          then: {properties: {target_reminder_id: {type: string}, snooze_minutes: {type: integer}}}
+        - if: {properties: {intent: {const: cancel}}}
+          then: {properties: {target_reminder_id: {type: string}}}
+        - if: {properties: {intent: {const: clarify}}}
+          then: {properties: {clarification_question: {type: string}}}
+        - if: {properties: {intent: {const: refuse}}}
+          then: {properties: {refusal_reason: {type: string}}}
+    AppliedResult:
+      type: object
+      additionalProperties: false
+      required: [operation, affected_id, new_time, reminders]
+      properties:
+        operation: {type: string, enum: [created, rescheduled, snoozed, cancelled, none]}
+        affected_id: {type: [string, 'null']}
+        new_time: {type: [string, 'null'], format: date-time}
+        reminders:
+          type: array
+          items: {$ref: '#/components/schemas/Reminder'}
+    InterpretResponse:
+      type: object
+      additionalProperties: false
+      required: [action, applied]
+      properties:
+        action: {$ref: '#/components/schemas/ProposedAction'}
+        applied: {$ref: '#/components/schemas/AppliedResult'}
