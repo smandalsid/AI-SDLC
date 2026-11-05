@@ -35,6 +35,7 @@ package = false
 testpaths = ["../../tests/backend"]
 pythonpath = [".", "../../.harness"]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 addopts = "--strict-markers"
 markers = [
     "covers(*ids): requirement ids (FR-, INV-, GR-, AC-) verified by the test",
