@@ -23,6 +23,8 @@ Foundational checkpoint (task T057, before any application code):
 
 Other human-recorded approvals (for example a regenerated `.harness/config/checksums.sha256`) are added below as one line each.
 
+- 2026-11-06 | Evidence conventions (Convergence F1, T159) | APPROVED | Siddharth | 2026-11-06 | The first generation is tagged `assignment-2-initial-generation` (the name `initial-generation` is already used in the shared repository) and the snapshots are `.tar.gz` archives with a manifest (the redaction scan flags the secret-pattern definitions in plain-text copies). Constitution Principles XI and XII are to be amended (PATCH) to name both.
+
 ## 2. Initial generation and context
 
 - Commit: `a3287ed0a8afcd906a70f702e168c4e3a9607645` on branch `assignment-2-reminder-agent`, tagged `assignment-2-initial-generation` before any recorded harness run (UTC date 2026-11-05).
@@ -216,6 +218,31 @@ MEC-22 pagination: not applicable, the API has no list endpoint.
 ## 7. Final human decision (ACCEPT or REJECT)
 
 _Recorded by a human only (task T158), with known limitations and residual risks._
+
+Decision: ACCEPT
+
+Name: Siddharth
+
+Date: 2026-11-06
+
+Justification:
+- The accepted run is the live run 20261105T183701Z on the final code: all five gates PASS,
+  aggregate 1.0 (threshold 0.85), structural, property, semantic and guardrail 100 percent,
+  INFRA 0 percent, 45 of 60 requests, served model gpt-6-luna, 33 of 33 cases, consistency
+  cases identical across 3 runs.
+- Every FR, INV, GR and AC maps to at least one test or eval case (section 6); 651 tests,
+  98 percent line coverage; lint, security and integrity gates clean.
+- Every unexpected failure is logged with evidence, change and rerun outcome (section 3);
+  the one live failure (run 20261105T182821Z) was repaired in one attempt with regression
+  tests written first.
+- The expected model and run.sh were changed by me after the foundational approval, and the
+  checksums were regenerated with my approval (see section 3).
+
+Known limitations and residual risks: I confirm the "Draft limitations" above [edit as needed]:
+model routing is unstable; model output varies between runs (one PASS is one sample); the
+semantic layer is a keyword rubric; rate-limit patterns are unverified; state is in memory;
+the app depends on the Copilot SDK runtime; plan edge cases are covered by prompt-rule tests
+and validators, not live cases; the specs and research still name the old model.
 
 ### Draft limitations (not a decision)
 
