@@ -240,7 +240,7 @@ Justification:
 - The expected model and run.sh were changed by me after the foundational approval, and the
   checksums were regenerated with my approval (see section 3).
 
-Known limitations and residual risks: I confirm the "Draft limitations" above [edit as needed]:
+Known limitations and residual risks: I confirm the "Draft limitations" above:
 model routing is unstable; model output varies between runs (one PASS is one sample); the
 semantic layer is a keyword rubric; rate-limit patterns are unverified; state is in memory;
 the app depends on the Copilot SDK runtime; plan edge cases are covered by prompt-rule tests
