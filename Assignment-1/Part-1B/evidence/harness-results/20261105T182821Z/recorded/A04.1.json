@@ -1,0 +1,10 @@
+{
+  "intent": "clarify",
+  "title": "call mom",
+  "datetime_iso": null,
+  "snooze_minutes": null,
+  "target_reminder_id": null,
+  "clarification_question": "2:30am tomorrow falls in a daylight-saving time gap and is not a valid local time. What valid time should I use?",
+  "refusal_reason": null,
+  "confidence": 1.0
+}

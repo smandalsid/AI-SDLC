@@ -1,0 +1,25 @@
+target-version = "py312"
+line-length = 100
+
+[lint]
+select = ["E", "F", "I", "B", "C90", "S", "UP", "ANN", "RUF"]
+
+[lint.per-file-ignores]
+"**/tests/**" = ["S101"]
+
+[lint.isort]
+known-first-party = [
+    "app",
+    "evaluators",
+    "scoring",
+    "infra",
+    "redact",
+    "summarize",
+    "eval_runner",
+    "check_dataset",
+    "check_coverage",
+    "check_endpoint_tests",
+    "check_function_length",
+    "trace_report",
+    "harness_helpers",
+]

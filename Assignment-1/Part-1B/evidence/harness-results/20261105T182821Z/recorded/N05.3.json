@@ -1,0 +1,10 @@
+{
+  "intent": "clarify",
+  "title": "send the report",
+  "datetime_iso": null,
+  "snooze_minutes": null,
+  "target_reminder_id": null,
+  "clarification_question": "Which day should I remind you to send the report? End of day today has already passed.",
+  "refusal_reason": null,
+  "confidence": 0.97
+}

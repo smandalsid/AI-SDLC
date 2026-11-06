@@ -1,0 +1,9 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "local secrets file and the virtual environment"
+paths = [
+  '''(^|/)\.env$''',
+  '''(^|/)\.venv/''',
+]

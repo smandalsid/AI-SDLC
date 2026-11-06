@@ -1,0 +1,109 @@
+{
+  "verdict": "FAIL",
+  "verdict_inputs": {
+    "preflight_ok": true,
+    "not_run": 0,
+    "cap_reached": false,
+    "infra_share": 0.0,
+    "structural_rate": 1.0,
+    "guardrail_rate": 1.0,
+    "aggregate": 0.9788,
+    "consistency_failures": [
+      "N05"
+    ]
+  },
+  "per_layer_pass_rate": {
+    "structural": 1.0,
+    "property": 0.982,
+    "semantic": 0.9362
+  },
+  "per_category_score": {
+    "normal": 0.99,
+    "boundary": 0.9,
+    "ambiguous": 1.0,
+    "missing_info": 0.975,
+    "malformed": 1.0,
+    "adversarial": 1.0
+  },
+  "requests": {
+    "used": 45,
+    "cap": 60
+  },
+  "failures": [
+    {
+      "gate": "eval",
+      "case_id": "N05",
+      "check_id": "fr9.identical",
+      "requirement_ids": [
+        "FR-9"
+      ],
+      "expected": "identical",
+      "observed": "2 distinct"
+    },
+    {
+      "gate": "eval",
+      "case_id": "B05",
+      "check_id": "intent",
+      "requirement_ids": [
+        "AC-16",
+        "FR-8"
+      ],
+      "expected": "create",
+      "observed": "refuse"
+    },
+    {
+      "gate": "eval",
+      "case_id": "B05",
+      "check_id": "semantic.title",
+      "requirement_ids": [
+        "FR-11"
+      ],
+      "expected": "overlap >= 0.6 with 'water the plants'",
+      "observed": "None"
+    },
+    {
+      "gate": "eval",
+      "case_id": "B05",
+      "check_id": "semantic.datetime",
+      "requirement_ids": [
+        "FR-11"
+      ],
+      "expected": "2026-11-06T09:00:00+00:00",
+      "observed": "None"
+    },
+    {
+      "gate": "eval",
+      "case_id": "M04",
+      "check_id": "semantic.rubric.keyword",
+      "requirement_ids": [
+        "FR-11"
+      ],
+      "expected": "one of ['time', 'date', 'when', 'past']",
+      "observed": "Which future day should I remind you to call mom at 3pm?"
+    }
+  ],
+  "infra_errors": [],
+  "preflight": {
+    "ok": true,
+    "cause": "",
+    "info": {
+      "runtime_version": "1.0.105",
+      "sdk_version": "1.0.28"
+    }
+  },
+  "run": {
+    "model_requested": "gpt-6-luna",
+    "reasoning_effort": "low",
+    "sdk_version": "1.0.28",
+    "runtime_version": "1.0.105",
+    "timestamp_utc": "20261105T182831Z",
+    "model_served": [
+      "gpt-6-luna"
+    ],
+    "request_count": 45,
+    "threshold": {
+      "aggregate_min": 0.85
+    },
+    "scoring_formula": "0.30*structural + 0.40*property + 0.30*semantic (weights redistributed over layers with applicable checks)"
+  }
+}
