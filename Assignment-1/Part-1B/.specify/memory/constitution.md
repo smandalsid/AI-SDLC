@@ -1,4 +1,9 @@
 <!--
+Sync Impact Report: 1.0.1 -> 1.0.2 (PATCH, requested by the human 2026-11-06).
+Reason: the project folder `assignment_2/` was moved to `Assignment-1/Part-1B/`. Every `assignment_2/` in this
+file and in specs/ now means the Part-1B folder; the scope rule applies to that folder. No limit or rule changed.
+Impact: none; the scope gate (`git rev-parse --show-prefix`) already follows the folder.
+
 Sync Impact Report: 1.0.0 -> 1.0.1 (PATCH, human-approved 2026-11-06, recorded in evidence/harness-log.md).
 Reason: a tag named `initial-generation` already exists in the shared repository, and the evidence
 redaction scan flags the secret-pattern definitions in plain-text copies. The tag is now
@@ -420,4 +425,4 @@ evidence/                   see Principle XI
   principle and every table row. A violation MUST be fixed or explicitly justified in the
   plan's complexity-tracking table before the next phase starts.
 
-**Version**: 1.0.1 | **Ratified**: 2026-11-05 | **Last Amended**: 2026-11-06
+**Version**: 1.0.2 | **Ratified**: 2026-11-05 | **Last Amended**: 2026-11-06

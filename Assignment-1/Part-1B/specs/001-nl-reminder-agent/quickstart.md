@@ -1,6 +1,6 @@
 # Quickstart: validation guide
 
-Proves the feature end to end once it is implemented. Run from `assignment_2/` unless stated. Contracts:
+Proves the feature end to end once it is implemented. Run from `Assignment-1/Part-1B/` (formerly `assignment_2/`) unless stated. Contracts:
 [openapi.yaml](contracts/openapi.yaml), [harness outputs](contracts/harness-outputs.md); entities:
 [data-model.md](data-model.md). This guide contains no implementation code.
 
