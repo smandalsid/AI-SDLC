@@ -10,7 +10,7 @@ in `.specify/memory/constitution.md`.
 
 ## Setup
 
-Run from `assignment_2/`.
+Run from `Assignment-1/Part-1B/` (formerly `assignment_2/`).
 
 ```bash
 pyenv local 3.12
