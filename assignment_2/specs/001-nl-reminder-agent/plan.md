@@ -61,7 +61,7 @@ Constitution v1.0.0 at `.specify/memory/constitution.md`. **Pre-research result:
 | IX. Engineering quality | Layering `api -> services -> llm -> models` enforced by an import-graph test; `LLMClient` Protocol; mypy strict, ruff, bandit, `extra="forbid"`, central error handler, `/api/v1`, pagination N/A (no list endpoint) | Pass |
 | X. Tests first | Tasks template will order failing tests before each implementation; endpoint contract tests cover success and failure | Pass |
 | XI. Evidence | Layout and `harness-log.md` section order follow the constitution; run row appended last by `run.sh` | Pass |
-| XII. Agent guardrails | One phase at a time with checkpoints; `initial-generation` tag before the first `run.sh` | Pass |
+| XII. Agent guardrails | One phase at a time with checkpoints; `assignment-2-initial-generation` tag before the first `run.sh` | Pass |
 | Technology and environment | Stack as constitution; SDK pinned; one SDK module; least-privilege keywords verified against the installed package | Pass, layout adapted (Complexity row 1) |
 | Repository and workflow | Branch `assignment-2-reminder-agent` (created); all paths inside `assignment_2/`; scope gate `git diff --name-only main...HEAD` | Pass |
 | MEC table | Each of MEC-1 to MEC-27 has an enforcing script in the harness (see "Harness design"); MEC-22 (pagination) is not applicable because the API has no list endpoint | Pass |

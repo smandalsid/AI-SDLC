@@ -1,3 +1,10 @@
+<!--
+Sync Impact Report: 1.0.0 -> 1.0.1 (PATCH, human-approved 2026-11-06, recorded in evidence/harness-log.md).
+Reason: a tag named `initial-generation` already exists in the shared repository, and the evidence
+redaction scan flags the secret-pattern definitions in plain-text copies. The tag is now
+`assignment-2-initial-generation` and snapshots may be archives. No limit or NON-NEGOTIABLE rule changed.
+Impact: plan.md Constitution Check row XII (tag name).
+-->
 # Natural-Language Reminder Agent Constitution
 
 The Natural-Language Reminder Agent is a small AI application. Its LLM behaviour is
@@ -183,8 +190,9 @@ Further rules:
 The following layout is REQUIRED, relative to `assignment_2/`:
 
 - `evidence/initial-generation/`: snapshot of the first agent output, git-tagged
-  `initial-generation` BEFORE the first harness run.
-- `evidence/final-generation/`: snapshot of the accepted output.
+  `assignment-2-initial-generation` BEFORE the first harness run. The snapshot is a directory
+  or a `.tar.gz` archive of the tagged commit with a manifest and a checksum.
+- `evidence/final-generation/`: snapshot of the accepted output, in the same form.
 - `evidence/harness-results/<UTC-timestamp>/`: raw stdout/stderr/exit codes, junit and
   coverage reports, results JSON, and `summary.json` for each run.
 - `evidence/eval-results.json`: produced by a live run only (Principle VI).
@@ -224,7 +232,7 @@ Log rules:
   checkpoint to report completed tasks and gate results, and halt on the first failing
   non-parallel task. A task MUST be marked `[X]` only after its tests pass.
 - **First generation preserved**: after the last implementation task and before the first
-  `.harness/run.sh`, the code MUST be committed, tagged `initial-generation`, and copied to
+  `.harness/run.sh`, the code MUST be committed, tagged `assignment-2-initial-generation`, and copied to
   `evidence/initial-generation/`. The repaired version goes to `evidence/final-generation/`.
 - **Self-healing**: failure evidence is fed to the coding agent, the implementation is
   repaired, and the same gates are rerun unchanged. Repair attempts are counted per failure
@@ -296,7 +304,7 @@ Log rules:
   after the final ACCEPT decision.
 - Local commits are allowed on the feature branch only. Commits MUST be small, and
   milestones MUST be committed: approved artifacts, foundation with harness, each user
-  story, the `initial-generation` tag, each repair, and the final generation.
+  story, the `assignment-2-initial-generation` tag, each repair, and the final generation.
 - Commit messages MUST be conventional (`feat:`, `fix:`, `test:`, `docs:`, `chore:`) and MUST
   reference the task IDs.
 - Staging MUST be explicit, using named paths inside `assignment_2/`. `git add -A` and
@@ -362,7 +370,7 @@ after a failure to collect all evidence, and exit non-zero if any gate failed:
 
 - Individual gate scripts MAY be run while developing. Only runs made through
   `.harness/run.sh` count as evidence, and the first such run happens only after the
-  `initial-generation` snapshot.
+  `assignment-2-initial-generation` snapshot.
 - A partial PASS MUST be treated as a REJECT.
 
 Required layout, relative to `assignment_2/`:
@@ -412,4 +420,4 @@ evidence/                   see Principle XI
   principle and every table row. A violation MUST be fixed or explicitly justified in the
   plan's complexity-tracking table before the next phase starts.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-05 | **Last Amended**: 2026-11-05
+**Version**: 1.0.1 | **Ratified**: 2026-11-05 | **Last Amended**: 2026-11-06
