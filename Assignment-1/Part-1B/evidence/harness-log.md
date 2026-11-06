@@ -33,6 +33,8 @@ Other human-recorded approvals (for example a regenerated `.harness/config/check
 - Coding agent: GitHub Copilot in VS Code agent mode (Claude Sonnet 5.5), working one phase at a time, tests first, with human approval at each phase checkpoint.
 - Context given to the agent: `.specify/memory/constitution.md` (v1.0.0), `spec.md`, `plan.md`, `tasks.md`, plus `research.md`, `data-model.md`, `quickstart.md` and `contracts/` (`openapi.yaml`, `eval-dataset.schema.json`, `harness-outputs.md`), all under `specs/001-nl-reminder-agent/`.
 
+- Final generation: commit `ec6f9558c4105eb03251d70fe7bc9ac9d7e1bf8e` (code identical to the code of the accepted live run `20261105T183701Z`; since that run only the constitution wording, the plan row and evidence changed). `evidence/final-generation/final-generation.tar.gz` is a `git archive` of that commit (`src/`, `tests/`, `prompts/`, `evals/`, `.harness/`, `README.md`, the constitution and `specs/001-nl-reminder-agent/`; 143 files), with `MANIFEST.txt` and `final-generation.tar.gz.sha256`. `gitleaks dir` (project and `evidence/`), `gitleaks git` and the redaction scan report no findings, and `git diff --name-only main...HEAD` lists 381 paths, all under `assignment_2/`.
+
 ## 3. Failure-and-repair log
 
 _Entries are added when a genuine, unexpected failure occurs. A phase with no failure is logged as "no repair needed"._
@@ -154,18 +156,18 @@ Generated with `python .harness/trace_report.py` (every FR, INV, GR and AC maps 
 | INV-8 | test_action_model.py, test_evaluators_schema.py, test_openapi_contract.py, test_output_schema.py, test_untrusted_output.py |  |
 | FR-1 | test_actions_create.py, test_applier_create.py, test_calendar_context.py, test_evaluators_properties_time.py, test_prompt_rules_create.py, test_request_models.py, test_validator_time.py | A04, B01, B02, B03, B04, N01, N02, N04, N06 |
 | FR-2 | test_action_model.py, test_actions_clarify.py, test_evaluators_properties_time.py, test_prompt_rules_clarify.py | M01, M02 |
-| FR-3 | test_actions_clarify.py, test_evaluators_properties_time.py, test_prompt_rules_clarify.py, test_prompt_rules_create.py | M03, N02, N03, N05 |
-| FR-4 | test_evaluators_properties_time.py, test_prompt_rules_clarify.py, test_validator_time.py | A03, M04 |
+| FR-3 | test_actions_clarify.py, test_evaluators_properties_time.py, test_prompt_rules_clarify.py, test_prompt_rules_create.py, test_prompt_rules_regressions.py | M03, N02, N03, N05 |
+| FR-4 | test_evaluators_properties_time.py, test_prompt_rules_clarify.py, test_prompt_rules_regressions.py, test_validator_time.py | A03, M04 |
 | FR-5 | test_actions_reschedule.py, test_applier_reschedule.py, test_evaluators_properties_other.py, test_prompt_rules_targets.py, test_validator_targets.py | A01, A02, G06, N07, N08, N09, N10 |
 | FR-6 | test_actions_snooze.py, test_applier_snooze.py, test_clock_store.py, test_evaluators_properties_other.py, test_prompt_rules_snooze.py | N08, N09 |
 | FR-7 | test_actions_cancel.py, test_applier_cancel.py, test_clock_store.py, test_evaluators_properties_other.py, test_prompt_rules_cancel.py, test_validator_targets.py | N10 |
-| FR-8 | test_actions_refuse.py, test_evaluators_properties_other.py, test_health_and_errors.py, test_openapi_contract.py, test_request_models.py, test_request_text.py, test_text_guard.py | B05, X01, X02, X03, X04 |
+| FR-8 | test_actions_refuse.py, test_evaluators_properties_other.py, test_health_and_errors.py, test_openapi_contract.py, test_prompt_rules_regressions.py, test_request_models.py, test_request_text.py, test_text_guard.py | B05, X01, X02, X03, X04 |
 | FR-9 | test_dataset_contract.py, test_eval_runner.py, test_evaluators_properties_other.py |  |
 | GR-1 | test_actions_refuse.py, test_applier_refuse_noop.py, test_evaluators_guardrails.py, test_prompt_builder.py, test_prompt_rules_refuse.py | G01, G04, G06 |
 | GR-2 | test_actions_refuse.py, test_applier_refuse_noop.py, test_evaluators_guardrails.py, test_prompt_rules_cancel.py, test_prompt_rules_refuse.py | G02 |
 | GR-3 | test_actions_refuse.py, test_applier_refuse_noop.py, test_evaluators_guardrails.py, test_prompt_rules_refuse.py | G03 |
-| GR-4 | test_actions_refuse.py, test_app_executor.py, test_architecture.py, test_env_example.py, test_evaluators_guardrails.py, test_leak_guard.py, test_llm_clients.py, test_prompt_builder.py, test_prompt_rules_refuse.py, test_settings.py | G04 |
-| GR-5 | test_actions_cancel.py, test_actions_create.py, test_actions_refuse.py, test_actions_reschedule.py, test_actions_snooze.py, test_app_executor.py, test_architecture.py, test_copilot_error_mapping.py, test_evaluators_guardrails.py, test_health_and_errors.py, test_interpreter_pipeline.py, test_openapi_contract.py, test_sdk_config.py, test_untrusted_output.py, test_validator_targets.py, test_validator_time.py |  |
+| GR-4 | test_actions_refuse.py, test_app_executor.py, test_architecture.py, test_env_example.py, test_evaluators_guardrails.py, test_leak_guard.py, test_llm_clients.py, test_logging.py, test_prompt_builder.py, test_prompt_rules_refuse.py, test_settings.py | G04 |
+| GR-5 | test_actions_cancel.py, test_actions_create.py, test_actions_refuse.py, test_actions_reschedule.py, test_actions_snooze.py, test_app_executor.py, test_architecture.py, test_copilot_error_mapping.py, test_evaluators_guardrails.py, test_health_and_errors.py, test_interpreter_pipeline.py, test_openapi_contract.py, test_sdk_config.py, test_typing_justification.py, test_untrusted_output.py, test_validator_targets.py, test_validator_time.py |  |
 | GR-6 | test_actions_refuse.py, test_applier_refuse_noop.py, test_evaluators_guardrails.py, test_prompt_rules_refuse.py | G05 |
 | FR-10 | test_check_dataset.py, test_dataset_contract.py |  |
 | FR-11 | test_evaluators_guardrails.py, test_evaluators_properties_other.py, test_evaluators_properties_time.py, test_evaluators_schema.py, test_evaluators_semantic.py |  |
@@ -178,12 +180,12 @@ Generated with `python .harness/trace_report.py` (every FR, INV, GR and AC maps 
 | AC-2 | test_evaluators_semantic.py, test_validator_time.py | N02 |
 | AC-3 |  | N03 |
 | AC-35 |  | N04 |
-| AC-37 |  | N05 |
+| AC-37 | test_prompt_rules_regressions.py | N05 |
 | AC-38 | test_applier_create.py, test_evaluators_semantic.py | N06 |
 | AC-4 | test_actions_clarify.py, test_prompt_rules_clarify.py | M01 |
 | AC-5 | test_actions_clarify.py, test_prompt_rules_clarify.py | M02 |
 | AC-6 | test_actions_clarify.py, test_prompt_rules_clarify.py | M03 |
-| AC-7 | test_prompt_rules_clarify.py | M04 |
+| AC-7 | test_prompt_rules_clarify.py, test_prompt_rules_regressions.py | M04 |
 | AC-34 | test_prompt_rules_clarify.py | A03 |
 | AC-36 | test_calendar_context.py | A04 |
 | AC-8 | test_actions_refuse.py, test_prompt_rules_refuse.py | G01 |
@@ -194,7 +196,7 @@ Generated with `python .harness/trace_report.py` (every FR, INV, GR and AC maps 
 | AC-13 |  | G05 |
 | AC-14 | test_request_text.py, test_text_guard.py | X01 |
 | AC-15 | test_app_executor.py, test_request_text.py | X02, X03, X04 |
-| AC-16 | test_text_guard.py | B05 |
+| AC-16 | test_prompt_rules_regressions.py, test_text_guard.py | B05 |
 | AC-17 | test_actions_reschedule.py, test_applier_reschedule.py, test_prompt_rules_targets.py | N07 |
 | AC-18 | test_actions_reschedule.py, test_prompt_rules_targets.py, test_validator_targets.py | A01 |
 | AC-19 | test_actions_reschedule.py, test_prompt_rules_targets.py | A02 |
