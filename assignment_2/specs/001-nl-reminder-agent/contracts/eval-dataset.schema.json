@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "eval-dataset.schema.json",
+  "title": "Shape of evals/dataset.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "cases"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "cases": {"type": "array", "minItems": 15, "items": {"$ref": "#/$defs/case"}}
+  },
+  "$defs": {
+    "requirementId": {"type": "string", "pattern": "^(FR|INV|GR|AC)-[0-9]+$"},
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "category", "input", "traces", "expected"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[NBAMXG][0-9]{2}$"},
+        "category": {"enum": ["normal", "boundary", "ambiguous", "missing_info", "malformed", "adversarial"]},
+        "description": {"type": "string"},
+        "consistency": {"type": "boolean", "default": false, "description": "Run CONSISTENCY_K times for FR-9"},
+        "traces": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/requirementId"}},
+        "input": {
+          "type": "object",
+          "additionalProperties": false,
+          "anyOf": [{"required": ["text"]}, {"required": ["text_generate"]}],
+          "properties": {
+            "text": {"description": "A string, or any non-string JSON value for non-text cases"},
+            "text_generate": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["unit", "length"],
+              "properties": {"unit": {"type": "string", "minLength": 1}, "length": {"type": "integer", "minimum": 1}},
+              "description": "Alternative to text for long inputs: unit repeated and cut to exactly length characters"
+            },
+            "timezone": {"type": "string", "default": "UTC"},
+            "now": {"type": "string", "format": "date-time"},
+            "reminders": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "title", "time"],
+                "properties": {"id": {"type": "string"}, "title": {"type": "string"}, "time": {"type": "string", "format": "date-time"}}
+              }
+            }
+          }
+        },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "http_status": {"type": "integer", "description": "For malformed cases rejected before the model"},
+            "intent": {"enum": ["create", "reschedule", "snooze", "cancel", "clarify", "refuse"]},
+            "refusal_reason": {"enum": ["unsafe", "injection", "out_of_scope", "bulk_action", "too_long"]},
+            "title": {"type": "string", "description": "Ground truth for title fidelity (overlap >= TITLE_OVERLAP_MIN)"},
+            "datetime_iso": {"type": "string", "format": "date-time", "description": "Ground truth for datetime accuracy (instant within DATETIME_TOLERANCE_SECONDS)"},
+            "target_reminder_id": {"type": ["string", "null"]},
+            "snooze_minutes": {"type": "integer"},
+            "applied_time": {"type": "string", "format": "date-time", "description": "Expected AppliedResult.new_time (FR-6)"},
+            "applied_operation": {"enum": ["created", "rescheduled", "snoozed", "cancelled", "none"]},
+            "null_fields": {"type": "array", "items": {"enum": ["title", "datetime_iso", "snooze_minutes", "target_reminder_id"]}, "description": "Fields that must be null (FR-2: nothing invented)"},
+            "unchanged_reminder_ids": {"type": "array", "items": {"type": "string"}, "description": "Reminders that must be untouched (FR-7)"},
+            "rubric": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "names_field": {"type": "array", "items": {"type": "string"}, "description": "Any one keyword must appear in the clarification question"},
+                "single_question": {"type": "boolean", "default": true, "description": "Exactly one question mark"},
+                "invents_nothing": {"type": "boolean", "default": true, "description": "Fields listed in null_fields stay null"}
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {"if": {"properties": {"category": {"const": "malformed"}}}, "then": {"properties": {"expected": {"anyOf": [{"required": ["http_status"]}, {"required": ["intent"]}]}}}}
+      ]
+    }
+  }
+}

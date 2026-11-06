@@ -1,0 +1,12 @@
+[main]	INFO	profile include tests: None
+[main]	INFO	profile exclude tests: None
+[main]	INFO	cli include tests: None
+[main]	INFO	cli exclude tests: None
+[main]	INFO	using config: .harness/config/bandit.yaml
+[main]	INFO	running on Python 3.12.14
+No known vulnerabilities found
+[90m12:07AM[0m [32mINF[0m [1mscanned ~3480934 bytes (3.48 MB) in 200ms[0m
+[90m12:07AM[0m [32mINF[0m [1mno leaks found[0m
+[90m12:07AM[0m [32mINF[0m [1m0 commits scanned.[0m
+[90m12:07AM[0m [32mINF[0m [1mscanned ~0 bytes (0) in 45.7ms[0m
+[90m12:07AM[0m [32mINF[0m [1mno leaks found[0m
